@@ -315,23 +315,23 @@ by the purely conductive rate that would exist if the fluid were at rest
 \begin{equation}
     \label{eqn:dim_nusselt}
     \nusselt(z,t) \equiv \frac{
-        \langle wT \rangle_A - \kappa \partial \langle T \rangle_A / \partial z
+        \langle wT \rangle_{A,t} - \kappa \partial \langle T \rangle_{A,t} / \partial z
     }{
         \kappa \delta T / d
     }
 \end{equation}
-where $\langle \cdot \rangle_A$ denotes averaging over the horizontal
-plane at height $z$ and $w = \vec{u} \cdot \uvec{z}$ is the vertical
+where $\langle \cdot \rangle_{A,t}$ denotes averaging over time and the horizontal
+plane at height $z$, and $w = \vec{u} \cdot \uvec{z}$ is the vertical
 velocity. The rate of heat transport in the numerator has two terms:
-advection $\langle wT \rangle_A$ and conduction
-$-\kappa \partial \langle T \rangle_A / \partial z$. The denominator
+advection $\langle wT \rangle_{A,t}$ and conduction
+$-\kappa \partial \langle T \rangle_{A,t} / \partial z$. The denominator
 $\kappa \delta T / d$ is the rate of heat transport for a linear
 conductive temperature profile with the fluid at rest.
 \textcite{scheel2013} give the corresponding nondimensionalised form,
 \begin{equation}
     \label{eqn:nusselt}
-    \nusselt(z,t) \equiv (\rayleigh\,\prandtl)^{1/2} \langle w \theta \rangle_A
-        - \pdiff{\langle \theta \rangle_A}{z}.
+    \nusselt(z,t) \equiv (\rayleigh\,\prandtl)^{1/2} \langle w \theta \rangle_{A,t}
+        - \pdiff{\langle \theta \rangle_{A,t}}{z}.
 \end{equation}
 
 Another important quantity is the thickness of the \emph{thermal boundary
@@ -341,15 +341,15 @@ average, the fluid temperature changes with height from $+\delta T/2$ at the
 lower plate to $0$ (the mean value in the well-mixed interior) over a distance
 $\delta_T$, then
 \[
-    \left. \pdiff{\langle T \rangle_A}{z} \right|_{z=0}
+    \left. \pdiff{\langle T \rangle_{A,t}}{z} \right|_{z=0}
         \approx -\frac{\delta T}{2 \delta_T}.
 \]
 But if one considers the definition of the Nusselt number
-\cref{eqn:dim_nusselt} at $z=0$, the advection term $\langle wT \rangle_A$
+\cref{eqn:dim_nusselt} at $z=0$, the advection term $\langle wT \rangle_{A,t}$
 vanishes due to the $\vec{u} = \vec{0}$ boundary condition and
 \[
     \nusselt(z=0) = -\frac{d}{\delta T}
-        \left. \pdiff{\langle T \rangle_A}{z} \right|_{z=0}.
+        \left. \pdiff{\langle T \rangle_{A,t}}{z} \right|_{z=0}.
 \]
 Thus,
 \begin{equation}
