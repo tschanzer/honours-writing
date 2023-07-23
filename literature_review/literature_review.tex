@@ -128,7 +128,7 @@
 \section{Parametrisation development using toy models}
 
 \newpage
-\section{\rb{} convection and numerical considerations}
+\section{Dynamical system case study: \rb{} convection}
 \subsection{Problem statement}
 \rb{} convection is the motion of a fluid confined between two
 horizontal isothermal plates, the temperature of the bottom plate being
@@ -287,22 +287,7 @@ turbulent. This work is concerned with the turbulent regime, since Rayleigh
 numbers for atmospheric deep moist convection can be as large as $\SI{e22}{}$
 \parencite{chilla2012}.
 
-\subsection{Resolution dependence of numerical solutions}
-In constructing a parametrisation test-bed, I will firstly seek
-reasonably accurate, high-resolution ``truth'' solutions of
-\crefrange{eqn:momentum}{eqn:bc_sides}. I will then deliberately reduce
-the resolution, aiming to produce solutions that are sufficiently
-``different'' that they might reasonably be ``improved'' by a parametrisation
-scheme. In this section, I review relevant literature with the aim of
-establishing how, exactly, under-resolved simulations of \rb{} convection
-might ``differ'' from well-resolved ones, and thus what one would hope to
-``improve''. Specifically, I will address the following questions:
-\begin{itemize}
-    \item What resolution is necessary for a converged solution?
-    \item Which quantities are most sensitive to insufficient resolution?
-\end{itemize}
-
-\subsubsection{Aside: Nusselt number and thermal boundary layer thickness}
+\subsection{Thermal properties}
 The rate of heat transport across the fluid layer has physical significance for
 natural realisations of thermally driven convection. It is widely analysed in
 terms of the dimensionless \emph{Nusselt number}, whose accurate determination
@@ -315,31 +300,31 @@ by the purely conductive rate that would exist if the fluid were at rest
 \begin{equation}
     \label{eqn:dim_nusselt}
     \nusselt(z,t) \equiv \frac{
-        \langle wT \rangle_{A,t} - \kappa \partial \langle T \rangle_{A,t} / \partial z
+        \langle wT \rangle_{A,t}
+        - \kappa \partial \langle T \rangle_{A,t} / \partial z
     }{
         \kappa \delta T / d
     }
 \end{equation}
-where $\langle \cdot \rangle_{A,t}$ denotes averaging over time and the horizontal
-plane at height $z$, and $w = \vec{u} \cdot \uvec{z}$ is the vertical
-velocity. The rate of heat transport in the numerator has two terms:
-advection $\langle wT \rangle_{A,t}$ and conduction
-$-\kappa \partial \langle T \rangle_{A,t} / \partial z$. The denominator
-$\kappa \delta T / d$ is the rate of heat transport for a linear
-conductive temperature profile with the fluid at rest.
-\textcite{scheel2013} give the corresponding nondimensionalised form,
+where $\langle \cdot \rangle_{A,t}$ denotes averaging over time and the
+horizontal plane at height $z$, and $w = \vec{u} \cdot \uvec{z}$ is the
+vertical velocity. The rate of heat transport in the numerator has two terms:
+advection $\langle wT \rangle_{A,t}$ and conduction $-\kappa \partial \langle T
+\rangle_{A,t} / \partial z$. The denominator $\kappa \delta T / d$ is the rate
+of heat transport for a linear conductive temperature profile with the fluid at
+rest. \textcite{scheel2013} give the corresponding nondimensionalised form,
 \begin{equation}
     \label{eqn:nusselt}
-    \nusselt(z,t) \equiv (\rayleigh\,\prandtl)^{1/2} \langle w \theta \rangle_{A,t}
+    \nusselt(z,t) \equiv (\rayleigh\,\prandtl)^{1/2}
+        \langle w \theta \rangle_{A,t}
         - \pdiff{\langle \theta \rangle_{A,t}}{z}.
 \end{equation}
 
-Another important quantity is the thickness of the \emph{thermal boundary
-layer} at each plate where large temperature gradients exist.
-\textcite{chilla2012} outline the method for estimating $\delta_T$: if, on
-average, the fluid temperature changes with height from $+\delta T/2$ at the
-lower plate to $0$ (the mean value in the well-mixed interior) over a distance
-$\delta_T$, then
+Another important quantity is the thickness $\delta_T$ of the \emph{thermal
+boundary layer} at each plate where large temperature gradients exist.
+\textcite{chilla2012} define $\delta_T$ as follows: if, on average, the fluid
+temperature changes with height from $+\delta T/2$ at the lower plate to $0$
+(the mean value in the well-mixed interior) over a distance $\delta_T$, then
 \[
     \left. \pdiff{\langle T \rangle_{A,t}}{z} \right|_{z=0}
         \approx -\frac{\delta T}{2 \delta_T}.
@@ -356,6 +341,28 @@ Thus,
     \label{eqn:thermal_bl}
     \delta_T = \frac{d}{2\,\nusselt(z=0)}.
 \end{equation}
+
+
+\subsection{Resolution dependence of numerical solutions}
+% s.sherwood: Might be important to further explain here that you will regard
+% this as the ("warts and all") dynamical system you want to emulate at a
+% coarser representation.  This avoids the issue of whether this hig-res is a
+% perfect solution of the fluid equations or not (it doesn't have to be,
+% although for robustness we want it to be relatively insensitive to small
+% changes in dx).
+In constructing a parametrisation test-bed, I will firstly seek
+reasonably accurate, high-resolution ``truth'' solutions of
+\crefrange{eqn:momentum}{eqn:bc_sides}. I will then deliberately reduce
+the resolution, aiming to produce solutions that are sufficiently
+``different'' that they might reasonably be ``improved'' by a parametrisation
+scheme. In this section, I review relevant literature with the aim of
+establishing how, exactly, under-resolved simulations of \rb{} convection
+might ``differ'' from well-resolved ones, and thus what one would hope to
+``improve''. Specifically, I will address the following questions:
+\begin{itemize}
+    \item What resolution is necessary for a converged solution?
+    \item Which quantities are most sensitive to insufficient resolution?
+\end{itemize}
 
 \subsubsection{Theoretical resolution requirements for accurate simulations}%
 \label{sec:res_requirements}
