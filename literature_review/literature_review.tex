@@ -72,6 +72,7 @@
 \newcommand{\prandtl}{\ensuremath{\mathrm{Pr}}}
 \newcommand{\rayleigh}{\ensuremath{\mathrm{Ra}}}
 \newcommand{\nusselt}{\ensuremath{\mathrm{Nu}}}
+\renewcommand{\bar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
 
 % text macros
 \newcommand{\rb}{Rayleigh-B\'{e}nard}
@@ -118,14 +119,110 @@
 \pagestyle{fancy}
 \thispagestyle{fancy}
 
-\section{Introduction}
-\subsection{Traditional parametrisation schemes}
+\section{Introduction and background}
+\subsection{The necessity of parametrisation}
+% Broad introduction of weather/climate prediction and fluid equations
+The primary task of numerical weather and climate models is to simulate the
+dynamics of the atmosphere and ocean, which are governed by the Navier-Stokes
+equations. The algorithm chosen to solve these partial differential equations
+is known as a model's \emph{dynamical core} \parencite{mcfarlane2011}. Since
+analytical solutions do not exist, the dynamical core necessarily approximates
+the continuous equations with finite-dimensional, exactly solvable alternatives
+using one of several possible discretisation schemes (e.g., the finite
+difference, finite element, finite volume and spectral methods)
+\parencite{christensen2022}. In practice, this usually involves representing
+the prognostic variables (i.e., those that affect the evolution of the flow)
+with sets of discrete samples in space and time, whose resolution is
+constrained by the available computing resources. The unavoidable consequence
+of discretisation is the loss of information about processes occurring on
+spatial and temporal scales smaller than the corresponding sampling intervals.
+These processes are said to be \emph{unresolved}.
 
-\section{Theory of parametrisation}
+% why we need parametrisation: nonlinearity
+It is tempting to na\"{i}vely accept the loss of fine-scale information as a
+necessary sacrifice and hope the dynamical core will still make accurate
+predictions for the larger, resolved scales. Unfortunately, this too is
+impossible due to the \emph{nonlinearity} of the governing equations. It is
+instructive to consider the linear case as a counterexample.
 
-\section{Data-driven parametrisation schemes}
+Linear differential equations allow arbitrary superpositions of solutions,
+meaning that any given solution may be partitioned into high- and low-frequency
+components, both of which are also solutions. One thus has the freedom to solve
+for the low-frequency components alone without compromise. This property may be
+understood more formally using the Fourier transform, defined for a function
+$f$ of space and time by
+\[
+    \tilde{f}(\omega, \vec{k})
+        = \int \d{t}\,\d^3{x}\, e^{i(\vec{k} \cdot \vec{x} - \omega t)}
+        f(t, \vec{x}),
+\]
+which reduces any linear differential equation to an algebraic equation
+relating the frequency $\omega$ to the wavenumber $\vec{k}$. Each wavenumber
+component of the initial state propagates trivially according to its own
+time dependence $e^{i(\vec{k} \cdot \vec{x} - \omega(\vec{k}) t)}$,
+\emph{independently of the other components}. The fine-scale dynamics may
+be safely neglected because they have no influence on the coarse scales.
 
-\section{Parametrisation development using toy models}
+The consequence of the nonlinearity of the equations governing atmospheric and
+oceanic flows is, therefore, a coupling of the resolved coarse scales to the
+unresolved fine scales \parencite{mcfarlane2011}.
+% justification via Reynolds averaging
+This fact may be demonstrated more quantitatively by applying so-called
+\emph{Reynolds averaging} to the equations \parencite{christensen2022}.
+Reynolds averaging decomposes each variable $f$ into a time-, space- or
+ensemble average $\bar{f}$ and a perturbation $f'$, where the averaging
+operation is linear and commutes with differentiation \parencite{monin2007}.
+Note that $\bar{f'} = 0$ by definition. Following the example given by
+\textcite{christensen2022}, consider the momentum equation, which has the
+general form
+\[
+    \pdiff{u_i}{t} + u_j \pdiff{u_i}{x_j} = \sum f,
+\]
+where $u_i$ are the components of the velocity, $x_i$ are the coordinates and
+$f$ are forces which are all linear in the prognostic variables. Summation
+over repeated indices is implied. Applying the decomposition and averaging
+both sides of the equation yields
+\begin{alignat*}{2}
+    && \pdiff{\bar{u_i}}{t} + \bar{\bar{u_j} \pdiff{\bar{u_i}}{x_j}}
+        + \bar{\bar{u_j} \pdiff{u_i'}{x_j}} + \bar{u_j' \pdiff{\bar{u_i}}{x_j}}
+        + \bar{u_j' \pdiff{u_i'}{x_j}} &= \sum \bar{f} \\
+    \Leftrightarrow& \qquad &
+        \pdiff{\bar{u_i}}{t} + \bar{u_j} \pdiff{\bar{u_i}}{x_j}
+        + \bar{u_j} \pdiff{\bar{u_i'}}{x_j} + \bar{u_j'} \pdiff{\bar{u_i}}{x_j}
+        + \pdiff{\bar{u_i' u_j'}}{x_j} + \bar{u_i' \pdiff{u_j'}{x_j}}
+        &= \sum \bar{f} \\
+    \Leftrightarrow &&
+        \pdiff{\bar{u_i}}{t} + \bar{u_j} \pdiff{\bar{u_i}}{x_j}
+        &= \sum \bar{f} - \pdiff{\bar{u_i' u_j'}}{x_j},
+\end{alignat*}
+where incompressibility ($\partial u_j' / \partial x_j = 0$) has been
+assumed for simplicity in the last step. The final result is an expression
+for the evolution of the averaged velocity field in terms of the averaged
+forces, along with a coupling to the fine-scale perturbation field via
+$\bar{u_i' u_j'}$, which does not necessarily vanish. This coupling exists
+only due to the nonlinearity of the original equation.
+
+To run the dynamical core of a weather or climate model on its own, ignoring
+this coupling, would introduce unacceptable systematic biases, or errors, in
+the resolved state. Models therefore require parametrisation schemes to
+estimate the effects of the coupling as functions of the resolved state (and
+the parameters of these functions must be chosen appropriately---hence the term
+``parametrisation'').
+
+
+\subsection{Physical processes requiring parametrisation}
+% spectrum of scales and implications of cross-interaction
+% Examples of processes requiring parametrisation
+
+\subsection{Traditional solutions to the problem and their limitations}
+% Traditional parametrisation techniques and underlying assumptions
+
+% Outstanding issues
+
+\newpage
+\section{Novel approaches to the parametrisation problem}
+
+\section{Simple dynamical systems as testbeds for novel approaches}
 
 \newpage
 \section{Dynamical system case study: \rb{} convection}
@@ -372,7 +469,7 @@ might ``differ'' from well-resolved ones, and thus what one would hope to
 requirements for accurate simulations of \rb{} convection
 \parencite{chilla2012,scheel2013}. He identified separate constraints on the
 mean (i.e., averaged in each spatial direction) grid spacing and the vertical
-spacing near the plates; we first discuss the former.
+spacing near the plates; I first discuss the former.
 \citeauthor{grotzbach1983} reasoned that a numerical model that neglects
 subgrid-scale effects must have a geometric mean grid spacing $h = (\Delta x
 \Delta y \Delta z)^{1/3}$ such that
