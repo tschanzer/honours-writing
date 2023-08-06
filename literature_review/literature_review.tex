@@ -126,17 +126,17 @@ The primary task of numerical weather and climate models is to simulate the
 dynamics of the atmosphere and ocean, which are governed by the Navier-Stokes
 equations. The algorithm chosen to solve these partial differential equations
 is known as a model's \emph{dynamical core} \parencite{mcfarlane2011}. Since
-analytical solutions do not exist, the dynamical core necessarily approximates
-the continuous equations with finite-dimensional, exactly solvable alternatives
-using one of several possible discretisation schemes (e.g., the finite
-difference, finite element, finite volume and spectral methods)
-\parencite{christensen2022}. In practice, this usually involves representing
-the prognostic variables (i.e., those that affect the evolution of the flow)
-with sets of discrete samples in space and time, whose resolution is
-constrained by the available computing resources. The unavoidable consequence
-of discretisation is the loss of information about processes occurring on
-spatial and temporal scales smaller than the corresponding sampling intervals.
-These processes are said to be \emph{unresolved}.
+analytical solutions to the equations do not exist, the dynamical core
+necessarily approximates the continuous equations with finite-dimensional,
+exactly solvable alternatives using one of several possible discretisation
+schemes (e.g., the finite difference, finite element, finite volume and
+spectral methods) \parencite{christensen2022}. In practice, this usually
+involves representing the prognostic variables (i.e., those that affect the
+evolution of the flow) with sets of discrete samples in space and time, whose
+resolution is constrained by the available computing resources. The unavoidable
+consequence of discretisation is the loss of information about processes
+occurring on spatial and temporal scales smaller than the corresponding
+sampling intervals. These processes are said to be \emph{unresolved}.
 
 % why we need parametrisation: nonlinearity
 It is tempting to na\"{i}vely accept the loss of fine-scale information as a
@@ -159,7 +159,7 @@ $f$ of space and time by
 which reduces any linear differential equation to an algebraic equation
 relating the frequency $\omega$ to the wavenumber $\vec{k}$. Each wavenumber
 component of the initial state propagates trivially according to its own
-time dependence $e^{i(\vec{k} \cdot \vec{x} - \omega(\vec{k}) t)}$,
+time dependence $e^{-i(\vec{k} \cdot \vec{x} - \omega(\vec{k}) t)}$,
 \emph{independently of the other components}. The fine-scale dynamics may
 be safely neglected because they have no influence on the coarse scales.
 
@@ -167,57 +167,215 @@ The consequence of the nonlinearity of the equations governing atmospheric and
 oceanic flows is, therefore, a coupling of the resolved coarse scales to the
 unresolved fine scales \parencite{mcfarlane2011}.
 % justification via Reynolds averaging
-This fact may be demonstrated more quantitatively by applying so-called
+This fact may be demonstrated more explicitly by applying so-called
 \emph{Reynolds averaging} to the equations \parencite{christensen2022}.
-Reynolds averaging decomposes each variable $f$ into a time-, space- or
-ensemble average $\bar{f}$ and a perturbation $f'$, where the averaging
-operation is linear and commutes with differentiation \parencite{monin2007}.
-Note that $\bar{f'} = 0$ by definition. Following the example given by
-\textcite{christensen2022}, consider the momentum equation, which has the
-general form
-\[
-    \pdiff{u_i}{t} + u_j \pdiff{u_i}{x_j} = \sum f,
-\]
-where $u_i$ are the components of the velocity, $x_i$ are the coordinates and
-$f$ are forces which are all linear in the prognostic variables. Summation
-over repeated indices is implied. Applying the decomposition and averaging
-both sides of the equation yields
+Reynolds averaging decomposes each field $q$ into the sum of a coarse-grained
+(in space or time) or statistical-ensemble-averaged field $\bar{q}$ and a
+perturbation $q'$. Note that $\bar{q'} = 0$ by definition. The coarse-graining
+operation is assumed to be linear, commute with differentiation and satisfy
+$\bar{\bar{p} q} = \bar{p} \bar{q}$ for any two fields $p$ and $q$
+\parencite{monin2007}. Following the example given by
+\textcite{christensen2022}, consider the incompressible Navier-Stokes
+equations, which have the general form
+\begin{align*}
+    \pdiff{u_i}{t} + u_j \pdiff{u_i}{x_j} &= \sum f_i, \\
+    \pdiff{u_i}{x_i} &= 0
+\end{align*}
+where $u_i$ are the components of the velocity, $x_i$ are the
+coordinates and $f_i$ are various forces per unit mass. Summation over repeated
+indices is implied. Applying the decomposition and coarse-graining both sides
+of the equations yields
 \begin{alignat*}{2}
-    && \pdiff{\bar{u_i}}{t} + \bar{\bar{u_j} \pdiff{\bar{u_i}}{x_j}}
-        + \bar{\bar{u_j} \pdiff{u_i'}{x_j}} + \bar{u_j' \pdiff{\bar{u_i}}{x_j}}
-        + \bar{u_j' \pdiff{u_i'}{x_j}} &= \sum \bar{f} \\
-    \Leftrightarrow& \qquad &
-        \pdiff{\bar{u_i}}{t} + \bar{u_j} \pdiff{\bar{u_i}}{x_j}
-        + \bar{u_j} \pdiff{\bar{u_i'}}{x_j} + \bar{u_j'} \pdiff{\bar{u_i}}{x_j}
-        + \pdiff{\bar{u_i' u_j'}}{x_j} + \bar{u_i' \pdiff{u_j'}{x_j}}
-        &= \sum \bar{f} \\
-    \Leftrightarrow &&
-        \pdiff{\bar{u_i}}{t} + \bar{u_j} \pdiff{\bar{u_i}}{x_j}
-        &= \sum \bar{f} - \pdiff{\bar{u_i' u_j'}}{x_j},
+    && \pdiff{}{x_i} \left( \bar{u_i} + u_i' \right) &= 0 \\
+    \Rightarrow & \qquad &
+        \pdiff{\bar{u_i}}{x_i}
+        + \underbrace{\pdiff{\bar{u_i'}}{x_i}}_{=0} &= 0 \\
+    \Rightarrow & \qquad &
+        \pdiff{\bar{u_i}}{x_i} = \pdiff{u_i'}{x_i} &= 0
 \end{alignat*}
-where incompressibility ($\partial u_j' / \partial x_j = 0$) has been
-assumed for simplicity in the last step. The final result is an expression
-for the evolution of the averaged velocity field in terms of the averaged
-forces, along with a coupling to the fine-scale perturbation field via
-$\bar{u_i' u_j'}$, which does not necessarily vanish. This coupling exists
-only due to the nonlinearity of the original equation.
+and
+\begin{alignat*}{2}
+    && \sum \bar{f_i} &=
+        \bar{\pdiff{}{t} \left( \bar{u_i} + u_i' \right)}
+        + \bar{\left( \bar{u_j} + u_j' \right)
+        \pdiff{}{x_j} \left( \bar{u_i} + u_i' \right)} \\
+    &&&=
+        \pdiff{\bar{u_i}}{t}
+        + \underbrace{\pdiff{\bar{u_i'}}{t}}_{=0}
+        + \bar{u_j} \pdiff{\bar{u_i}}{x_j}
+        + \bar{u_j} \underbrace{\pdiff{\bar{u_i'}}{x_j}}_{=0}
+        + \underbrace{\bar{u_j'}}_{=0} \pdiff{\bar{u_i}}{x_j}
+        + \bar{u_j' \pdiff{u_i'}{x_j}} \\
+    &&&=
+        \pdiff{\bar{u_i}}{t} + \bar{u_j} \pdiff{\bar{u_i}}{x_j}
+        + \pdiff{\bar{u_i' u_j'}}{x_j}
+        - \bar{u_i' \underbrace{\pdiff{u_j'}{x_j}}_{=0}} \\
+    \Leftrightarrow & \qquad &
+        \pdiff{\bar{u_i}}{t} + \bar{u_j} \pdiff{\bar{u_i}}{x_j}
+        &= \sum \bar{f_i} - \pdiff{\bar{u_i' u_j'}}{x_j}.
+\end{alignat*}
+The physical meaning of this last equation is that the evolution of the
+coarse-grained velocity field depends not only on itself and the coarse-grained
+forces, but also on the perturbations via $\bar{u_i' u_j'}$, which does not
+necessarily vanish. This dependence is a consequence of nonlinearity.
 
-To run the dynamical core of a weather or climate model on its own, ignoring
-this coupling, would introduce unacceptable systematic biases, or errors, in
-the resolved state. Models therefore require parametrisation schemes to
-estimate the effects of the coupling as functions of the resolved state (and
-the parameters of these functions must be chosen appropriately---hence the term
-``parametrisation'').
+The theoretical discussion in this section establishes that physical processes
+occurring at one place in the spectrum of temporal and spatial scales are
+coupled to all the other processes in the spectrum. In particular, to ignore
+the effect of processes not explicitly resolved in numerical models would
+introduce unacceptable systematic biases, or errors, in the model forecasts.
+Numerical weather and climate models therefore require parametrisation schemes
+to estimate the effects of unresolved processes as functions of the available
+large-scale information (and the parameters of these functions must be chosen
+appropriately---hence the name ``parametrisation'').
 
 
 \subsection{Physical processes requiring parametrisation}
 % spectrum of scales and implications of cross-interaction
 % Examples of processes requiring parametrisation
+Following the broad theoretical argument in the previous section, I now turn to
+concrete examples of processes that are often represented by parametrisations,
+restricting the discussion to atmospheric processes for brevity. This section
+will give a basic introduction to each process, its effect on the larger-scale
+behaviour of the climate system and the role of its corresponding
+parametrisation scheme. The purpose of these examples is to provide real-world
+context and motivation for current parametrisation research in more idealised
+settings, which will form one of the main topics of this review.
+
+\emph{Cloud microphysics} parametrisations model the composition of clouds in
+terms of the amount of water in the solid (e.g., hail), liquid (cloud droplets
+and rain) and gaseous phases, and the rate of transitions between these phases.
+Accurate representation of cloud formation and evolution is crucial for several
+reasons. First, the interaction of clouds with solar and terrestrial radiation
+has a major influence on the overall energy balance of the atmosphere
+\parencite{mcfarlane2011}. Second, cloud water phase transitions lead to the
+formation of precipitation, and are a source and sink of latent heat that
+drives convection \parencite{mcfarlane2011}. Furthermore, the statistics of
+cloud formation are linked to global temperatures in a feedback loop;
+uncertainty in the sign and magnitude of this feedback effect is a major
+contributor to uncertainty in the sensitivity of global temperatures to
+increases in atmospheric CO$_2$ concentration \parencite{andrews2012,
+christensen2022}. Microphysical processes occur on the spatial scales of single
+water droplets and ice particles---among the smallest scales in the atmosphere.
+All atmospheric models must parametrise the amount of cloud water in each
+phase, the size distribution and concentration of liquid and ice particles, and
+the resulting rate and type (rain, hail, snow, etc.) of precipitation
+\parencite{christensen2022}.
+
+\emph{Moist convection} encompasses vertial motions in the atmosphere that are
+accompanied (and driven) by phase changes of water, and must be parametrised
+when it occurs on sub-grid scales. Moist convection is generally triggered by
+warming and moistening at low levels, which create convective instability, and
+is manifested by narrow updrafts and downdrafts that can rarely be resolved
+explicitly \parencite{mcfarlane2011}. Convection transports heat and moisture
+vertically, removing the instability and generating storms where the condensed
+water falls out as precipitation; more broadly, it is a key component of the
+global atmospheric circulation in spite of its small spatial scale
+\parencite{christensen2022}.
+
+It should be noted that parametrisation also encompasses estimation techniques
+for processes that are too complex to model exactly for reasons unrelated to
+spatial and temporal resolution \parencite{mcfarlane2011}. A good example of
+such a process is \emph{radiative transfer}. Air and its constituent gases, as
+well as clouds, absorb, emit, reflect and/or scatter solar and terrestrial
+radiation. This leads to differential heating and cooling that drives the
+atmospheric circulation. While the theory of radiative transfer is understood
+well enough to allow precise calculations in principle, the prohibitive
+computational cost of such calculations necessitates a parametrisation based on
+simplifying assumptions (the details of which are beyond the scope of this
+review) \parencite{christensen2022}.
+
 
 \subsection{Traditional solutions to the problem and their limitations}
-% Traditional parametrisation techniques and underlying assumptions
+With the examples of cloud microphysics, moist convection and radiative
+transfer in mind, I now broadly review the traditional approaches used to
+construct parametrisation schemes in practice. In particular, this section will
+identify the key assumptions upon which many traditional schemes are founded,
+and the circumstances under which the assumptions may be violated. This will
+motivate research into novel approaches.
 
-% Outstanding issues
+% conceptual model (examples)
+A parametrisation scheme is traditionally constructed by formulating a
+simplfied, easily solvable and deterministic conceptual model of the physical
+process in question. The solution of this model is then used to estimate the
+effect of the process on the coarse-scale state of the parent model, known as
+the \emph{unresolved tendency} \parencite{mcfarlane2011}. For example, the earliest convective
+parametrisation was developed by \textcite{manabe1965} and simply assumed that
+the net effect of convection is to relax the vertical structure of the
+atmosphere towards a neutrally stable state whenever it becomes convectively
+unstable.
+% motivate data-driven parametrisation here?
+One obvious deficiency of simple conceptual models is that they cannot possibly
+capture the full range of variability in the processes they simulate. One major
+branch of modern parametrisation research therefore studies \emph{data-driven}
+schemes that instead use observational or high-resolution simulated data to fit
+empirical models for the unresolved processes, naturally capturing a wider
+range of variability \parencite{christensen2022}. Data-driven parametrisation
+will be discussed in much further detail in the next section.
+
+% grid-box mean and scale separation
+In general, a traditional parametrisation scheme aims to capture the net
+unresolved tendency due to all occurrences of the unresolved process (e.g., all
+convective updrafts and downdrafts) within each grid cell of the parent model.
+A deterministic prediction of this type is valid when each grid cell contains
+many independent realisations whose varying contributions may be expected to
+yield a reliable average tendency. This requires a \emph{scale separation}
+between the unresolved process and the resolution of the parent model. Scale
+separation breaks down when model development and increases in available
+computing resources allow simulations at resolutions approaching the previously
+unresolved scales. In this case, knowledge of the coarse-scale state cannot be
+expected to uniquely determine the unresolved tendency because the process is
+only realised a few times in each grid cell. The resulting (seemingly) random
+nature of the true unresolved tendency motivates stochastic treatments
+\parencite{mcfarlane2011,christensen2022}. These will be discussed in the next
+section.
+
+% closure, quasi-equilibrium -> memory
+The conceptual models core to traditional parametrisations usually contain free
+parameters that are determined from the coarse-scale model state using
+additional assumptions called \emph{closures}. Closures often postulate a state
+of quasi-equilibrium between the unresolved processes and their large-scale
+environment, such as a balance between the accumulation of convective available
+potential energy (CAPE) and its removal by convection, or between the
+horizontal convergence of moisture at low levels and its convective transport
+to higher levels \parencite{mcfarlane2011,christensen2022}. However, there is
+no guarantee that such an equilibrium exists; in fact, it has been demonstrated
+that the CAPE balance is violated by fluctuations on sub-diurnal time scales
+\parencite{donner2003} and by midlatitude continental convection
+\parencite{zhang2002}. Newer parametrisation schemes have allowed departures
+from equilibrium by representing the unresolved processes in a prognostic
+rather than diagnostic manner (i.e., allowing the processes to have their own
+self-governing time dependence rather than calculating them from the
+large-scale state at each time step independently of their values at the
+previous step) \parencite{rio2019}. This creates \emph{memory} or
+\emph{latency} in the parametrised tendencies, meaning that the tendencies have
+some nonzero response time when subjected to sudden changes in the large-scale
+state. Memory will be discussed further in the next section.
+
+% ISSUES
+Parametrisation schemes commonly suffer from several other issues that I will
+briefly address here.
+% division of processes -> unification
+Firstly, while the division of the general atmospheric dynamics into a set of
+separately parametrised processes (microphysics, convection, etc.) is
+physically motivated, it remains somewhat arbitrary because these processes,
+strictly speaking, form a continuum without well-defined boundaries
+\parencite{christensen2022,mcfarlane2011}. It is a goal of contemporary
+research to unify the parametrisations as much as possible.
+% universality
+Secondly, given the importance of future climate projections, it is natural to
+ask whether the parametrisation schemes that have been developed and tuned on
+today's climate remain valid as the climate changes over decade- to
+century-long simulations. This is a matter of particular concern for
+data-driven parametrisations, since there is little reason to trust empirical
+models once they are extrapolated beyond the range of the data originally used
+to fit them \parencite{christensen2022}.
+% conservation laws
+Finally, unless very special care is taken, parametrisation schemes can cause
+the parent model to violate known physical conservation laws (e.g., mass,
+energy and momentum) \parencite{christensen2022}. Efforts to resolve this issue
+are ongoing.
+
 
 \newpage
 \section{Novel approaches to the parametrisation problem}
