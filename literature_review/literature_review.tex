@@ -157,7 +157,7 @@ $f$ of space and time by
         f(t, \vec{x}),
 \]
 which reduces any linear differential equation to an algebraic equation
-relating the frequency $\omega$ to the wavenumber $\vec{k}$. Each wavenumber
+relating the frequency $\omega$ to the wave vector $\vec{k}$. Each wavenumber
 component of the initial state propagates trivially according to its own
 time dependence $e^{-i(\vec{k} \cdot \vec{x} - \omega(\vec{k}) t)}$,
 \emph{independently of the other components}. The fine-scale dynamics may
@@ -221,13 +221,16 @@ necessarily vanish. This dependence is a consequence of nonlinearity.
 
 The theoretical discussion in this section establishes that physical processes
 occurring at one place in the spectrum of temporal and spatial scales are
-coupled to all the other processes in the spectrum. In particular, to ignore
-the effect of processes not explicitly resolved in numerical models would
-introduce unacceptable systematic biases, or errors, in the model forecasts.
-Numerical weather and climate models therefore require parametrisation schemes
-to estimate the effects of unresolved processes as functions of the available
-large-scale information (and the parameters of these functions must be chosen
-appropriately---hence the name ``parametrisation'').
+coupled to all the other processes in the spectrum \parencite{franzke2015}. In
+particular, to ignore the effect of processes not explicitly resolved in
+numerical models would introduce unacceptable systematic biases, or errors, in
+the model forecasts. Numerical weather and climate models therefore require
+parametrisation schemes to estimate the effects of unresolved processes as
+functions of the available large-scale information (and the parameters of these
+functions must be chosen appropriately---hence the name ``parametrisation'').
+
+
+\subsection{Mathematical formulation of the parametrisation problem}
 
 
 \subsection{Physical processes requiring parametrisation}
@@ -255,14 +258,14 @@ cloud formation are linked to global temperatures in a feedback loop;
 uncertainty in the sign and magnitude of this feedback effect is a major
 contributor to uncertainty in the sensitivity of global temperatures to
 increases in atmospheric CO$_2$ concentration \parencite{andrews2012,
-christensen2022}. Microphysical processes occur on the spatial scales of single
-water droplets and ice particles---among the smallest scales in the atmosphere.
-All atmospheric models must parametrise the amount of cloud water in each
-phase, the size distribution and concentration of liquid and ice particles, and
-the resulting rate and type (rain, hail, snow, etc.) of precipitation
-\parencite{christensen2022}.
+christensen2022,stevens2013}. Microphysical processes occur on the spatial
+scales of single water droplets and ice particles---among the smallest scales
+in the atmosphere. All atmospheric models must parametrise the amount of cloud
+water in each phase, the size distribution and concentration of liquid and ice
+particles, and the resulting rate and type (rain, hail, snow, etc.) of
+precipitation \parencite{christensen2022}.
 
-\emph{Moist convection} encompasses vertial motions in the atmosphere that are
+\emph{Moist convection} encompasses vertical motions in the atmosphere that are
 accompanied (and driven) by phase changes of water, and must be parametrised
 when it occurs on sub-grid scales. Moist convection is generally triggered by
 warming and moistening at low levels, which create convective instability, and
@@ -327,8 +330,8 @@ unresolved scales. In this case, knowledge of the coarse-scale state cannot be
 expected to uniquely determine the unresolved tendency because the process is
 only realised a few times in each grid cell. The resulting (seemingly) random
 nature of the true unresolved tendency motivates stochastic treatments
-\parencite{mcfarlane2011,christensen2022}. These will be discussed in the next
-section.
+\parencite{mcfarlane2011,christensen2022,berner2017}. These will be discussed
+in the next section.
 
 % closure, quasi-equilibrium -> memory
 The conceptual models core to traditional parametrisations usually contain free
@@ -338,16 +341,16 @@ of quasi-equilibrium between the unresolved processes and their large-scale
 environment, such as a balance between the accumulation of convective available
 potential energy (CAPE) and its removal by convection, or between the
 horizontal convergence of moisture at low levels and its convective transport
-to higher levels \parencite{mcfarlane2011,christensen2022}. However, there is
-no guarantee that such an equilibrium exists; in fact, it has been demonstrated
-that the CAPE balance is violated by fluctuations on sub-diurnal time scales
-\parencite{donner2003} and by midlatitude continental convection
+to higher levels \parencite{mcfarlane2011,christensen2022,palmer2019}. However,
+there is no guarantee that such an equilibrium exists; in fact, it has been
+demonstrated that the CAPE balance is violated by fluctuations on sub-diurnal
+time scales \parencite{donner2003} and by midlatitude continental convection
 \parencite{zhang2002}. Newer parametrisation schemes have allowed departures
 from equilibrium by representing the unresolved processes in a prognostic
 rather than diagnostic manner (i.e., allowing the processes to have their own
 self-governing time dependence rather than calculating them from the
 large-scale state at each time step independently of their values at the
-previous step) \parencite{rio2019}. This creates \emph{memory} or
+previous step) \parencite{rio2019,berner2017}. This creates \emph{memory} or
 \emph{latency} in the parametrised tendencies, meaning that the tendencies have
 some nonzero response time when subjected to sudden changes in the large-scale
 state. Memory will be discussed further in the next section.
@@ -379,6 +382,7 @@ are ongoing.
 
 \newpage
 \section{Novel approaches to the parametrisation problem}
+% ongoing issues, processes will remain unresolved
 
 \section{Simple dynamical systems as testbeds for novel approaches}
 
@@ -650,8 +654,8 @@ energy dissipation rate defined by
 \parencite{chilla2012}. The condition \cref{eqn:grotzbach} can be
 understood using the Nyquist-Shannon theorem, which states that a
 sampling frequency $f \geq k/\pi$ is needed to unambiguously reconstruct
-a signal with wavenumber $k$; substituting $f = 1/h$, $k = 1/\eta$ leads
-to the claimed relation.
+a signal with maximum wavenumber $k$; substituting $f = 1/h$, $k =
+1/\eta$ leads to the claimed relation.
 
 % resolution near plates, number of points.
 \citeauthor{grotzbach1983} recognised that the above reasoning was only valid
