@@ -1,5 +1,5 @@
 % imports
-\documentclass[titlepage]{article}
+\documentclass[titlepage,twoside]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[a4paper, total={16cm, 23cm}, top=3.5cm]{geometry}
 \usepackage[dvipsnames]{xcolor}
@@ -27,6 +27,7 @@
     uniquename=false,
     maxbibnames=99,
     giveninits=true,
+    sortcites=false,
 ]{biblatex}
 
 % bibliographic options
@@ -53,9 +54,14 @@
 \makeatother
 
 % page style options
+\setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{0cm}
 \pagestyle{fancy}
-\fancyhead{}
-\rhead{Title}
+\fancyhead[LE,RO]{\bfseries\thepage}
+\renewcommand{\sectionmark}[1]{\markboth{\MakeUppercase{\thesection.\ #1}}{}}
+\fancyhead[RE,LO]{\bfseries\nouppercase{\leftmark}}
+\fancyfoot{}
+
 \renewcommand{\headrulewidth}{0.5pt}
 \setlength{\headheight}{15pt}
 \setlength\parindent{0pt}
@@ -83,10 +89,9 @@
 
 \begin{center}
     {\Huge \textbf{%
-        Title
+        Novel parametrisation techniques in weather and climate modelling and
+        their evaluation using simpler analogue models
     }} \\
-    \vspace{0.75cm}
-    {\Large\textbf{Honours Literature Review}} \\
     \vspace{0.75cm}
     {\Large\textbf{Thomas D. Schanzer}} \\
     \vspace{6pt}
@@ -122,21 +127,22 @@
 \section{Introduction and background}
 \subsection{The necessity of parametrisation}
 % Broad introduction of weather/climate prediction and fluid equations
-The primary task of numerical weather and climate models is to simulate the
-dynamics of the atmosphere and ocean, which are governed by the Navier-Stokes
-equations. The algorithm chosen to solve these partial differential equations
-is known as a model's \emph{dynamical core} \parencite{mcfarlane2011}. Since
-analytical solutions to the equations do not exist, the dynamical core
-necessarily approximates the continuous equations with finite-dimensional,
-exactly solvable alternatives using one of several possible discretisation
-schemes (e.g., the finite difference, finite element, finite volume and
-spectral methods) \parencite{christensen2022}. In practice, this usually
-involves representing the prognostic variables (i.e., those that affect the
-evolution of the flow) with sets of discrete samples in space and time, whose
-resolution is constrained by the available computing resources. The unavoidable
-consequence of discretisation is the loss of information about processes
-occurring on spatial and temporal scales smaller than the corresponding
-sampling intervals. These processes are said to be \emph{unresolved}.
+The primary task of general circulation models (GCMs) for Earth's weather and
+climate is to simulate the dynamics of the atmosphere and ocean, which are
+governed by the Navier-Stokes equations. The algorithm chosen to solve these
+partial differential equations is known as a model's \emph{dynamical core}
+\parencite{mcfarlane2011}. Since analytical solutions to the equations do not
+exist, the dynamical core necessarily approximates the continuous equations
+with finite-dimensional, exactly solvable alternatives using one of several
+possible discretisation schemes (e.g., the finite difference, finite element,
+finite volume and spectral methods) \parencite{christensen2022}. In practice,
+this usually involves representing the prognostic variables (i.e., those that
+affect the evolution of the flow) with sets of discrete samples in space and
+time, whose resolution is constrained by the available computing resources. The
+unavoidable consequence of discretisation is the loss of information about
+processes occurring on spatial and temporal scales smaller than the
+corresponding sampling intervals. These processes are said to be
+\emph{unresolved}.
 
 % why we need parametrisation: nonlinearity
 It is tempting to na\"{i}vely accept the loss of fine-scale information as a
@@ -224,19 +230,89 @@ occurring at one place in the spectrum of temporal and spatial scales are
 coupled to all the other processes in the spectrum \parencite{franzke2015}. In
 particular, to ignore the effect of processes not explicitly resolved in
 numerical models would introduce unacceptable systematic biases, or errors, in
-the model forecasts. Numerical weather and climate models therefore require
-parametrisation schemes to estimate the effects of unresolved processes as
-functions of the available large-scale information (and the parameters of these
-functions must be chosen appropriately---hence the name ``parametrisation'').
+the model forecasts. GCMs therefore require parametrisation schemes to estimate
+the effects of unresolved processes as functions of the available large-scale
+information (and the parameters of these functions must be chosen
+appropriately---hence the name ``parametrisation'').
 
 
-\subsection{Mathematical formulation of the parametrisation problem}
+\subsection{Mathematical formulation of the parametrisation problem}%
+\label{sec:math}
+In order to make any progress on the parametrization problem, it is necessary
+to formalise the notion of estimating the ``effects'' of unresolved processes.
+I will describe the general approach, which is well-established \parencite[see,
+e.g.,][]{hasselmann1976,palmer2001,demaeyer2018,brajard2021}, while
+acknowledging possible alternative conventions where they exist.
+
+The Earth system may be considered as a dynamical system whose exact evolution
+is governed by equations of the form
+\begin{equation} \label{eqn:truth}
+    \diff{\vec{z}}{t} = \vec{F}(\vec{z},t),
+\end{equation}
+where the vector $\vec{z}$ contains all the variables needed to fully specify
+the state of the system and $\vec{F}$ is a nonlinear differential operator. One
+then employs a change of variables $\vec{z} \to (\vec{x},\vec{y})$, where
+$\vec{x}$ contains the information or variables that are explicitly resolved by
+the model being studied and $\vec{y}$ contains the unresolved, `sub-grid'
+information or variables. Practically, $\vec{x}$ and $\vec{y}$ can be thought
+of as projections of the full state $\vec{z}$ onto lower-dimensional
+subspaces \parencite{brajard2021}. Alternatively (and more concretely),
+$\vec{x}$ can be obtained by averaging the original variables over several
+adjacent grid points, with $\vec{y}$ being the corresponding residuals
+\parencite{zacharuk2018,alcala2021}.
+
+In principle, the change of variables splits \cref{eqn:truth}
+into two parts
+\begin{align*}
+    \diff{\vec{x}}{t} &= \vec{G}(\vec{x},\vec{y},t), \\
+    \diff{\vec{y}}{t} &= \vec{H}(\vec{x},\vec{y},t)
+\end{align*}
+that (still exactly) describe the coupled evolution of the resolved and
+unresolved variables via nonlinear differential operators $\vec{G}$ and
+$\vec{H}$. The goal of parametrisation is now to derive a new system of
+equations
+\begin{equation*}
+    \diff{\tilde{\vec{x}}}{t} = \tilde{\vec{G}}(\tilde{\vec{x}},t)
+\end{equation*}
+whose solution $\tilde{\vec{x}}(t)$ approximates the true $\vec{x}(t)$ as well
+as possible without explicitly modelling $\vec{y}(t)$. The measure used to
+compare $\tilde{\vec{x}}$ and $\vec{x}$ depends on the intended function of the
+parametrised model; weather forecasting applications that prioritise short-term
+predictive skill might call for minimisation of the root-mean-square error
+(RMSE), while climate prediction would be more concerned with the closeness of
+long-term average quantities.
+
+There are several possible interpretations of $\tilde{\vec{G}}(\vec{x},t)$ and
+its relationship to $\vec{G}(\vec{x},\vec{y},t)$. \textcite{hasselmann1976}
+describes $\tilde{\vec{G}}(\vec{x},t)$ as an ensemble average of
+$\vec{G}(\vec{x},\vec{y},t)$, taken over the distribution of all $\vec{y}$ that
+are possible for a given $\vec{x}$, i.e.
+\begin{equation*}
+    \tilde{\vec{G}}(\vec{x},t)
+        = \langle \vec{G}(\vec{x},\vec{y},t) \rangle_{\vec{y}}.
+\end{equation*}
+\textcite{demaeyer2018} instead assert that the ultimate goal of
+parametrisation is to literally approximate $\vec{y}$ as a function
+$\vec{\xi}(\vec{x})$, in which case
+\begin{equation*}
+    \tilde{\vec{G}}(\vec{x},t)
+        = \vec{G}(\vec{x},\vec{\xi}(\vec{x}),t).
+\end{equation*}
+In practice, $\vec{G}(\vec{x},\vec{y},t)$ usually separates into a known
+resolved part $\vec{D}(\vec{x},t)$ independent of $\vec{y}$ and an unresolved
+coupling term $\vec{C}(\vec{x},\vec{y},t)$. It then suffices to approximate
+only the unresolved part by a parametrisation $\vec{P}(\vec{x}, t)$ using one
+of the above methods, so that the parametrised model reads
+\begin{equation} \label{eqn:parametrised_model}
+    \diff{\tilde{\vec{x}}}{t}
+        = \vec{D}(\tilde{\vec{x}},t) + \vec{P}(\tilde{\vec{x}}, t).
+\end{equation}
 
 
 \subsection{Physical processes requiring parametrisation}
 % spectrum of scales and implications of cross-interaction
 % Examples of processes requiring parametrisation
-Following the broad theoretical argument in the previous section, I now turn to
+Following the broad theoretical argument in the previous sections, I now turn to
 concrete examples of processes that are often represented by parametrisations,
 restricting the discussion to atmospheric processes for brevity. This section
 will give a basic introduction to each process, its effect on the larger-scale
@@ -289,7 +365,8 @@ simplifying assumptions (the details of which are beyond the scope of this
 review) \parencite{christensen2022}.
 
 
-\subsection{Traditional solutions to the problem and their limitations}
+\subsection{Traditional solutions to the problem and their limitations}%
+\label{sec:traditional}
 With the examples of cloud microphysics, moist convection and radiative
 transfer in mind, I now broadly review the traditional approaches used to
 construct parametrisation schemes in practice. In particular, this section will
@@ -383,8 +460,211 @@ are ongoing.
 \newpage
 \section{Novel approaches to the parametrisation problem}
 % ongoing issues, processes will remain unresolved
+Since the 1990s, the limitations identified in \cref{sec:traditional} have
+prompted many to reconsider the principles upon which parametrisation schemes
+are founded. The main advance has been the development of stochastic
+parametrisations that incorporate random noise in the predicted tendencies.
+More recently, others have approached the problem from an entirely new
+direction, developing data-driven parametrisations that learn to predict the
+tendencies empirically. This section will introduce the stochastic and
+data-driven approaches in general terms while omitting the technical details of
+individual implementations, the aim being to contextualise and motivate the
+study of these approaches in more idealised frameworks in \cref{sec:simple}.
+Other methods (such as superparametrisation) exist but are beyond the scope of
+this review.
 
-\section{Simple dynamical systems as testbeds for novel approaches}
+
+\subsection{Stochastic parametrisation and memory}
+The potential value of stochasticity for climate modelling was first
+established by \textcite{hasselmann1976}, whose seminal paper sought to explain
+the characteristics of long-term climate variability. Knowing that climate
+depends on interactions between all components of the Earth system
+(atmosphere, ocean, cryosphere, biosphere, etc.), \citeauthor{hasselmann1976}
+argued that the effect of the more rapidly-evolving atmosphere on the other,
+more slowly-varying components is that of a stochastic forcing. Owing to
+their long response time, the slowly-varying components effectively integrate
+this stochastic forcing, allowing long-term climate variability to be
+characterised as a type of random walk process akin to the Brownian motion
+of a massive particle in a fluid.
+
+Further motivation for stochastic parametrisation in particular stems from the
+need to reliably estimate uncertainties in weather forecasts and climate
+projections. Weather forecasting centres typically propagate initial condition
+uncertatinties (due to imperfect observations) through to the final forecast in
+a Monte Carlo fashion, by initialising an ensemble of model runs with perturbed
+initial conditions and measuring the spread of the resulting forecasts. It has
+been observed that deterministic models produce systematically under-dispersed
+ensembles that fail to span the range of actual weather outcomes, indicating
+that these models are failing to capture additional sources of variability
+\parencite{palmer2005,berner2017,palmer2019}. Knowing that poor scale
+separation and departures from quasi-equilibrium should preclude deterministic
+relationships between unresolved tendencies and the large-scale state (see
+\cref{sec:traditional}), it should seem highly likely that deterministic
+parametrisation contributes to this deficiency.
+
+% should this go at the beginning of the subsection so we get the point quicker?
+The principle of stochastic parametrisation is, therefore, that unresolved
+tendencies should be randomly sampled from an appropriate distribution at each
+point in space and time, not simply set to the mean of the distribution
+\parencite{franzke2015}. This choice has now been theoretically justified using
+statistical mechanical arguments; most notably,
+\textcite{wouters2012,wouters2013} showed that, assuming a weak coupling to the
+resolved variables, the effect of unresolved dynamics should be parametrised by
+a combination of deterministic and stochastic terms, as well as a
+\emph{non-Markovian} memory term depending on the past states of the resolved
+variables.
+
+The simplest and earliest approach to stochastic parametrisation is the method
+of \emph{stochastically perturbed parametrisation tendencies} (SPPT), which
+takes an existing deterministic parametrisation and randomly scales its output
+with a multiplicative noise field \parencite{palmer2019,christensen2020}.
+Re-using the notation of \cref{sec:math}, an SPPT model for the resolved
+variables $\vec{x}$ takes the form
+\begin{equation*}
+    \diff{\vec{x}}{t} = \vec{D}(\vec{x},t) + (1 + e) \vec{P}(\vec{x}, t),
+\end{equation*}
+where $\vec{P}$ is the existing deterministic parametrisation and $e$ is a
+random field with mean zero. The choice of multiplicative (and thus inherently
+state-dependent) rather than additive noise is intuitively motivated by the
+expectation that variability in the effect of unresolved processes should be
+greatest when those processes are most active \parencite{franzke2015}.
+\textcite{christensen2020} performed a comparison of high-resolution
+simulations to parametrised single-column model output which justified the use
+of multiplicative perturbations. Additionally, it has been argued that the
+random field $e$ should spatially and temporally correlated (in contrast to
+uncorrelated ``white'' noise) in order to emulate the organisation of
+unresolved processes on larger scales and their persistence in time
+\parencite{christensen2022,franzke2015}. In particular, perturbations that
+explictly depend on their own past values constitute a type of memory, albeit
+distinct from the memory term advocated by \textcite{wouters2012,wouters2013},
+which would instead couple the perturbations to the past values of the
+large-scale variables.
+
+Stochastic parametrisations have several known advantages over their
+deterministic counterparts, and are now implemented in operational weather
+forecast models. They have been found to remedy the aforementioned issues of
+ensemble underdispersion and prediction unreliability
+\parencite{palmer2005,berner2017}, and (as of 2009) even make the skill of
+five-day forecasts comparable to that of deterministically parametrised two-day
+forecasts \parencite{palmer2019}. Despite the zero-mean nature of the noise, it
+has been shown that stochastic parametrisations can reduce systematic model
+biases (``noise-induced drift''; \textcite{palmer2005}) and stabilise the
+simulation of regime-based behaviour (such as the El Ni\~{n}o-Southern
+Oscillation) in the climate system \parencite{berner2017}.
+
+Reviewing the field, \textcite{palmer2019} identifies outstanding issues for
+further research. The main concern is the lack of rigour in most stochastic
+schemes; SPPT, for example, modifies existing deterministic schemes \emph{ad
+hoc} rather than incorporating stochasticity \emph{ab initio} in the
+development process. More objective approaches are yet to gain widespread
+acceptance. This motivates both data-driven methods and further testing
+using simpler dynamical systems where objectivity is more feasible.
+
+
+\subsection{Data-driven parametrisation and machine learning}
+The fitting of predictive statistical models to data is, of course, ubiquitous
+in the sciences, but attempts to use such models as parametrisation schemes and
+couple them into fully fledged GCMs are a relatively new phenomenon---certainly
+more so than stochastic parametrisations. The prerequisite for all data-driven
+parametrisations is obviously training data: mathematically, an approximate
+solution of \cref{eqn:truth} of sufficient accuracy and resolution to be
+considered ``truth'' for the application at hand. Training data are typically
+derived from high-resolution simulations, such as regional weather model runs
+or large eddy simulations (LES). The other ingredient is the imperfect
+low-resolution model that will later be augmented by parametrisation.
+
+To generate an appreciation of how these data might be used to construct a
+parametrisation in practice, I roughly follow the argument and notation of
+\textcite{brajard2021}. Define a map $\mathcal{M}$ that takes each state
+$\vec{z}(t)$ in the training dataset to the state $\vec{z}(t + \delta t)$ at
+the next time step. Similarly, denote by $\mathcal{M}^\mathrm{r}$ the
+low-resolution model (the superscript r meaning ``reduced''), which maps a
+low-resolution state $\vec{x}(t)$ to a prediction for $\vec{x}(t + \Delta t)$,
+where $\Delta t$ is not necessarily equal to $\delta t$ (usually larger). The
+spaces of high- and low-resolution states, having different dimensions, may be
+linked by an operator $\langle \cdot \rangle$ that projects high-resolution
+states onto the low-resolution state space. Practically, the projection
+operation is simply a coarse-graining of $\vec{z}$ by averaging values at
+adjacent grid points to match the resolution of $\vec{x}$. Now, for each state
+$\vec{z}$ in the training dataset, one may compute the difference
+\begin{equation*}
+    \vec{\epsilon}(\vec{z}) =
+        \frac{
+            \langle \mathcal{M}(\vec{z}) \rangle - \langle \vec{z} \rangle
+        }{\delta t}
+        - \frac{
+            \mathcal{M}^\mathrm{r}(\langle \vec{z} \rangle)
+            - \langle \vec{z} \rangle
+        }{\Delta t}
+\end{equation*}
+between the coarse-grained true tendency (on the left) and the tendency
+predicted by the coarse model when it sees the same state (on the right). This
+is the unresolved tendency. Knowledge of $\langle \vec{z} \rangle$ alone does
+not uniquely determine $\vec{\epsilon}$ because $\langle \mathcal{M}(\vec{z})
+\rangle$ depends on the original $\vec{z}$. However, if one can fit a
+statistical model $\vec{P}$ to the dataset of ($\langle \vec{z} \rangle$,
+$\vec{\epsilon}$), then $-\vec{P}(\vec{x}(t)) \Delta t$ will be able to serve
+as an estimate of the error incurred by the coarse model in predicting
+$\vec{x}(t + \Delta t)$ given $\vec{x}(t)$. This motivates the construction of
+a parametrised model $\mathcal{M}^\mathrm{p}$, defined by
+\begin{equation*}
+    \mathcal{M}^\mathrm{p}(\vec{x}) =
+        \mathcal{M}^\mathrm{r}(\vec{x}) + \vec{P}(\vec{x}) \Delta t
+\end{equation*}
+that simply subtracts the estimated error at each time step of the coarse
+model. In theory, the solution $\vec{x}(t)$ obtained by iteration of
+$\mathcal{M}^\mathrm{p}$ will be more accurate than that obtained by
+iteration of the unparametrised $\mathcal{M}^\mathrm{r}$.
+
+The current method of choice for constructing $\vec{P}$ in weather and climate
+modelling contexts is machine learning (ML). I will briefly introduce the key
+concepts, strengths and weaknesses of ML, following \textcite{beucler2022}. ML
+encompasses a broad class of algorithms that programmatically and autonomously
+develop and apply rules for performing tasks, such as image classification,
+removing the need for a human to explicitly program the rules. They do this
+using supplied \emph{training data} that exemplify the task to be performed.
+When it comes to data-driven parametrisation, the task is function
+approximation or regression, and the relevant algorithms usually require a
+training dataset of example inputs (i.e., coarse-scale variables)
+\emph{labelled} with the desired outputs (i.e., unresolved tendencies). One
+commonly-used class of algorithms called \emph{neural networks} consist of
+layers of inter-communicating calculation nodes called neurons and learn to
+approximate functions by optimising sets of weights associated with the
+neurons. Another type of algorithm is the \emph{random forest}, which
+approximates functions by passing the inputs through a series of nested
+\texttt{if/else} decision trees.
+
+The distinguishing advantage offered by ML data-driven parametrisations is
+their ability to systematically capture complex relationships without relying
+on artificially simplified physical models derived by humans
+\parencite{irrgang2021,beucler2022}. In addition to constructing new
+parametrisations from scratch, ML has been used to emulate the action of
+existing parametrisation schemes in weather and climate models
+\parencite[e.g.,][]{gentine2018}. These ML emulators have the potential to
+reduce the computational burden that parametrisation usually imposes, leaving
+more resources for other tasks such as calling the parametrisation scheme more
+frequently or increasing the model resolution \parencite{beucler2022}.
+Furthermore, the ability to emulate multiple existing schemes at once is a step
+towards unifying the parametrisation of unresolved processes (a long-standing
+issue; see \cref{sec:traditional}).
+
+ML parametrisations are not without their issues; they are known to be prone to
+overfitting and often cause their host models to become numerically unstable.
+They are also, by their very nature, far more difficult to interpret than
+traditional schemes. It is therefore very difficult to determine \emph{a
+priori} whether or not they will continue to be valid in climate conditions
+outside the bounds of their training datasets
+\parencite{irrgang2021,beucler2022}. ``Interpretable'' or ``explainable'' ML is
+an active area of research that aims to address these issues. Another active
+research topic is ``physics-guided ML'', the aim of which is to augment ML with
+known physical constraints and conservation laws that would otherwise be
+violated \parencite[e.g.,][]{yuval2021}.
+
+
+\newpage
+\section{Simple dynamical systems as testbeds for novel approaches}%
+\label{sec:simple}
+
 
 \newpage
 \section{Dynamical system case study: \rb{} convection}
@@ -465,12 +745,12 @@ $\delta T$ is the constant temperature difference between the plates.
 
 \subsection{Nondimensionalisation and scale analysis}
 It is helpful to nondimensionalise the governing equations
-\crefrange{eqn:dim_momentum}{eqn:dim_bc_sides}; this is not only useful
-for numerical work but also gives insight into the different flow
-regimes that are possible. A range of nondimensionalisations are used in
-fluid dynamics literature; I adopt a common one (see, e.g.,
-\textcite{grotzbach1983,ouertatani2008,stevens2010}) which is suitable
-for the turbulent convective regime.
+\crefrange{eqn:dim_momentum}{eqn:dim_bc_sides}; this is not only useful for
+numerical work but also gives insight into the different flow regimes that are
+possible. A range of nondimensionalisations are used in fluid dynamics
+literature; I adopt a common one \parencite[see,
+e.g.,][]{grotzbach1983,ouertatani2008,stevens2010} which is suitable for the
+turbulent convective regime.
 
 For low-viscosity, turbulent flow, a suitable time scale is the
 \emph{free-fall time} $t_0$, which is the time for a fluid element with
