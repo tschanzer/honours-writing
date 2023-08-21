@@ -38,6 +38,9 @@
 \renewbibmacro{in:}{}
 \addbibresource{references.bib}
 \DeclareFieldFormat{titlecase:title}{\MakeSentenceCase*{#1}}
+\newrobustcmd*{\citefirstlastauthor}{%
+    \AtNextCite{\DeclareNameAlias{labelname}{given-family}}\citeauthor
+}
 
 % ref options
 \crefname{section}{\S}{\S\S}
@@ -117,14 +120,14 @@
 \vfill
 \end{titlepage}
 
-\newpage
+\clearpage
 \tableofcontents
 
-\newpage
+\clearpage
 \pagestyle{fancy}
 \thispagestyle{fancy}
 
-\section{Introduction and background}
+\section{Introduction and background} \label{sec:intro}
 \subsection{The necessity of parametrisation}
 % Broad introduction of weather/climate prediction and fluid equations
 The primary task of general circulation models (GCMs) for Earth's weather and
@@ -457,8 +460,9 @@ energy and momentum) \parencite{christensen2022}. Efforts to resolve this issue
 are ongoing.
 
 
-\newpage
-\section{Novel approaches to the parametrisation problem}
+\clearpage
+\section{Novel approaches to the parametrisation problem}%
+\label{sec:novel}
 % ongoing issues, processes will remain unresolved
 Since the 1990s, the limitations identified in \cref{sec:traditional} have
 prompted many to reconsider the principles upon which parametrisation schemes
@@ -661,12 +665,69 @@ known physical constraints and conservation laws that would otherwise be
 violated \parencite[e.g.,][]{yuval2021}.
 
 
-\newpage
+\clearpage
 \section{Simple dynamical systems as testbeds for novel approaches}%
 \label{sec:simple}
+Historically, it has been common practice to develop and test new
+parametrisation techniques using simpler dynamical systems that share the key
+nonlinear, multi-scale and chaotic properties of the climate system. These
+analogue systems provide testbeds where the parametrisation problem is more
+tractable, avoiding the expense, effort and technicalities of fully-fledged
+climate models. This section will review the progress that has been made using
+simple analogue systems and argue that, considering the outstanding issues
+identified in \cref{sec:intro,sec:novel}, further research using these systems
+may yet be warranted. The relevant techniques for constructing and testing
+parametrisation schemes in simple model frameworks, and the remaining open
+questions, will be discussed in order to inform future research.
+
+The most popular option is the so-called Lorenz '96 model, which will be
+addressed along with other ``toy'' models of its kind in \cref{sec:l96}.
+More recent work has used more sophisticated models of idealised fluid flows
+and will be discussed in \cref{sec:simple_fluid}.
 
 
-\newpage
+\subsection{Lorenz '96 and other toy models} \label{sec:l96} The Lorenz '96
+model (henceforth L96) was proposed by eminent meteorologist Edward N. Lorenz
+in a \citeyear{lorenz1995} paper \parencite{lorenz1995} on the growth of errors
+in solutions of dynamical systems and the resulting limits of predictability
+for those systems. \citeauthor{lorenz1995} proposed to mimic the multi-scale
+nature of the climate system by coupling two dynamical systems with different
+characteristic time scales. Following his notation, there is a discrete set of
+``slow'' variables $\{X_k\}_{k=1}^K$, each of which has an associated discrete
+set of ``fast'' variables $\{Y_{j,k}\}_{j=1}^J$. The indices of the slow
+variables are periodic ($X_{K+1} = X_1$ and $X_0 = X_K$) and the sets of fast
+variables are arranged end-to-end so that $Y_{J+1,k} = Y_{1,k+1}$ and $Y_{0,k}
+= Y_{J,k-1}$. The intuition is that the variables represent samples of a field
+along a latitude circle, as shown in \cref{fig:L96_diagram} (a reproduction of
+Figure 1 by \textcite{russell2017}).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/russell2017_L96_diagram.pdf}
+    \caption{
+        Illustration of the periodic arrangement of the L96 variables,
+        with the slow variables $X_k$ arranged in a circle. Each slow variable
+        is coupled to a neighbouring subset of the similarly arranged fast
+        variables $Y_{j,k}$. Reproduced from \textcite{russell2017}, Figure 1.
+    }
+    \label{fig:L96_diagram}
+\end{figure}
+
+The evolution of the system is governed by the equations
+\begin{align*}
+    \diff{X_k}{t}
+        &= -X_{k-1} (X_{k-2} - X_{k+1}) - X_k
+        - \frac{hc}{b} \sum_{j=1}^J Y_{j,k}, \\
+    \diff{Y_{j,k}}{t}
+        &= -cb Y_{j+1,k} (Y_{j+2,k} - Y_{j-1,k}) - c Y_{j,k}
+        + \frac{hc}{b} X_k.
+\end{align*}
+
+
+\subsection{Models of simple fluid flows} \label{sec:simple_fluid}
+
+
+\clearpage
 \section{Dynamical system case study: \rb{} convection}
 \subsection{Problem statement}
 \rb{} convection is the motion of a fluid confined between two
@@ -1041,10 +1102,10 @@ conditions than \cref{eqn:grotzbach}.
     \label{fig:kooij2018_artefacts}
 \end{figure}
 
-\newpage
+\clearpage
 \section{Conclusion}
 
-\newpage
+\clearpage
 \emergencystretch=5em
 \printbibliography
 \end{document}
