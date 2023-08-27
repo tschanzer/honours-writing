@@ -673,33 +673,51 @@ parametrisation techniques using simpler dynamical systems that share the key
 nonlinear, multi-scale and chaotic properties of the climate system. These
 analogue systems provide testbeds where the parametrisation problem is more
 tractable, avoiding the expense, effort and technicalities of fully-fledged
-climate models. This section will review the progress that has been made using
-simple analogue systems and argue that, considering the outstanding issues
-identified in \cref{sec:intro,sec:novel}, further research using these systems
-may yet be warranted. The relevant techniques for constructing and testing
-parametrisation schemes in simple model frameworks, and the remaining open
-questions, will be discussed in order to inform future research.
+climate models. The simplicity of these systems also helps to ensure the
+reproducibility of the results obtained. This section will review the progress
+that has been made using simple analogue systems and argue that, considering
+the outstanding issues identified in \cref{sec:intro,sec:novel}, further
+research using these systems may yet be warranted. The relevant techniques for
+constructing and testing parametrisation schemes in simple model frameworks,
+and the remaining open questions, will be discussed in order to inform future
+research.
 
-The most popular option is the so-called Lorenz '96 model, which will be
-addressed along with other ``toy'' models of its kind in \cref{sec:l96}.
-More recent work has used more sophisticated models of idealised fluid flows
-and will be discussed in \cref{sec:simple_fluid}.
+% The most popular option is the so-called Lorenz '96 model, which will be
+% addressed along with other ``toy'' models of its kind in \cref{sec:l96}.
+% More recent work has used more sophisticated models of idealised fluid flows
+% and will be discussed in \cref{sec:simple_fluid}.
 
 
-\subsection{Lorenz '96 and other toy models} \label{sec:l96} The Lorenz '96
-model (henceforth L96) was proposed by eminent meteorologist Edward N. Lorenz
-in a \citeyear{lorenz1995} paper \parencite{lorenz1995} on the growth of errors
-in solutions of dynamical systems and the resulting limits of predictability
-for those systems. \citeauthor{lorenz1995} proposed to mimic the multi-scale
-nature of the climate system by coupling two dynamical systems with different
-characteristic time scales. Following his notation, there is a discrete set of
-``slow'' variables $\{X_k\}_{k=1}^K$, each of which has an associated discrete
-set of ``fast'' variables $\{Y_{j,k}\}_{j=1}^J$. The indices of the slow
-variables are periodic ($X_{K+1} = X_1$ and $X_0 = X_K$) and the sets of fast
-variables are arranged end-to-end so that $Y_{J+1,k} = Y_{1,k+1}$ and $Y_{0,k}
-= Y_{J,k-1}$. The intuition is that the variables represent samples of a field
-along a latitude circle, as shown in \cref{fig:L96_diagram} (a reproduction of
-Figure 1 by \textcite{russell2017}).
+\subsection{The Lorenz '96 system}
+The Lorenz '96 model (henceforth L96) was proposed by eminent meteorologist
+Edward N. Lorenz in a \citeyear{lorenz1995} paper \parencite{lorenz1995} on the
+growth of errors in solutions of dynamical systems and the resulting limits of
+predictability for those systems. \citeauthor{lorenz1995} proposed to mimic the
+multi-scale nature of the climate system by coupling two dynamical systems with
+different characteristic time scales. Following his notation, there is a
+discrete set of ``slow'' variables $\{X_k\}_{k=1}^K$, each of which has an
+associated discrete set of ``fast'' variables $\{Y_{j,k}\}_{j=1}^J$. The
+indices of the slow variables are periodic ($X_{K+1} = X_1$ and $X_0 = X_K$)
+and the sets of fast variables are arranged end-to-end so that $Y_{J+1,k} =
+Y_{1,k+1}$ and $Y_{0,k} = Y_{J,k-1}$. The intuition is that the variables
+represent samples of a field along a latitude circle, as shown in
+\cref{fig:L96_diagram} (a reproduction of Figure 1 by \textcite{russell2017}).
+The evolution of the system is governed by the ordinary differential equations
+\begin{subequations} \label{eqn:l96}
+\begin{align}
+    \diff{X_k}{t}
+        &= -X_{k-1} (X_{k-2} - X_{k+1}) - X_k + F
+        - \frac{hc}{b} \sum_{j=1}^J Y_{j,k}, \\
+    \diff{Y_{j,k}}{t}
+        &= -cb Y_{j+1,k} (Y_{j+2,k} - Y_{j-1,k}) - c Y_{j,k}
+        + \frac{hc}{b} X_k.
+\end{align}
+\end{subequations}
+The constant $c \geq 1$ dictates the ratio of the time scale of the $Y$
+variables to the time scale of the $X$ variables, $b$ the typical
+magnitude of $X$ relative to $Y$, $h$ the strength of the coupling
+between the two subsystems and $F$ the constant forcing applied to each
+$X$ variable.
 
 \begin{figure}[ht]
     \centering
@@ -713,18 +731,61 @@ Figure 1 by \textcite{russell2017}).
     \label{fig:L96_diagram}
 \end{figure}
 
-The evolution of the system is governed by the equations
-\begin{align*}
+As discussed in \cref{sec:math}, the objective is to find $P_k(X_1, \dots, X_K)
+\approx -(hc/b) \sum_{j=1}^J Y_{j,k}$ such that the solution of the
+parametrised system
+\begin{equation*}
     \diff{X_k}{t}
-        &= -X_{k-1} (X_{k-2} - X_{k+1}) - X_k
-        - \frac{hc}{b} \sum_{j=1}^J Y_{j,k}, \\
-    \diff{Y_{j,k}}{t}
-        &= -cb Y_{j+1,k} (Y_{j+2,k} - Y_{j-1,k}) - c Y_{j,k}
-        + \frac{hc}{b} X_k.
-\end{align*}
+        = -X_{k-1} (X_{k-2} - X_{k+1}) - X_k + F + P_k(X_1, \dots, X_K)
+\end{equation*}
+approximates as accurately as possible the true $X_k$ obtained by solving
+\cref{eqn:l96}. The simple form of L96 allows one to generate a training
+dataset by numerically solving \cref{eqn:l96} and directly diagnosing the
+unresolved tendency of $X_k$ as
+\begin{equation*}
+    U_k(t) = \frac{X_k(t + \Delta t) - X_k(t)}{\Delta t}
+        - \left[ -X_{k-1} (X_{k-2} - X_{k+1}) - X_k \right].
+\end{equation*}
+As we shall see, it is usually assumed that $P_k$ depends only
+on $X_k$ (i.e., the parametrisation is \emph{local}) but may also depend on the
+value of $X_k$ at earlier times. The symmetry of \cref{eqn:l96} under shifts of
+the $k$ index further allows the same $P$ to be used for all the $X_k$.
+
+\subsection{Statistical models}
+Constructing a data-driven parametrisation scheme for L96 requires first
+choosing the structure of the scheme and then using the training dataset to
+find the optimal values of the associated free parameters. The simplest
+structure, popularised in an influential paper by \textcite{wilks2005},
+consists of a polynomial regression of $U$ against $X$ as a deterministic base,
+modified by stochastic noise. Wilks' scatterplot of $U$ and $X$ and quartic
+polynomial least-squares regression, shown in \cref{fig:wilks2005_regression},
+confirms that such a structure is reasonable.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.3\linewidth]{figures/wilks2005_regression.pdf}
+    \caption{
+        Scatterplot of unresolved tendencies $U$ against large-scale variables
+        $X$ in L96 (black dots), and corresponding quartic polynomial
+        least-squares regression (black line). Data are for forcing $F=18$.
+        Reproduced from Figure 2a of \textcite{wilks2005}.
+    }
+    \label{fig:wilks2005_regression}
+\end{figure}
+
+Denote the deterministic polynomial part of the parametrisation by
+$P_\mathrm{det}(X)$. Wilks' proposal was to then introduce additive random
+noise in the form
+\begin{equation*}
+    P(X) = P_\mathrm{det}(X) + e(t)
+\end{equation*}
+for a suitable stochastic process $e(t)$ independent of $X$.
 
 
-\subsection{Models of simple fluid flows} \label{sec:simple_fluid}
+\subsection{Evaluating parametrisation performance}
+
+
+\subsection{Outlook}
 
 
 \clearpage
@@ -1087,6 +1148,7 @@ averaged or local kinetic energy dissipation rate
 were much more sensitive, with their convergence requiring even stricter
 conditions than \cref{eqn:grotzbach}.
 
+% this figure may not be necessary, just describe in text
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{figures/kooij2018_artefacts.pdf}
