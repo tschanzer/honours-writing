@@ -290,7 +290,7 @@ extreme values).
 Before proceeding, it is important to note two assumptions that are
 implicitly made in writing down \cref{eqn:reduced_model}. The first is that
 $\tilde{\vec{G}}$ is a \emph{deterministic} function of $\tilde{\vec{x}}$.
-The second is that $\tilde{\vec{G}}$ depends only on the value of 
+The second is that $\tilde{\vec{G}}$ depends only on the value of
 $\tilde{\vec{x}}$ at time $t$ and not earlier times (that is to say,
 the parametrisation is \emph{memoryless}. Recent research has shown
 that relaxing these assumptions has the potential to greatly improve
@@ -352,7 +352,8 @@ uncertainty in the sign and magnitude of this feedback effect is a major
 contributor to uncertainty in the sensitivity of global temperatures to
 increases in atmospheric CO$_2$ concentration \parencite{andrews2012,
 christensen2022,stevens2013}. Microphysical processes occur on the spatial
-scales of single water droplets and ice particles---among the smallest scales
+scales of single water droplets and ice particles (of order
+$\SIrange{e-6}{e-2}{\meter}$; \textcite{lamb2003}), among the smallest scales
 in the atmosphere. All atmospheric models must parametrise the amount of cloud
 water in each phase, the size distribution and concentration of liquid and ice
 particles, and the resulting rate and type (rain, hail, snow, etc.) of
@@ -539,24 +540,30 @@ with a multiplicative noise field \parencite{palmer2019,christensen2020}.
 Re-using the notation of \cref{sec:math}, an SPPT model for the resolved
 variables $\vec{x}$ takes the form
 \begin{equation*}
-    \diff{\vec{x}}{t} = \vec{D}(\vec{x},t) + (1 + e) \vec{P}(\vec{x}, t),
+    \diff{\vec{x}}{t}
+        = \vec{D}(\vec{x},t)
+        + [I + \operatorname{diag}(\vec{e})] \vec{P}(\vec{x}, t),
 \end{equation*}
-where $\vec{P}$ is the existing deterministic parametrisation and $e$ is a
-random field with mean zero. The choice of multiplicative (and thus inherently
+where $\vec{P}$ is the existing deterministic parametrisation, $\vec{e}$ is a
+mean-zero random vector with the same length as $\vec{x}$ and $I$ is the
+identity matrix. The choice of multiplicative (and thus inherently
 state-dependent) rather than additive noise is intuitively motivated by the
 expectation that variability in the effect of unresolved processes should be
 greatest when those processes are most active \parencite{franzke2015}.
 \textcite{christensen2020} performed a comparison of high-resolution
 simulations to parametrised single-column model output which justified the use
-of multiplicative perturbations. Additionally, it has been argued that the
-random field $e$ should spatially and temporally correlated (in contrast to
-uncorrelated ``white'' noise) in order to emulate the organisation of
-unresolved processes on larger scales and their persistence in time
-\parencite{christensen2022,franzke2015}. In particular, perturbations that
-explictly depend on their own past values constitute a type of memory, albeit
-distinct from the memory term advocated by \textcite{wouters2012,wouters2013},
-which would instead couple the perturbations to the past values of the
-large-scale variables.
+of multiplicative perturbations.
+
+In GCMs, where the variables being modelled have spatial dependence, the
+multiplicative perturbation takes the form of a random \emph{field}
+$e(x,y,t)$. It has been argued that this random field should be spatially and
+temporally correlated (in contrast to uncorrelated ``white'' noise) in order to
+emulate the organisation of unresolved processes on larger scales and their
+persistence in time \parencite{christensen2022,franzke2015}. In particular,
+perturbations that explictly depend on their own past values constitute a type
+of memory, albeit distinct from the memory term advocated by
+\textcite{wouters2012,wouters2013}, which would instead couple the
+perturbations to the past values of the large-scale variables.
 
 Stochastic parametrisations have several known advantages over their
 deterministic counterparts, and are now implemented in operational weather
@@ -657,14 +664,14 @@ their ability to systematically capture complex relationships without relying
 on artificially simplified physical models derived by humans
 \parencite{irrgang2021,beucler2022}. In addition to constructing new
 parametrisations from scratch, ML has been used to emulate the action of
-existing parametrisation schemes in weather and climate models
-\parencite[e.g.,][]{gentine2018}. These ML emulators have the potential to
-reduce the computational burden that parametrisation usually imposes, leaving
-more resources for other tasks such as calling the parametrisation scheme more
-frequently or increasing the model resolution \parencite{beucler2022}.
-Furthermore, the ability to emulate multiple existing schemes at once is a step
-towards unifying the parametrisation of unresolved processes (a long-standing
-issue; see \cref{sec:traditional}).
+existing parametrisation schemes in GCMs \parencite[e.g.,][]{gentine2018}.
+These ML emulators have the potential to reduce the computational burden that
+parametrisation usually imposes, leaving more resources for other tasks such as
+calling the parametrisation scheme more frequently or increasing the model
+resolution \parencite{beucler2022}. Furthermore, the ability to emulate
+multiple existing schemes at once is a step towards unifying the
+parametrisation of unresolved processes (a long-standing issue; see
+\cref{sec:traditional}).
 
 ML parametrisations are not without their issues; they are known to be prone to
 overfitting and often cause their host models to become numerically unstable.
@@ -987,13 +994,7 @@ vertical velocity. The rate of heat transport in the numerator has two terms:
 advection $\langle wT \rangle_{A,t}$ and conduction $-\kappa \partial \langle T
 \rangle_{A,t} / \partial z$. The denominator $\kappa \delta T / d$ is the rate
 of heat transport for a linear conductive temperature profile with the fluid at
-rest. \textcite{scheel2013} give the corresponding nondimensionalised form,
-\begin{equation}
-    \label{eqn:nusselt}
-    \nusselt(z,t) \equiv (\rayleigh\,\prandtl)^{1/2}
-        \langle w \theta \rangle_{A,t}
-        - \pdiff{\langle \theta \rangle_{A,t}}{z}.
-\end{equation}
+rest.
 
 Another important quantity is the thickness $\delta_T$ of the \emph{thermal
 boundary layer} at each plate where large temperature gradients exist.
