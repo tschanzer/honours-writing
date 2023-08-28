@@ -151,12 +151,12 @@ corresponding sampling intervals. These processes are said to be
 It is tempting to na\"{i}vely accept the loss of fine-scale information as a
 necessary sacrifice and hope the dynamical core will still make accurate
 predictions for the larger, resolved scales. Unfortunately, this too is
-impossible due to the \emph{nonlinearity} of the governing equations. It is
-instructive to consider the linear case as a counterexample.
-
-Linear differential equations allow arbitrary superpositions of solutions,
-meaning that any given solution may be partitioned into high- and low-frequency
-components, both of which are also solutions. One thus has the freedom to solve
+impossible due to the \emph{nonlinearity} of the governing equations.
+The reason for this may be seen by considering linear differential equations
+as a counterexample. If the governing equations were linear, they would allow
+arbitrary superpositions of solutions,
+meaning that any given solution could be partitioned into high- and low-frequency
+components, themselves also solutions. One would thus have the freedom to solve
 for the low-frequency components alone without compromise. This property may be
 understood more formally using the Fourier transform, defined for a function
 $f$ of space and time by
@@ -169,8 +169,10 @@ which reduces any linear differential equation to an algebraic equation
 relating the frequency $\omega$ to the wave vector $\vec{k}$. Each wavenumber
 component of the initial state propagates trivially according to its own
 time dependence $e^{-i(\vec{k} \cdot \vec{x} - \omega(\vec{k}) t)}$,
-\emph{independently of the other components}. The fine-scale dynamics may
-be safely neglected because they have no influence on the coarse scales.
+\emph{independently of the other components}. If the equations of fluid
+dynamics were linear, one could safely neglect the fine-scale dynamics because
+they would have no influence on the coarse scales. In reality, the equations
+are nonlinear cannot be solved by Fourier transform.
 
 The consequence of the nonlinearity of the equations governing atmospheric and
 oceanic flows is, therefore, a coupling of the resolved coarse scales to the
@@ -239,7 +241,7 @@ information (and the parameters of these functions must be chosen
 appropriately---hence the name ``parametrisation'').
 
 
-\subsection{Mathematical formulation of the parametrisation problem}%
+\subsection{Mathematical formulation of the deterministic, memoryless parametrisation problem}%
 \label{sec:math}
 In order to make any progress on the parametrization problem, it is necessary
 to formalise the notion of estimating the ``effects'' of unresolved processes.
@@ -274,18 +276,30 @@ that (still exactly) describe the coupled evolution of the resolved and
 unresolved variables via nonlinear differential operators $\vec{G}$ and
 $\vec{H}$. The goal of parametrisation is now to derive a new system of
 equations
-\begin{equation*}
+\begin{equation} \label{eqn:reduced_model}
     \diff{\tilde{\vec{x}}}{t} = \tilde{\vec{G}}(\tilde{\vec{x}},t)
-\end{equation*}
+\end{equation}
 whose solution $\tilde{\vec{x}}(t)$ approximates the true $\vec{x}(t)$ as well
 as possible without explicitly modelling $\vec{y}(t)$. The measure used to
 compare $\tilde{\vec{x}}$ and $\vec{x}$ depends on the intended function of the
 parametrised model; weather forecasting applications that prioritise short-term
 predictive skill might call for minimisation of the root-mean-square error
-(RMSE), while climate prediction would be more concerned with the closeness of
-long-term average quantities.
+(RMSE), while climate prediction would be more concerned with the closeness of their probability distributions (including both mean and
+extreme values).
 
-There are several possible interpretations of $\tilde{\vec{G}}(\vec{x},t)$ and
+Before proceeding, it is important to note two assumptions that are
+implicitly made in writing down \cref{eqn:reduced_model}. The first is that
+$\tilde{\vec{G}}$ is a \emph{deterministic} function of $\tilde{\vec{x}}$.
+The second is that $\tilde{\vec{G}}$ depends only on the value of 
+$\tilde{\vec{x}}$ at time $t$ and not earlier times (that is to say,
+the parametrisation is \emph{memoryless}. Recent research has shown
+that relaxing these assumptions has the potential to greatly improve
+the accuracy and reliability of the parametrised model, and this will
+be discussed in detail in \cref{sec:novel,sec:simple}. However, for
+the purpose of this basic introduction, I will temporarily follow the
+traditional approach and retain these assumptions.
+
+There is more than one possible interpretation of $\tilde{\vec{G}}(\vec{x},t)$ and
 its relationship to $\vec{G}(\vec{x},\vec{y},t)$. \textcite{hasselmann1976}
 describes $\tilde{\vec{G}}(\vec{x},t)$ as an ensemble average of
 $\vec{G}(\vec{x},\vec{y},t)$, taken over the distribution of all $\vec{y}$ that
@@ -931,8 +945,8 @@ and thermal diffusivity, and the \emph{Rayleigh number}
     \rayleigh \equiv \frac{g \alpha d^3 \delta T}{\kappa \nu}.
 \]
 The Rayleigh number can be interpreted as the ratio of the time scale for
-thermal transport by convection to the time scale for thermal transport by
-conduction. It determines the importance of diffusion for the evolution of
+thermal transport by conduction to the time scale for
+thermal transport by convection. It determines the importance of diffusion for the evolution of
 $\vec{u}$ and $\theta$; inspection of \cref{eqn:momentum,eqn:energy} indicates
 that low $\rayleigh$ implies strong diffusion and high $\rayleigh$ weak
 diffusion. Detailed theoretical analysis of the governing equations (see, e.g.,
@@ -1043,7 +1057,7 @@ subgrid-scale effects must have a geometric mean grid spacing $h = (\Delta x
         \frac{\nu^3}{\langle \epsilon \rangle}
     \right)^{1/4}
 \end{equation}
-where $\eta \equiv (\nu^3/\epsilon)^{1/4}$ is the \emph{Kolmogorov length}, the
+where $\eta \equiv (\nu^3/\langle \epsilon \rangle)^{1/4}$ is the \emph{Kolmogorov length}, the
 universal smallest relevant length scale for general turbulent flow, and
 $\langle \epsilon \rangle$ is the spatial and temporal average of the kinetic
 energy dissipation rate defined by
@@ -1053,7 +1067,7 @@ energy dissipation rate defined by
         \pdiff{u_i}{x_j} + \pdiff{u_j}{x_i}
     \right)^2
 \end{equation}
-\parencite{chilla2012}. The condition \cref{eqn:grotzbach} can be
+\parencite{chilla2012}. The inequality \cref{eqn:grotzbach} between $h$ and $\eta$ can be
 understood using the Nyquist-Shannon theorem, which states that a
 sampling frequency $f \geq k/\pi$ is needed to unambiguously reconstruct
 a signal with maximum wavenumber $k$; substituting $f = 1/h$, $k =
@@ -1165,7 +1179,7 @@ conditions than \cref{eqn:grotzbach}.
 \end{figure}
 
 \clearpage
-\section{Conclusion}
+\section{Summary}
 
 \clearpage
 \emergencystretch=5em
