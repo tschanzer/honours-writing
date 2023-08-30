@@ -151,15 +151,14 @@ corresponding sampling intervals. These processes are said to be
 It is tempting to na\"{i}vely accept the loss of fine-scale information as a
 necessary sacrifice and hope the dynamical core will still make accurate
 predictions for the larger, resolved scales. Unfortunately, this too is
-impossible due to the \emph{nonlinearity} of the governing equations.
-The reason for this may be seen by considering linear differential equations
-as a counterexample. If the governing equations were linear, they would allow
-arbitrary superpositions of solutions,
-meaning that any given solution could be partitioned into high- and low-frequency
-components, themselves also solutions. One would thus have the freedom to solve
-for the low-frequency components alone without compromise. This property may be
-understood more formally using the Fourier transform, defined for a function
-$f$ of space and time by
+impossible due to the \emph{nonlinearity} of the governing equations. The
+reason for this may be seen by considering linear differential equations as a
+counterexample. If the governing equations were linear, they would allow
+arbitrary superpositions of solutions, meaning that any given solution could be
+partitioned into high- and low-frequency components, themselves also solutions.
+One would thus have the freedom to solve for the low-frequency components alone
+without compromise. This property may be understood more formally using the
+Fourier transform, defined for a function $f$ of space and time by
 \[
     \tilde{f}(\omega, \vec{k})
         = \int \d{t}\,\d^3{x}\, e^{i(\vec{k} \cdot \vec{x} - \omega t)}
@@ -241,7 +240,7 @@ information (and the parameters of these functions must be chosen
 appropriately---hence the name ``parametrisation'').
 
 
-\subsection{Mathematical formulation of the deterministic, memoryless parametrisation problem}%
+\subsection{Mathematical formulation of the parametrisation problem}%
 \label{sec:math}
 In order to make any progress on the parametrization problem, it is necessary
 to formalise the notion of estimating the ``effects'' of unresolved processes.
@@ -284,23 +283,23 @@ as possible without explicitly modelling $\vec{y}(t)$. The measure used to
 compare $\tilde{\vec{x}}$ and $\vec{x}$ depends on the intended function of the
 parametrised model; weather forecasting applications that prioritise short-term
 predictive skill might call for minimisation of the root-mean-square error
-(RMSE), while climate prediction would be more concerned with the closeness of their probability distributions (including both mean and
-extreme values).
+(RMSE), while climate prediction would be more concerned with the closeness of
+their probability distributions (including both mean and extreme values).
 
-Before proceeding, it is important to note two assumptions that are
-implicitly made in writing down \cref{eqn:reduced_model}. The first is that
-$\tilde{\vec{G}}$ is a \emph{deterministic} function of $\tilde{\vec{x}}$.
-The second is that $\tilde{\vec{G}}$ depends only on the value of
-$\tilde{\vec{x}}$ at time $t$ and not earlier times (that is to say,
-the parametrisation is \emph{memoryless}. Recent research has shown
-that relaxing these assumptions has the potential to greatly improve
-the accuracy and reliability of the parametrised model, and this will
-be discussed in detail in \cref{sec:novel,sec:simple}. However, for
-the purpose of this basic introduction, I will temporarily follow the
-traditional approach and retain these assumptions.
+Before proceeding, it is important to note two assumptions that are implicitly
+made in writing down \cref{eqn:reduced_model}. The first is that
+$\tilde{\vec{G}}$ is a \emph{deterministic} function of $\tilde{\vec{x}}$. The
+second is that $\tilde{\vec{G}}$ depends only on the value of $\tilde{\vec{x}}$
+at time $t$ and not earlier times (that is to say, the parametrisation is
+\emph{memoryless}. Recent research has shown that relaxing these assumptions
+has the potential to greatly improve the accuracy and reliability of the
+parametrised model, and this will be discussed in detail in
+\cref{sec:novel,sec:simple}. However, for the purpose of this basic
+introduction, I will temporarily follow the traditional approach and retain
+these assumptions.
 
-There is more than one possible interpretation of $\tilde{\vec{G}}(\vec{x},t)$ and
-its relationship to $\vec{G}(\vec{x},\vec{y},t)$. \textcite{hasselmann1976}
+There is more than one possible interpretation of $\tilde{\vec{G}}(\vec{x},t)$
+and its relationship to $\vec{G}(\vec{x},\vec{y},t)$. \textcite{hasselmann1976}
 describes $\tilde{\vec{G}}(\vec{x},t)$ as an ensemble average of
 $\vec{G}(\vec{x},\vec{y},t)$, taken over the distribution of all $\vec{y}$ that
 are possible for a given $\vec{x}$, i.e.
@@ -329,14 +328,15 @@ of the above methods, so that the parametrised model reads
 \subsection{Physical processes requiring parametrisation}
 % spectrum of scales and implications of cross-interaction
 % Examples of processes requiring parametrisation
-Following the broad theoretical argument in the previous sections, I now turn to
-concrete examples of processes that are often represented by parametrisations,
-restricting the discussion to atmospheric processes for brevity. This section
-will give a basic introduction to each process, its effect on the larger-scale
-behaviour of the climate system and the role of its corresponding
-parametrisation scheme. The purpose of these examples is to provide real-world
-context and motivation for current parametrisation research in more idealised
-settings, which will form one of the main topics of this review.
+Following the broad theoretical argument in the previous sections, I now turn
+to concrete examples of processes that are often represented by
+parametrisations, restricting the discussion to atmospheric processes for
+brevity. This section will give a basic introduction to each process, its
+effect on the larger-scale behaviour of the climate system and the role of its
+corresponding parametrisation scheme. The purpose of these examples is to
+provide real-world context and motivation for current parametrisation research
+in more idealised settings, which will form one of the main topics of this
+review.
 
 \emph{Cloud microphysics} parametrisations model the composition of clouds in
 terms of the amount of water in the solid (e.g., hail), liquid (cloud droplets
@@ -397,11 +397,11 @@ A parametrisation scheme is traditionally constructed by formulating a
 simplfied, easily solvable and deterministic conceptual model of the physical
 process in question. The solution of this model is then used to estimate the
 effect of the process on the coarse-scale state of the parent model, known as
-the \emph{unresolved tendency} \parencite{mcfarlane2011}. For example, the earliest convective
-parametrisation was developed by \textcite{manabe1965} and simply assumed that
-the net effect of convection is to relax the vertical structure of the
-atmosphere towards a neutrally stable state whenever it becomes convectively
-unstable.
+the \emph{unresolved tendency} \parencite{mcfarlane2011}. For example, the
+earliest convective parametrisation was developed by \textcite{manabe1965} and
+simply assumed that the net effect of convection is to relax the vertical
+structure of the atmosphere towards a neutrally stable state whenever it
+becomes convectively unstable.
 % motivate data-driven parametrisation here?
 One obvious deficiency of simple conceptual models is that they cannot possibly
 capture the full range of variability in the processes they simulate. One major
@@ -493,7 +493,7 @@ Other methods (such as superparametrisation) exist but are beyond the scope of
 this review.
 
 
-\subsection{Stochastic parametrisation and memory}
+\subsection{Stochastic parametrisation and memory} \label{sec:stochastic}
 The potential value of stochasticity for climate modelling was first
 established by \textcite{hasselmann1976}, whose seminal paper sought to explain
 the characteristics of long-term climate variability. Knowing that climate
@@ -586,7 +586,8 @@ acceptance. This motivates both data-driven methods and further testing
 using simpler dynamical systems where objectivity is more feasible.
 
 
-\subsection{Data-driven parametrisation and machine learning}
+\subsection{Data-driven parametrisation and machine learning}%
+\label{sec:data_driven}
 The fitting of predictive statistical models to data is, of course, ubiquitous
 in the sciences, but attempts to use such models as parametrisation schemes and
 couple them into fully fledged GCMs are a relatively new phenomenon---certainly
@@ -763,14 +764,17 @@ approximates as accurately as possible the true $X_k$ obtained by solving
 \cref{eqn:l96}. The simple form of L96 allows one to generate a training
 dataset by numerically solving \cref{eqn:l96} and directly diagnosing the
 unresolved tendency of $X_k$ as
-\begin{equation*}
+\begin{equation} \label{eqn:l96_tendency}
     U_k(t) = \frac{X_k(t + \Delta t) - X_k(t)}{\Delta t}
         - \left[ -X_{k-1} (X_{k-2} - X_{k+1}) - X_k \right].
-\end{equation*}
-As we shall see, it is usually assumed that $P_k$ depends only
-on $X_k$ (i.e., the parametrisation is \emph{local}) but may also depend on the
-value of $X_k$ at earlier times. The symmetry of \cref{eqn:l96} under shifts of
-the $k$ index further allows the same $P$ to be used for all the $X_k$.
+\end{equation}
+As we shall see, it is usually assumed that $P_k$ depends only on $X_k$ (i.e.,
+the parametrisation is \emph{local}) but may also depend on the value of $X_k$
+at earlier times. The symmetry of \cref{eqn:l96} under shifts of the $k$ index
+implies that all the $X_k$ have the same long-term statistics, so it suffices
+to aggregate all the $U_k$ into a single training dataset and use the resulting
+parametrisation for all the $X_k$ rather than constructing a separate
+parametrisation for each variable.
 
 \subsection{Statistical models}
 Constructing a data-driven parametrisation scheme for L96 requires first
@@ -780,7 +784,7 @@ structure, popularised in an influential paper by \textcite{wilks2005},
 consists of a polynomial regression of $U$ against $X$ as a deterministic base,
 modified by stochastic noise. Wilks' scatterplot of $U$ and $X$ and quartic
 polynomial least-squares regression, shown in \cref{fig:wilks2005_regression},
-confirms that such a structure is reasonable.
+confirm that such a structure is reasonable.
 
 \begin{figure}[ht]
     \centering
@@ -795,18 +799,199 @@ confirms that such a structure is reasonable.
 \end{figure}
 
 Denote the deterministic polynomial part of the parametrisation by
-$P_\mathrm{det}(X)$. Wilks' proposal was to then introduce additive random
-noise in the form
-\begin{equation*}
-    P(X) = P_\mathrm{det}(X) + e(t)
-\end{equation*}
-for a suitable stochastic process $e(t)$ independent of $X$.
+$P_\mathrm{det}(X)$. Wilks' proposal was to then model the residuals as an
+additive, mean-zero noise term $e(t)$, independent of $X$ and updated at each
+time step, so that
+\begin{equation} \label{eqn:l96_additive}
+    P(X) = P_\mathrm{det}(X) + e(t).
+\end{equation}
+\textcite{arnold2013} and later \textcite{christensen2015} considered the SPPT
+method (see \cref{sec:stochastic}), where instead
+\begin{equation} \label{eqn:l96_sppt}
+    P(X) = [1 + e(t)] P_\mathrm{det}(X).
+\end{equation}
+The most common form for $e(t)$ in both \cref{eqn:l96_additive,eqn:l96_sppt} is
+that of a \emph{first-order autoregressive} or AR(1) model
+\begin{equation} \label{eqn:ar1}
+    e(t) = \phi e(t - \Delta t) + \sigma z
+\end{equation}
+where $\phi \in [0,1]$ and $\sigma  \geq 0$ are constants and $z$ is drawn
+independently from the standard normal distribution at each time step. The
+AR(1) model introduces memory by having $e(t)$ relax from its value at the
+previous time step towards zero, while also adding independent random jumps
+with standard deviation $\sigma$. AR(1) noise is commonly also referred to as
+\emph{red} noise. The two important special cases of an AR(1) model are $\phi =
+0$, which reduces $e(t)$ to white noise without memory, and $\phi = \sigma =
+0$, which results in a deterministic parametrisation $P(X) =
+P_\mathrm{det}(X)$. The best estimates of $\phi$ and $\sigma$ are
+straightforwardly obtained by examining the autocorrelation and standard
+deviation of the residual time series $U(t) - P_\mathrm{det}(X(t))$ in the
+training dataset (see \textcite{arnold2013} and \textcite[Chapter 9]{wilks2011}
+for details).
+
+It must be noted that the additive and SPPT schemes
+\cref{eqn:l96_additive,eqn:l96_sppt} are inherently limited by their simple
+form. The additive scheme assumes that the variance of the unresolved tendency
+is independent of the value of $X$, and SPPT implies that the variance vanishes
+when $P_\mathrm{det}(X)=0$. Inspection of \cref{fig:wilks2005_regression}
+indicates that neither of these conditions is strictly satisfied.
+\textcite{arnold2013} therefore proposed two possible modifications of
+\cref{eqn:l96_additive}, with the standard deviation of $e(t)$ being a linear
+function of either $|X(t)|$ or $|P_\mathrm{det}(X(t))|$.
+
+Other studies have experimented with more complex statistical models for the
+unresolved tendencies. \textcite{chorin2015} tested NARMAX (nonlinear
+autoregression moving average with exogenous inputs), a model which represents
+the tendency as a function of (i) the tendencies estimated at previous time
+steps (autoregression), (ii) the current and previous values of $X$ (nonlinear;
+exogenous data), (iii) independent Gaussian noise and (iv) the previous values
+of the Gaussian noise (moving average). The motivation for NARMAX is that it
+may be able to capture more complex relationships and memory effects by using
+more predictors and free parameters. \textcite{crommelin2008,kwasniok2012} used
+Markov chain models, which approximate the continuous range of possible
+unresolved tendencies $U$ for a given $X$ by a discrete set of allowed states.
+The model transitions from state to state according to a set of probabilities
+that depend on $X$ and are estimated from the training dataset. The latest
+studies have tested machine learning algorithms for L96, reflecting the
+increasing research interest in ML-based parametrisation schemes for GCMs (see
+\cref{sec:data_driven}). \textcite{gagne2020} used generative adversarial
+networks (GANs), which involve pairs of competing neural networks and have the
+advantage of being stochastic with no need for \emph{ad hoc} perturbations.
+\textcite{bhouri2023} used deterministic but memory-based neural networks
+trained to directly optimise short-term forecast accuracy without requiring
+the calculation of the unresolved tendencies $U$ in the training dataset.
 
 
 \subsection{Evaluating parametrisation performance}
+After choosing and fitting a parametrisation scheme, the next step is to assess
+its performance. It is important to recognise that there are several contexts
+in which one might want a parametrisation to perform well. The first important
+distinction is between \emph{offline} and \emph{online} testing. Offline
+testing involves feeding large-scale states into the parametrisation scheme
+from a pre-computed test dataset that was not used for training (such as a new
+high-resolution simulation) and measuring the level of agreement between the
+tendencies predicted by the scheme and the true tendencies. Online testing, on
+the other hand, involves coupling the parametrisation scheme into the host
+model and comparing the output of the parametrised model to the corresponding
+``truth'' solution (which might be the output of a high-resolution
+unparametrised model). Online performance can further be assessed for
+short-term (``weather'') forecasts or long-term (``climate'') predictions. The
+reliability of ensemble forecasts (see \cref{sec:stochastic}) must also be
+determined. As we shall see, the extent to which good performance in more than
+one category is achievable is a topic of ongoing research.
+
+\subsubsection{Offline testing}
+Offline testing is rarely documented in the L96 literature because it is
+somewhat more straightforward than online testing. The aim is to ensure that
+the parametrisation scheme accurately captures the distribution of unresolved
+tendencies that exist in the true solution. \textcite{gagne2020} achieved this
+by integrating the full system \cref{eqn:l96} to obtain a test dataset and
+estimating the time-aggregated probability density functions (PDFs) of the true
+unresolved tendencies \cref{eqn:l96_tendency} and the tendencies predicted by
+the parametrisation schemes. They then expressed the difference between these
+distributions as a scalar quantity using the Hellinger distance, defined for
+two PDFs $p$ and $q$ by
+\begin{equation} \label{eqn:hellinger}
+    H(p,q) = \frac{1}{2} \int \mathrm{d}x
+        \left( \sqrt{p(x)} - \sqrt{q(x)} \right)^2.
+\end{equation}
+
+\subsubsection{Forecast performance}
+When evaluating online forecast accuracy for L96, studies are primarily
+concerned with the agreement between a ``truth'' (or verification) solution of
+\cref{eqn:l96} and the mean of an ensemble of independently realised,
+stochastically parametrised forecasts starting from the same or nearby initial
+conditions. This reflects standard practice in operational numerical weather
+prediction. A standard approach is to calculate the root mean square error
+(RMSE)
+\begin{equation*}
+    \mathrm{RMSE}(t) = \left( \left\langle
+        \sum_k (X_k^\text{ens}(t) - X_k^\text{ver}(t))^2
+    \right\rangle \right)^{1/2}
+\end{equation*}
+between the ensemble mean forecast $X_k^\text{ens}(t)$ and the verification
+$X_k^\text{ver}(t)$, where the mean $\langle \cdot \rangle$ is taken over many
+forecast-verification pairs with a range of initial conditions
+\parencite{crommelin2008,gagne2020}.
+
+An alternative for single-integration
+(non-ensemble) forecasts is to take the mean over time, from the initial time
+up to time $t$ \parencite{bhouri2023}. Another accuracy metric is the
+anomaly correlation (ANCR), which is the Pearson correlation coefficient
+\begin{equation*}
+    \mathrm{ANCR}(t) = \left\langle
+        \frac{
+            \sum_k A_k^\text{ens}(t) A_k^\text{ver}(t)
+        }{
+            \left[
+                \left( \sum_k A_k^\text{ens}(t)^2 \right)
+                \left( \sum_k A_k^\text{ver}(t)^2 \right)
+            \right]^{1/2}
+        }
+    \right\rangle
+\end{equation*}
+between the forecast anomaly
+$A_k^\text{ens}(t) = X_k^\text{ens}(t) - \langle X_k^\text{ver}(t) \rangle_t$
+and the verification anomaly
+$A_k^\text{ver}(t) = X_k^\text{ver}(t) - \langle X_k^\text{ver}(t) \rangle_t$,
+again averaged over forecast-verification pairs \parencite{crommelin2008}.
+Other studies \parencite{kwasniok2012,arnold2013} have used more complex
+skill scores to assess forecast accuracy.
+
+Recall from \cref{sec:stochastic} that an ensemble forecast is said to be
+reliable if the spread of the ensemble members is an accurate estimate of the
+uncertainty in the ensemble mean. In the context of L96, there are two ways to
+measure reliabilty. The first \parencite{wilks2005,crommelin2008,kwasniok2012}
+is to sort the states $X_k$ of the ensemble members at the chosen lead time
+from largest to smallest (or vice versa), and find the rank that the truth
+state would occupy within the list. The ranks from many ensemble forecasts are
+aggregated and their distribution plotted on a \emph{rank histogram}, which
+should ideally be uniform for a well-dispersed ensemble. A U-shaped rank
+histogram indicates underdispersion; that is, the truth too frequently lies at
+the extreme ends of or outside the ensemble. An inverted U shape indicates the
+opposite (overdispersion). Another method is to simply compare the ensemble
+standard deviation and the RMSE, which should be roughly equal for a reliable
+forecast \parencite{arnold2013,gagne2020}.
+
+\subsubsection{Climate prediction performance}
+There are several classes of metrics and methods available for assessing the
+accuracy of long-term climate predictions made by parametrised L96 models. The
+simplest is to compare the low-order moments (mean, variance) of the long-term
+distributions of $X$ between the parametrised and truth solutions. However, it
+is often the case for the relatively simple L96 model that parametrised models
+reproduce these moments quite accurately \parencite{wilks2005}, motivating
+comparison of the entire PDFs---a more stringent test. In addition to visual
+comparison of the PDFs, one can use scalar measures such as the Hellinger
+distance \cref{eqn:hellinger} \parencite{arnold2013,gagne2020} and the
+Kolmogorov-Smirnov statistic
+\begin{equation*}
+    D_n = \max_X |\Psi_\mathrm{true}(X) - \Psi_\mathrm{model}(X)|,
+\end{equation*}
+which is the maximum absolute difference between the cumulative distribution
+functions $\Psi$ of $X$ in the truth and parametrised models
+\parencite{wilks2005,chorin2015,kwasniok2012}. As a diagnostic tool, it is
+also possible to compare the joint distributions of $X$ and the unresolved
+tendency $U$ between the truth and parametrised models \parencite{gagne2020}.
+
+Another approach is to study the correlation and spectral properties of $X$. In
+the time domain, one can compute the autocorrelation function $\langle X_k(t)
+X_k(t + \tau) \rangle_{t,k}$ or the cross-correlation $\langle X_k(t) X_{k+1}(t
++ \tau) \rangle_{t,k}$ between neighbouring variables and compare these to
+their truth counterparts
+\parencite{crommelin2008,kwasniok2012,chorin2015,gagne2020}.
+\textcite{gagne2020} applied the continuous wavelet transform (CWT) to the
+$X(t)$ time series to measure the amount of power in the signal as a function
+of oscillation period. Similar analyses may be performed in ``space'' by
+computing the autocorrelation $\langle X_k(t) X_{k+n}(t) \rangle_{t,k}$ with
+respect to shifts in the $k$ index \parencite{gagne2020} or by taking a
+discrete Fourier transform of $X_k$ with respect to $k$ and deriving
+wavenumber statistics \parencite{crommelin2008,kwasniok2012}.
 
 
-\subsection{Outlook}
+\subsection{Lessons learnt from Lorenz '96}
+
+
+\subsection{Beyond Lorenz '96}
 
 
 \clearpage
