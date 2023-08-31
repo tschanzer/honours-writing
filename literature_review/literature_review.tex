@@ -1158,9 +1158,33 @@ the problem of constructing a rigorous data-driven parametrisation will
 quickly become intractable. \textcite{crommelin2008} give an insightful
 discussion of this issue as it relates to Markov chain parametrisations.
 
+Another complication is that the ``spatial'' dimension in L96 is
+discrete, while the dynamical systems being parametrised in weather and
+climate modelling (i.e., fluid flows) have continuous spatial
+dimensions. While it is well established that there is little benefit in
+using stochastic parametrisations with spatially correlated noise for
+L96, spatial correlation is expected to be a much more important
+consideration in spatially continuous systems \parencite{arnold2013}.
+One might also ask whether it will be beneficial to construct spatially
+nonlocal schemes where the tendency predicted at each point also depends on the
+values of the large-scale variables at neighbouring points (potentially
+capturing the gradients of these variables).
+
 
 \clearpage
 \section{Dynamical system case study: \rb{} convection}
+In the final section of this review, I will present a case study on the
+numerical modelling of \rb{} convection, arguing that it is an ideal
+intermediate-complexity dynamical system for further parametrisation
+development and testing. After reviewing the necessary preliminary material, I
+will review the relevant literature to establish that under-resolved numerical
+solutions of the system exhibit systematic errors that may be attributed to the
+neglect of subgrid-scale dynamics. An understanding of the nature of these
+errors will allow future work to use the \rb{} problem as a parametrisation
+testbed analogous to L96, and inform the construction and testing of
+data-driven schemes.
+
+
 \subsection{Problem statement}
 \rb{} convection is the motion of a fluid confined between two
 horizontal isothermal plates, the temperature of the bottom plate being
@@ -1389,6 +1413,12 @@ might ``differ'' from well-resolved ones, and thus what one would hope to
     \item What resolution is necessary for a converged solution?
     \item Which quantities are most sensitive to insufficient resolution?
 \end{itemize}
+
+Having presented the preliminary theory, I will now review previous studies on
+the numerical solution of the \rb{} problem to determine the nature of the
+errors that one should expect to obeserve between an under-resolved model and
+a high-resolution ``truth'' model. The rationale is that, if the resolutions
+of the high- and low-resolution models are chosen
 
 \subsubsection{Theoretical resolution requirements for accurate simulations}%
 \label{sec:res_requirements}
