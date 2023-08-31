@@ -16,6 +16,7 @@
     booktabs,
     enumitem,
     array,
+    float,
 }
 \usepackage[colorlinks=true, allcolors=linkcolor]{hyperref}
 \usepackage[nameinlink]{cleveref}
@@ -776,7 +777,7 @@ to aggregate all the $U_k$ into a single training dataset and use the resulting
 parametrisation for all the $X_k$ rather than constructing a separate
 parametrisation for each variable.
 
-\subsection{Statistical models}
+\subsection{Statistical models} \label{sec:l96_statmodels}
 Constructing a data-driven parametrisation scheme for L96 requires first
 choosing the structure of the scheme and then using the training dataset to
 find the optimal values of the associated free parameters. The simplest
@@ -989,9 +990,173 @@ wavenumber statistics \parencite{crommelin2008,kwasniok2012}.
 
 
 \subsection{Lessons learnt from Lorenz '96}
+Now that the statistical models and analysis techniques for L96 parametrisation
+have been surveyed, I shall review the results of previous studies, focusing on
+key conclusions that have potential implications for more complex dynamical
+systems. The common objective in many studies has been to determine the value
+added by stochasticity and memory. The general consensus is that
+parametrisations with white noise outperform purely deterministic ones, and
+that adding memory via red noise or dependence on past large-scale states gives
+a further advantage over white noise
+\parencite{wilks2005,arnold2013,gagne2020}. The advantages of stochasticity and
+memory include improvements in the skill and reliability of ensemble forecasts
+and in the accuracy of climatological probability distributions.
+\textcite{arnold2013} additionally found that parametrisations with
+state-dependent noise have the potential to produce more skilful forecasts than
+those with state-independent additive noise. This was only observed under
+conditions of small time-scale separation between the resolved and unresolved
+variables (i.e., $c \sim 1$ in \cref{eqn:l96}); it appeared that simple
+additive noise was sufficient for larger scale separation. A representative
+illustration of the conclusions for short-term forecasting and climate
+prediction are respectively given by Figures 6 and 10 of
+\citeauthor{arnold2013}, which are reproduced here as
+\cref{fig:arnold_fig6,fig:arnold_fig10}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\linewidth]{figures/arnold2013_fig6.pdf}
+    \caption{
+        Reproduction of Figure 6 by \textcite{arnold2013}, showing a comparison
+        of ensemble forecast skill for parametrisations with different types of
+        noise. Skill is measured by the ranked probability skill score (RPSS;
+        panel (a)) and ignorance skill score (IGNSS; panel (b)); higher values
+        indicate better skill. The deterministic parametrisation is a cubic
+        polynomial regression and added noise is either white or generated
+        by an AR(1) process. Acronyms indicate the method used to introduce
+        the noise; A = ``additive'', SD = ``state-dependent'' (noise standard
+        deviation a linear function of $|X|$), M = ``multiplicative'' (SPPT)
+        and MA = ``multiplicative and additive'' (noise standard deviation a
+        linear function of $|P_\mathrm{det}(X)|$). Upright light grey triangles
+        indicate results obtained under conditions of larger time scale
+        separation ($c=10$ in \cref{eqn:l96}) and inverted dark grey triangles
+        indicate smaller time scale separation ($c=4$). It is clear that
+        schemes with white noise outperform deterministic ones, and schemes
+        with AR(1) noise outperform whose with white noise.
+    }
+    \label{fig:arnold_fig6}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{figures/arnold2013_fig10.pdf}
+    \caption{
+        Reproduction of Figure 10 by \textcite{arnold2013}, comparing the
+        accuracy with which parametrisations with different types of noise
+        reproduce the true climatological PDFs of the resolved variables.
+        Accuracy is measured by the Hellinger distance between the modelled
+        and true PDFs; lower values indicate higher accuracy. The labels on
+        the horizontal axis and the markers have the same meaning that they do
+        in \cref{fig:arnold_fig6}. A clear improvement in accuracy is given
+        by the schemes with AR(1) noise.
+    }
+    \label{fig:arnold_fig10}
+\end{figure}
+
+Some studies have obtained results that conflict with the aforementioned
+consensus. Firstly \textcite{arnold2013} found no appreciable difference in
+climatological PDF accuracy between their white noise and deterministic
+schemes; this is evident in \cref{fig:arnold_fig10}. Analogously,
+\textcite{christensen2015} similarly found no significant difference between
+white noise and deterministic schemes in terms of their ability to reproduce
+regime behaviour and predict the system's response to changes in the external
+forcing parameter $F$. \textcite{gagne2020}, who constructed parametrisations
+using generative adversarial networks, came to the unexpected conclusion that
+using temporally correlated red noise may degrade the accuracy of ensemble
+forecasts via an accumulation of noise-induced error and have little benefit
+over white noise for climate prediction accuracy.
+
+Several authors have postulated general interpretations of these results that
+may be relevant to the parametrisation problem in dynamical systems beyond L96.
+\textcite{arnold2013} attributed the apparent superiority of memory-based
+parametrisations to a potential for subgrid-scale processes to influence the
+resolved state on scales much larger than the grid scale at which the host
+model is truncated; memory captures this spatial and temporal correlation or
+persistence. \textcite{christensen2015} agreed with this assessment on the
+basis of their results. They also argued that the persistence of correlated
+noise is necessary to drive regime transitions that would otherwise be
+underrepresented. Observing that stochastic parametrisation improved the
+prediction of responses to changes in forcing, they further argued that
+stochastic data-driven parametrisations are generally more likely to function
+well in changed climate conditions outside the range of their training
+datasets.
+
+
+\subsection{Open questions and the case for more complex dynamical systems}
+To conclude this section on data-driven parametrisation for L96, I will draw on
+the key messages and conclusions in the literature to motivate further research
+of the same kind in models of intermediate complexity.
+
+Generally speaking, many parametrisation approaches of varying complexity have
+shown promise when applied to L96; all the studies mentioned in
+\cref{sec:l96_statmodels} were able to construct a scheme that reproduced the
+properties of interest without egregious errors. Indeed, some of the more
+recent and complex approaches have shown only marginal improvements over the
+original regression-based approach introduced by \textcite{wilks2005}.
+\textcite{gagne2020} attributed this to the simplicity of L96, which only
+considers the evolution of a single field in one discrete spatial dimension.
+There is hope that applying the L96 methods to dynamical systems with more
+prognostic variables, spatial dimensions and degrees of freedom may reveal
+deficiencies that were inconsequential in L96 and thus give researchers more
+discriminative power in choosing approaches for application to full GCMs.
+
+Several specific findings in L96 studies raise other questions that also
+motivate a change of focus to more complex dynamical systems. The first is the
+observation by \textcite{crommelin2008} that the advantage of their conditional
+Markov chain parametrisation over the regression-based approach was greatest
+under conditions of small time-scale separation and diminished with increasing
+scale separation. \textcite{arnold2013} drew a similar conclusion regarding the
+difference between stochastic and deterministic regression-based schemes. These
+findings are consistent with the expectation that the net effect of
+subgrid-scale processes should become increasingly unpredictable as resolution
+increases and the size of the sample of small-scale events decreases (see
+\cref{sec:traditional}). This is another piece of evidence that more realistic
+fluid models, which do not have such a clean separation between ``resolved''
+and ``unresolved'' variables, will be more discriminating and allow the best
+approaches to show their full potential.
+
+An open question of importance for real-world modelling concerns the extent to
+which parametrisation schemes that result in accurate weather forecasts tend
+can be expected to also produce accurate climate predictions
+\parencite{christensen2019}. Another asks whether a scheme's offline
+performance is a good indicator of its online performance once coupled into a
+model. \textcite{gagne2020} addressed these questions by testing a collection
+of GAN parametrisations with different predictors and types of noise (see
+\cref{fig:gagne_fig11}), with the results suggesting an affirmative answer for
+the former and a negative answer for the latter. The verification of these
+conclusions would be a worthwhile goal for further research using other
+dynamical systems. Other possible goals could be to more clearly assess
+the ability of data-driven parametrisation schemes to adapt to unseen climate
+conditions \parencite{christensen2015} and to explore and exploit the potential
+for data-driven schemes to correct numerical errors in addition to modelling
+unresolved processes \parencite{bhouri2023}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.3\linewidth]{figures/gagne_fig11a.pdf}%
+    \includegraphics[width=0.3\linewidth]{figures/gagne_fig11c.pdf}
+    \caption{
+        Reproduction of Figures 11a and 11c by \textcite{gagne2020}.
+        Panel (a) compares ensemble mean weather forecast accuracy
+        (measured by RMSE) to climatological PDF accuracy (measured by the
+        Hellinger distance $H$) for a collection of GAN parametrisations
+        with different predictors and types of noise. Panel (c) performs a
+        similar comparison with offline performance (measured by the Hellinger
+        distance between the PDFs of the true and predicted tendencies)
+        taking the place of RMSE.
+    }
+    \label{fig:gagne_fig11}
+\end{figure}
 
 
 \subsection{Beyond Lorenz '96}
+The transition from L96 to more complex systems necessarily gives rise to
+several technicalities that must be addressed. The most pressing of these is
+the fact that increasing the number of degrees of freedom in the host model
+will greatly increase the number of predictors available for parametrisations
+to use. Models with more than one prognostic variable will also require
+separate parametrisations for each one. Without judicious simplifications,
+the problem of constructing a rigorous data-driven parametrisation will
+quickly become intractable. \textcite{crommelin2008} give an insightful
+discussion of this issue as it relates to Markov chain parametrisations.
 
 
 \clearpage
