@@ -1344,11 +1344,8 @@ numbers for atmospheric deep moist convection can be as large as $\SI{e22}{}$
 \parencite{chilla2012}.
 
 \subsection{Thermal properties}
-The rate of heat transport across the fluid layer has physical significance for
-natural realisations of thermally driven convection. It is widely analysed in
-terms of the dimensionless \emph{Nusselt number}, whose accurate determination
-is a common theme in the \rb{} convection literature; I therefore introduce
-this quantity before proceeding. The Nusselt number measures the rate of
+Two more definitions are necessary before proceeding.
+First, the Nusselt number measures the rate of
 (vertical) heat transport across a horizontal plane at height $z$, normalised
 by the purely conductive rate that would exist if the fluid were at rest
 \parencite{verzicco1999}. Following \textcite{chilla2012}, I use the definition
@@ -1400,25 +1397,13 @@ Thus,
 % perfect solution of the fluid equations or not (it doesn't have to be,
 % although for robustness we want it to be relatively insensitive to small
 % changes in dx).
-In constructing a parametrisation test-bed, I will firstly seek
-reasonably accurate, high-resolution ``truth'' solutions of
-\crefrange{eqn:momentum}{eqn:bc_sides}. I will then deliberately reduce
-the resolution, aiming to produce solutions that are sufficiently
-``different'' that they might reasonably be ``improved'' by a parametrisation
-scheme. In this section, I review relevant literature with the aim of
-establishing how, exactly, under-resolved simulations of \rb{} convection
-might ``differ'' from well-resolved ones, and thus what one would hope to
-``improve''. Specifically, I will address the following questions:
+The first basic requirement for a parametrisation testbed is a reasonably accurate high-resolution model to treat as truth. The next requirement is a truncated coarse model which posesses systematic biases relative to truth that might reasonably be improved by parametrising the unresolved subgrid-scale dynamics. In this section, I review relevant literature on numerical solutions of the \rb{} problem with the aim of
+establishing the nature of the biases that might be expected. Practically, the following questions must be answered:
 \begin{itemize}
     \item What resolution is necessary for a converged solution?
     \item Which quantities are most sensitive to insufficient resolution?
 \end{itemize}
 
-Having presented the preliminary theory, I will now review previous studies on
-the numerical solution of the \rb{} problem to determine the nature of the
-errors that one should expect to obeserve between an under-resolved model and
-a high-resolution ``truth'' model. The rationale is that, if the resolutions
-of the high- and low-resolution models are chosen
 
 \subsubsection{Theoretical resolution requirements for accurate simulations}%
 \label{sec:res_requirements}
@@ -1525,8 +1510,7 @@ reproduced the theoretically predicted scaling of $\nusselt$ as a function of
 $\rayleigh$ even when the flow was deliberately under-resolved. On the other
 hand, the presence of numerical artefacts in the instantaneous temperature
 field near the bottom plate was a clear indicator of insufficient resolution.
-\cref{fig:kooij2018_artefacts}, a reproduction of part of their Figure 5, shows
-these artefacts.
+
 
 % scheel: dissipation rates sensitive
 \textcite{scheel2013} performed similar high-resolution simulations for
@@ -1543,21 +1527,8 @@ averaged or local kinetic energy dissipation rate
 were much more sensitive, with their convergence requiring even stricter
 conditions than \cref{eqn:grotzbach}.
 
-% this figure may not be necessary, just describe in text
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\linewidth]{figures/kooij2018_artefacts.pdf}
-    \caption{
-        Reproduction of part of Figure 5 by \textcite{kooij2018}, showing an
-        instantaneous horizontal temperature profile simulated by the
-        \textsc{Nek}5000 code for \rb{} convection at $\rayleigh =
-        \SI{e10}{}$. The profile is taken near the bottom plate of a
-        cylindrical cavity and shows a grid-like pattern of numerical
-        artefacts. The right panel is an enlargement of the region inside
-        the black square in the left panel.
-    }
-    \label{fig:kooij2018_artefacts}
-\end{figure}
+In summary, conditions on the mean grid spacing and number of grid points in the thermal boundary layer exist to guide high-resolution simulations. It is known that the Nusselt number and kinetic and thermal dissipatiom rates are sensitive to under-resolution, so the statistics of these quantities could serve as metrics for evaluating parametrisation performance.
+
 
 \clearpage
 \section{Summary}
