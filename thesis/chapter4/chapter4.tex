@@ -1,0 +1,33 @@
+\providecommand{\topdir}{..}
+\documentclass[../main.tex]{subfiles}
+
+\ifSubfilesClassLoaded{
+  \externaldocument[main-]{../main}
+  \setcounterref{chapter}{main-chap:evaluation}
+  \addtocounter{chapter}{-1}
+}{}
+
+\begin{document}
+
+\ifSubfilesClassLoaded{
+    \frontmatter
+    \tableofcontents
+    \mainmatter
+}{}
+
+\chapter{Evaluation of the parametrised model} \label{chap:evaluation}
+\setlength{\epigraphwidth}{.45\textwidth}
+\epigraphhead[0.1\textheight]{
+    \epigraph{%
+        Good approximations often lead to better ones.
+    }{\emph{Mathematical Methods in Science}\\George P\`{o}lya, 1977}
+}
+
+
+
+\ifSubfilesClassLoaded{%
+    \emergencystretch=5em
+    \printbibliography{}
+}{}
+
+\end{document}

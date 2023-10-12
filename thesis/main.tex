@@ -1,5 +1,5 @@
 % imports
-\documentclass[twoside]{report}
+\documentclass{book}
 \usepackage[utf8]{inputenc}
 \usepackage[a4paper, total={16cm, 23cm}, top=3.5cm]{geometry}
 \usepackage[dvipsnames]{xcolor}
@@ -10,13 +10,15 @@
     fancyhdr,
     siunitx,
     bm,
-    lipsum,
     standalone,
     tikz,
     booktabs,
     enumitem,
     array,
     float,
+    epigraph,
+    refcount,
+    xr,
 }
 \usepackage[colorlinks=true, allcolors=linkcolor]{hyperref}
 \usepackage[nameinlink]{cleveref}
@@ -38,7 +40,8 @@
 \DeclareFieldFormat[article]{pages}{#1}
 \renewcommand*{\volnumdelim}{}
 \renewbibmacro{in:}{}
-\addbibresource{references.bib}
+\providecommand{\topdir}{.}
+\addbibresource{\topdir/references.bib}
 \DeclareFieldFormat{titlecase:title}{\MakeSentenceCase*{#1}}
 \newrobustcmd*{\citefirstlastauthor}{%
     \AtNextCite{\DeclareNameAlias{labelname}{given-family}}\citeauthor
@@ -66,7 +69,22 @@
 \renewcommand{\sectionmark}[1]{\markboth{\MakeUppercase{\thesection.\ #1}}{}}
 \fancyhead[RE,LO]{\bfseries\nouppercase{\leftmark}}
 \fancyfoot{}
+\renewcommand{\textflush}{flushepinormal}
 
+% blank page notice
+\newcommand*{\blankpage}{%
+\vspace*{\fill}
+{\centering \emph{This page intentionally left blank}\par}
+\vspace{\fill}}
+\makeatletter
+\renewcommand*{\cleardoublepage}{\clearpage\if@twoside \ifodd\c@page\else
+\blankpage
+\thispagestyle{empty}
+\newpage
+\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+% lengths
 \renewcommand{\headrulewidth}{0.5pt}
 \setlength{\headheight}{15pt}
 \setlength\parindent{0pt}
@@ -91,5 +109,14 @@
 \begin{document}
 
 \subfile{front_matter/front_matter.tex}
+\subfile{chapter1/chapter1.tex}
+\subfile{chapter2/chapter2.tex}
+\subfile{chapter3/chapter3.tex}
+\subfile{chapter4/chapter4.tex}
+\subfile{chapter5/chapter5.tex}
+
+\backmatter
+\emergencystretch=5em
+\printbibliography{}
 
 \end{document}
