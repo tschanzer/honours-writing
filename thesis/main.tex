@@ -18,7 +18,7 @@
     float,
     epigraph,
     refcount,
-    xr,
+    xr-hyper,
 }
 \usepackage[colorlinks=true, allcolors=linkcolor]{hyperref}
 \usepackage[nameinlink]{cleveref}
@@ -50,6 +50,7 @@
 % ref options
 \crefname{section}{\S}{\S\S}
 \crefname{subsection}{\S}{\S\S}
+\crefname{chapter}{Chapter}{Chapters}
 \crefname{equation}{}{}
 \crefname{figure}{Figure}{Figures}
 \newcommand\crefrangeconjunction{--}
@@ -79,7 +80,7 @@
 \makeatletter
 \renewcommand*{\cleardoublepage}{\clearpage\if@twoside \ifodd\c@page\else
 \blankpage
-\thispagestyle{empty}
+\thispagestyle{plain}
 \newpage
 \if@twocolumn\hbox{}\newpage\fi\fi\fi}
 \makeatother
@@ -105,15 +106,27 @@
 
 % text macros
 \newcommand{\rb}{Rayleigh-B\'{e}nard}
+\newcommand{\todo}[1]{{\color{red} \texttt{TODO: #1}}}
+
+\ifSubfilesClassLoaded{}{
+    \externaldocument[fm-]{00_front_matter/front_matter}
+    \externaldocument[intro-]{01_introduction/introduction}
+    \externaldocument[l96-]{02_lorenz96/lorenz96}
+    \externaldocument[rb-]{03_rayleigh_benard/rayleigh_benard}
+    \externaldocument[tend-]{04_tendencies/tendencies}
+    \externaldocument[eval-]{05_evaluation/evaluation}
+    \externaldocument[conc-]{06_conclusion/conclusion}
+}
 
 \begin{document}
 
-\subfile{front_matter/front_matter.tex}
-\subfile{chapter1/chapter1.tex}
-\subfile{chapter2/chapter2.tex}
-\subfile{chapter3/chapter3.tex}
-\subfile{chapter4/chapter4.tex}
-\subfile{chapter5/chapter5.tex}
+\subfile{00_front_matter/front_matter.tex}
+\subfile{01_introduction/introduction.tex}
+\subfile{02_lorenz96/lorenz96.tex}
+\subfile{03_rayleigh_benard/rayleigh_benard.tex}
+\subfile{04_tendencies/tendencies.tex}
+\subfile{05_evaluation/evaluation.tex}
+\subfile{06_conclusion/conclusion.tex}
 
 \backmatter
 \emergencystretch=5em
