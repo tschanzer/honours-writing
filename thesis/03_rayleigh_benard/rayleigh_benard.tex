@@ -67,7 +67,7 @@
 }
 \undodrop
 
-\todo{introductory paragraph}
+\todo{introductory paragraph - explain where this is going}
 
 \section{Governing equations}
 \rb{} convection is the overturning motion of a fluid confined between two
@@ -210,8 +210,8 @@ concerned with the turbulent regime, since Rayleigh numbers for atmospheric
 deep moist convection can be as large as $\SI{e22}{}$ \parencite{chilla2012}.
 
 
-\section{Large-eddy simulation}
-In \cref{main-chap:evaluation} I will compare the output of a parametrised
+\section{Large-eddy simulation} \label{sec:les}
+In \cref{eval-chap:evaluation} I will compare the output of a parametrised
 low-resolution model of \crefrange{eqn:dim_momentum}{eqn:bc_sides} to the
 output of the unparametrised base model (i.e., the control). However, it was
 found in the early stages of this work that unparametrised low-resolution
@@ -227,7 +227,7 @@ equations \parencite{pope2000}. In coarse models where these smallest scales
 are not resolved, excess energy accumulates at the highest resolved
 wavenumbers.
 
-The widely-accepted solution to this problem is to artificially introduce
+I choose to stabilise the numerical model by artificially introducing
 additional dissipative terms that act on the smallest scales, modelling the
 energy transfer to unresolved motions in what is effectively a simple
 parametrisation. This is known as \emph{large-eddy simulation} or LES. There
@@ -253,8 +253,8 @@ equations read
 \end{align}
 where the new terms are highlighted in red and $\delta_{ij}$ is the Kronecker
 delta symbol. $\tau_{ij}$ is known as the \emph{residual stress tensor} and
-$F_j$ is known as the \emph{residual flux}. The residual stress tensor is given
-by
+$F_j$ is known as the \emph{residual heat flux}. The residual stress tensor is
+given by
 \[
     \tau_{ij} = 2 \nu_\mathrm{sgs} S_{ij}^*,
 \]
@@ -264,7 +264,9 @@ where
 \]
 is the so-called \emph{eddy viscosity} and
 \[
-    S_{ij} = \frac{1}{2} \left( \frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i} \right)
+    S_{ij} = \frac{1}{2} \left(
+        \frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}
+    \right)
 \]
 is the \emph{strain rate tensor}. $S_{ij}^*$ is the deviatoric part of the
 strain rate tensor given by
@@ -292,6 +294,14 @@ the distance to the nearest wall normalised by the viscous length scale
 $\delta_\nu$. It is conventional to choose $A^+ = 26$.
 \todo{explain measurement of delta-nu}
 
+The residual heat flux is similarly modelled as
+\[
+    F_j = \kappa_\mathrm{sgs} \partial_j \theta,
+\]
+where it is assumed that the \emph{eddy diffusivity}
+$\kappa_\mathrm{sgs}$ is equal to the eddy viscosity $\nu_\mathrm{sgs}$
+\parencite[as in][, for example]{vreugdenhil2018}.
+
 
 \section{Model configuration}
 The nondimensionalised Boussinesq equations
@@ -315,72 +325,31 @@ $\Gamma = 8$ and the Prandtl number was set to $1$ for simplicity.
 \todo{link to animations}
 
 
-\section{Choice of resolution: literature}
-\todo{fix introductory paragraph}
+\section{Choice of resolution: literature} \label{sec:resolution}
+The next important step is to choose the resolution of the fine and coarse
+models. The fine model will serve as ``truth'', providing the training dataset
+to which the parametrisation model will be fitted and the test dataset against
+which the parametrised coarse model will be evaluated. Its resolution should
+therefore be high enough that the (yet-to-be-)chosen evaluation metrics are
+relatively insensitive to small changes in resolution (i.e., there should be
+near-convergence of long-term statistics). Note, however, that neither a
+perfect solution of the fluid equations nor perfect agreement with real-world
+experimental measurements are necessary; the fine model merely serves as a
+reference dynamical system whose behaviour I aim to reproduce by parametrising
+the coarse model. In order to create a worthwhile parametrisation problem, the
+coarse model's resolution should therefore be low enough that it exhibits
+statistically significant biases relative to the fine model, as measured by the
+chosen evaluation metrics. However, as explained in \cref{sec:les}, the
+coarse model must still be numerically stable so that it can provide an
+unparametrised control solution.
 
-\todo{s.sherwood: Might be important to further explain here that
-you will regard this as the ("warts and all") dynamical system you want to
-emulate at a coarser representation.  This avoids the issue of whether this
-hig-res is a perfect solution of the fluid equations or not (it doesn't have to
-be, although for robustness we want it to be relatively insensitive to small
-changes in dx).}
-
-The first basic requirement for a parametrisation testbed is a reasonably
-accurate high-resolution model to treat as truth. The next requirement is a
-truncated coarse model which posesses systematic biases relative to truth that
-might reasonably be improved by parametrising the unresolved subgrid-scale
-dynamics. In this section, I review relevant literature on numerical solutions
-of the \rb{} problem with the aim of establishing the nature of the biases that
-might be expected. Practically, the following questions must be answered:
-\begin{itemize}
-    \item What resolution is necessary for a converged solution?
-    \item Which quantities are most sensitive to insufficient resolution?
-\end{itemize}
-
-\subsection{Definitions}
-Two more definitions are necessary before proceeding. First, the Nusselt number
-measures the rate of (vertical) heat transport across a horizontal plane at
-height $z$, normalised by the purely conductive rate that would exist if the
-fluid were at rest \parencite{verzicco1999}. Following \textcite{chilla2012}, I
-use the definition (before nondimensionalisation)
-\begin{equation}
-    \label{eqn:dim_nusselt}
-    \nusselt(z,t) \equiv \frac{
-        \langle wT \rangle_{A,t}
-        - \kappa \partial \langle T \rangle_{A,t} / \partial z
-    }{
-        \kappa \delta T / d
-    }
-\end{equation}
-where $\langle \cdot \rangle_{A,t}$ denotes averaging over time and the
-horizontal plane at height $z$, and $w = \vec{u} \cdot \uvec{z}$ is the
-vertical velocity. The rate of heat transport in the numerator has two terms:
-advection $\langle wT \rangle_{A,t}$ and conduction $-\kappa \partial \langle T
-\rangle_{A,t} / \partial z$. The denominator $\kappa \delta T / d$ is the rate
-of heat transport for a linear conductive temperature profile with the fluid at
-rest.
-
-Another important quantity is the thickness $\delta_T$ of the \emph{thermal
-boundary layer} at each plate where large temperature gradients exist.
-\textcite{chilla2012} define $\delta_T$ as follows: if, on average, the fluid
-temperature changes with height from $+\delta T/2$ at the lower plate to $0$
-(the mean value in the well-mixed interior) over a distance $\delta_T$, then
-\[
-    \left. \pdiff{\langle T \rangle_{A,t}}{z} \right|_{z=0}
-        \approx -\frac{\delta T}{2 \delta_T}.
-\]
-But if one considers the definition of the Nusselt number
-\cref{eqn:dim_nusselt} at $z=0$, the advection term $\langle wT \rangle_{A,t}$
-vanishes due to the $\vec{u} = \vec{0}$ boundary condition and
-\[
-    \nusselt(z=0) = -\frac{d}{\delta T}
-        \left. \pdiff{\langle T \rangle_{A,t}}{z} \right|_{z=0}.
-\]
-Thus,
-\begin{equation}
-    \label{eqn:thermal_bl}
-    \delta_T = \frac{d}{2\,\nusselt(z=0)}.
-\end{equation}
+With the above constraints in mind, \cref{sec:res_requirements} will review the
+guidelines that have been established in the literature for producing
+well-resolved simulations of \rb{} convection. \cref{sec:metrics} will
+then review the metrics that are known to be sensitive to under-resolution;
+these may be used to experimentally determine appropriate resolutions for the
+fine and coarse models, and later (in \cref{eval-chap:evaluation}) to evaluate
+parametrisation performance.
 
 
 \subsection{Resolution guidelines}
@@ -418,10 +387,30 @@ to the claimed relation.
 \citeauthor{grotzbach1983} recognised that the above reasoning was only valid
 for the mean grid spacing; large gradients in temperature and velocity near the
 top and bottom plates require finer resolution in those regions. The notion of
-nearness can be formalised using the thermal boundary layer thickness
-\cref{eqn:thermal_bl}, and one asks how many grid points are necessary in this
-layer. \citeauthor{grotzbach1983} did not give a theoretical argument to derive
-this number but claimed that 3 points are sufficient for turbulent flows.
+nearness can be formalised by considering the thickness of the \emph{thermal
+boundary layer}, the region at each plate where large temperature gradients
+exist. Consider a Taylor series expansion of the horizontally- and
+time-averaged dimensionless temperature profile about $z=0$; recalling the
+boundary condition \cref{eqn:bc_bot}, this reads
+\[
+    \langle \theta \rangle_{A,t} \approx \frac{1}{2}
+        + \left. \pdiff{\langle \theta \rangle_{A,t}}{z} \right|_{z=0} z
+        + O(z^2).
+\]
+The thermal boundary layer thickness $\delta_T$ is defined \parencite[see,
+e.g.,][]{chilla2012} as the height at which, to first order, the temperature
+reaches the mean value in the well-mixed interior of the domain (i.e., zero for
+this problem). It follows that
+\begin{equation}
+    \label{eqn:thermal_bl}
+    \delta_T = -\frac{1}{2} \left(
+        \left. \pdiff{\langle \theta \rangle_{A,t}}{z} \right|_{z=0}
+    \right)^{-1}.
+\end{equation}
+
+One then asks how many grid points must be within the thermal boundary layer.
+\citeauthor{grotzbach1983} claimed that 3 points are sufficient for turbulent
+flows but did not give a theoretical argument to derive this number.
 \textcite{shishkina2010} presented a theoretical argument based on the
 (experimentally and numerically justified) assumption of laminar
 \emph{Prandtl-Blasius} flow conditions in the boundary layer and were able to
@@ -434,15 +423,36 @@ process of iteratively running simulations, checking their convergence and
 updating the resolution.
 
 
-\subsection{Consequences of insufficient resolution}
-\todo{note double purpose of this section: verifying fine resolution
-and choosing coarse resolution. Also provides good evaluation metrics}
-
+\subsection{Metrics sensitive to under-resolution} \label{sec:metrics}
 Performing numerical experiments for a 3D fluid layer,
-\citeauthor{grotzbach1983} found that RMS velocity and Nusselt number were the
-most sensitive quantities to insufficient mean grid spacing, but even they
-increased ``only slightly'' above the values obtained from well-resolved
-simulations.
+\citeauthor{grotzbach1983} found that the RMS velocity and the \emph{Nusselt
+number} were the most sensitive quantities to insufficient mean grid spacing,
+but even they increased ``only slightly'' above the values obtained from
+well-resolved simulations. The dimensionless Nusselt number measures the
+instantaneous rate of (vertical) heat transport across a horizontal plane at
+height $z$, normalised by the purely conductive rate that would exist if the
+fluid were at rest \parencite{verzicco1999}. Following \textcite{kooij2018}, I
+define
+\begin{equation}
+    \label{eqn:nusselt}
+    \nusselt(z,t) \equiv \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle_A
+        - \left\langle \pdiff{\theta}{z} \right\rangle _A
+\end{equation}
+where $\langle \cdot \rangle_A$ denotes averaging over the horizontal plane at
+height $z$, and $w = \vec{u} \cdot \uvec{z}$ is the vertical velocity. Notice
+that the heat transport has contribitions from both advection (the first term)
+and conduction (the second term). Authors frequently consider the
+vertically-averaged value
+\[
+    \langle \nusselt(z,t) \rangle_z
+        = \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle_{A,z} + 1
+\]
+and/or the time-averaged value, which is is independent of height due to
+energy conservation,
+\[
+    \langle \nusselt(z,t) \rangle_t = \langle \nusselt(z,t) \rangle_{z,t}
+        = \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle_{A,z,t} + 1.
+\]
 
 Later work also supports the finding that the Nusselt number is sensitive to
 under-resolution. Even studying only steady-state convective solutions at
@@ -495,15 +505,15 @@ corresponding thermal dissipation rate
 were much more sensitive, with their convergence requiring even stricter
 conditions than \cref{eqn:grotzbach}.
 
-In summary, conditions on the mean grid spacing and number of grid points in
-the thermal boundary layer exist to guide high-resolution simulations. It is
-known that the Nusselt number and kinetic and thermal dissipatiom rates are
-sensitive to under-resolution, so the statistics of these quantities could
-serve as metrics for evaluating parametrisation performance.
-\todo{fix concluding paragraph}
-
 
 \section{Choice of resolution: experiment}
+\cref{sec:resolution} showed that simulations must satisfy certain grid spacing
+conditions in order to be accurate, and presented several metrics that are
+sensitive to under-resolution. I now perform numerical experiments and
+use these conditions and metrics to determine appropriate resolutions for
+the fine and coarse models in the parametrisation study that will follow.
+
+\todo{describe experiments and present results}
 
 
 \ifSubfilesClassLoaded{%
