@@ -53,6 +53,9 @@
 \crefname{chapter}{Chapter}{Chapters}
 \crefname{equation}{}{}
 \crefname{figure}{Figure}{Figures}
+\crefalias{step}{enumi}
+\crefname{step}{Step}{Steps}
+\crefname{appendix}{Appendix}{Appendices}
 \newcommand\crefrangeconjunction{--}
 \def\equationautorefname~#1\null{(#1)\null}
 \numberwithin{equation}{chapter}
@@ -116,6 +119,7 @@
     \externaldocument[tend-]{04_tendencies/tendencies}
     \externaldocument[eval-]{05_evaluation/evaluation}
     \externaldocument[conc-]{06_conclusion/conclusion}
+    \externaldocument[app-]{07_appendix/appendix}
 }
 
 \begin{document}
@@ -128,8 +132,10 @@
 \subfile{05_evaluation/evaluation.tex}
 \subfile{06_conclusion/conclusion.tex}
 
-\backmatter
+% \backmatter
 \emergencystretch=5em
 \printbibliography{}
+
+\subfile{07_appendix/appendix.tex}
 
 \end{document}

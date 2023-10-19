@@ -23,11 +23,17 @@
 }{}
 
 \chapter{Introduction} \label{chap:introduction}
-\setlength{\epigraphwidth}{.45\textwidth}
 \epigraphhead[0.1\textheight]{
     \epigraph{
-        Good approximations often lead to better ones.
-    }{\emph{Mathematical Methods in Science}\\George P\'{o}lya, 1977}
+        \textsc{First Witch:} \\
+
+        \hfill\begin{minipage}[b]{\dimexpr\textwidth-1cm}
+            When shall we three meet again \\
+            In thunder, lightning, or in rain?
+        \end{minipage}
+    }{
+        Shakespeare, \emph{Macbeth}, Act I, Scene I
+    }
 }
 
 \todo{introductory paragraph with motivation (from proposal) and outline}
@@ -165,12 +171,12 @@ the state of the system and $\vec{F}$ is a nonlinear differential operator. One
 then employs a change of variables $\vec{z} \to (\vec{x},\vec{y})$, where
 $\vec{x}$ contains the information or variables that are explicitly resolved by
 the model being studied and $\vec{y}$ contains the unresolved, `sub-grid'
-information or variables. Practically, $\vec{x}$ and $\vec{y}$ can be thought
-of as projections of the full state $\vec{z}$ onto lower-dimensional
-subspaces \parencite{brajard2021}. Alternatively (and more concretely),
-$\vec{x}$ can be obtained by averaging the original variables over several
-adjacent grid points, with $\vec{y}$ being the corresponding residuals
-\parencite{zacharuk2018,alcala2021}.
+information or variables. Mathematically, $\vec{x}$ and $\vec{y}$ are
+projections of the full state $\vec{z}$ onto lower-dimensional subspaces of the
+original state space \parencite{brajard2021}. Practically, $\vec{x}$ can be
+obtained by averaging the original variables over several adjacent grid points,
+with $\vec{y}$ being the corresponding residuals
+\parencite{zacharuk2018,alcala2021}. \todo{fix last sentence}
 
 In principle, the change of variables splits \cref{eqn:truth}
 into two parts
@@ -522,8 +528,9 @@ spaces of high- and low-resolution states, having different dimensions, may be
 linked by an operator $\langle \cdot \rangle$ that projects high-resolution
 states onto the low-resolution state space. Practically, the projection
 operation is simply a coarse-graining of $\vec{z}$ by averaging values at
-adjacent grid points to match the resolution of $\vec{x}$. Now, for each state
-$\vec{z}$ in the training dataset, one may compute the difference
+adjacent grid points to match the resolution of $\vec{x}$ \todo{not
+necessarily!}. Now, for each state $\vec{z}$ in the training dataset, one may
+compute the difference
 \begin{equation*}
     \vec{\epsilon}(\vec{z}) =
         \frac{

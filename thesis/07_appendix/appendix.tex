@@ -2,16 +2,13 @@
 \documentclass[../main.tex]{subfiles}
 
 \ifSubfilesClassLoaded{
-  \externaldocument[main-]{../main}
   \externaldocument[fm-]{../00_front_matter/front_matter}
   \externaldocument[intro-]{../01_introduction/introduction}
   \externaldocument[l96-]{../02_lorenz96/lorenz96}
   \externaldocument[rb-]{../03_rayleigh_benard/rayleigh_benard}
   \externaldocument[tend-]{../04_tendencies/tendencies}
+  \externaldocument[eval-]{../05_evaluation/evaluation}
   \externaldocument[conc-]{../06_conclusion/conclusion}
-
-  \setcounterref{chapter}{main-chap:evaluation}
-  \addtocounter{chapter}{-1}
 }{}
 
 \begin{document}
@@ -22,10 +19,28 @@
     \mainmatter
 }{}
 
-\chapter{Evaluation of the parametrised model} \label{chap:evaluation}
+\appendix
+\chapter{Details of numerical experiments} \label{chap:details}
+\setlength{\epigraphwidth}{.45\textwidth}
 \epigraphhead[0.1\textheight]{
-    \epigraph{All models are wrong but some are useful.}{George Box}
+    \epigraph{\todo{epigraph}}{}
 }
+
+
+\section{Initial condition} \label{sec:initial_condition}
+
+
+\section{Spin-up} \label{sec:spinup}
+
+
+\section{Averaging time and uncertainty estimation} \label{sec:averaging_time}
+
+
+\section{Viscous length scale} \label{sec:viscous_length}
+
+
+\section{Training dataset snapshot frequency} \label{sec:snapshot_freq}
+
 
 
 \ifSubfilesClassLoaded{%

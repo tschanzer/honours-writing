@@ -59,7 +59,8 @@
             in gloomy caverns, and over them piled high mountain masses
             and gave them a king who, under fixed covenant, should be
             skilled to tighten and loosen the reins at command.
-        \end{minipage} \\
+        \end{minipage}
+        \vspace{.5\baselineskip}
     }{
         Virgil, \emph{Aeneid I}, ll. 50--63 \\
         trans. H. R. Fairclough
@@ -305,8 +306,8 @@ $\kappa_\mathrm{sgs}$ is equal to the eddy viscosity $\nu_\mathrm{sgs}$
 
 \section{Model configuration}
 The nondimensionalised Boussinesq equations
-\crefrange{eqn:momentum}{eqn:bc_sides} are solved numerically using
-Dedalus, a spectral code built in Python \parencite{burns2020}. Spectral
+\crefrange{eqn:momentum}{eqn:bc_sides} are solved numerically using Dedalus
+(\texttt{v3}), a spectral code built in Python \parencite{burns2020}. Spectral
 methods represent the solution of a partial differential equation as a linear
 combination of linearly independent basis functions, solving for the
 coefficients of the basis function expansion rather than the values of the
