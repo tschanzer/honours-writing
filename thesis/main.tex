@@ -111,6 +111,19 @@
 \newcommand{\rb}{Rayleigh-B\'{e}nard}
 \newcommand{\todo}[1]{{\color{red} \texttt{TODO: #1}}}
 
+% cross-referencing setup
+\newcommand*{\addFileDependency}[1]{
+    \typeout{(#1)}
+    \IfFileExists{#1}{}{\typeout{No file #1.}}
+}
+
+\let\oldexternaldocument\externaldocument
+\renewcommand*{\externaldocument}[2][]{%
+    \oldexternaldocument[#1]{#2}%
+    \addFileDependency{#2.tex}%
+    \addFileDependency{#2.aux}%
+}
+
 \ifSubfilesClassLoaded{}{
     \externaldocument[fm-]{00_front_matter/front_matter}
     \externaldocument[intro-]{01_introduction/introduction}
