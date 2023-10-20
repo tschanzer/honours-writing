@@ -36,48 +36,54 @@
 
 
 \section{Calculation of subgrid tendencies} \label{sec:calculation}
-The method used to calculate the subgrid tendencies is described below and
-illustrated in the form of a flowchart in \cref{fig:method}.
+The workflow used to calculate the subgrid tendencies is described below and
+illustrated as a flowchart in \cref{fig:method}, which uses the same numbering
+to show the order of the steps.
 \begin{enumerate}
-    \item\label[step]{itm:fine_model} The fine model was integrated for [\todo{}]
-        time units. Every 3 time units, the model state was saved, and
-        then saved again one time step later. This resulted in a dataset
-        of [\todo{}] pairs of snapshots separated by 3 time units. An
-        interval of 3 time units was chosen as it was the approximate
-        decorrelation time of the model state (see
-        \cref{app-sec:snapshot_freq}); using a shorter interval would
-        mean saving redundant information.
-    \item\label[step]{itm:diff} The first snapshot in each pair was subtracted
-        from the second snapshot and the difference divided by the time step,
-        giving the \emph{fine tendency} (i.e., the time derivative of the fine
-        model state).
-    \item Each snapshot in the fine tendency dataset was \emph{coarse-grained},
-        reducing its spatial resolution to that of the coarse model. The
-        nature of the coarse-graining algorithm warrants special attention
-        and is discussed separately in \cref{sec:coarse_graining}.
-    \item The same coarse-graining algorithm was applied to the first fine
-        state snapshot in each pair from \cref{itm:fine_model}, producing a
-        dataset of \emph{coarse states}.
-    \item\label[step]{itm:coarse_model} Each coarse state was input as an
-        initial condition for the coarse model, the coarse model integrated for
-        one time step only, and the resulting state saved. There were now
-        [\todo{}] pairs of coarse state snapshots separated by 3 time units,
-        analogous to the fine state snapshots from \cref{itm:fine_model}.
-    \item\label[step]{itm:coarse_tend} \cref{itm:diff} was repeated for the
-        coarse state snapshots, producing a dataset of \emph{coarse tendencies}
-        (i.e., the time derivatives predicted by the coarse model).
-    \item\label[step]{itm:subgrid_tend} Finally, the coarse tendencies were
-        subtracted from the coarse-grained fine tendencies, producing the
-        \emph{subgrid tendencies}.
+    \item\label[step]{itm:fine_model} The fine model was integrated for
+        [\todo{}] time units. Every 3 time units, the model state was saved,
+        and then saved again one time step later. This resulted in a dataset of
+        [\todo{}] pairs of snapshots separated by 3 time units. An interval of
+        3 time units was chosen as it was the approximate decorrelation time of
+        the model variables (see \cref{app-sec:snapshot_freq}); using a shorter
+        interval would result in saving redundant information.
+    \item\label[step]{itm:coarse_grain} Each pair of snapshots was
+        \emph{coarse-grained}, reducing its spatial resolution to that of the
+        coarse model. The nature of the coarse-graining operation warrants
+        special attention and is discussed separately in
+        \cref{sec:coarse_graining}.
+    \item\label[step]{itm:coarse_model} The first coarse-grained snapshot in
+        each pair was input as an initial condition for the coarse model. The
+        coarse model integrated for one time step only, and the resulting
+        state---the coarse model's prediction for the large-scale state after
+        one time step---was saved.
+    \item\label[step]{itm:true_tend} The first coarse-grained snapshot in each
+        pair from \cref{itm:coarse_grain} was subtracted from the second
+        and the difference divided by the fine model's time step, giving the
+        \emph{true coarse tendency} (i.e., the true time derivative of the
+        large-scale state as calculated by the fine model).
+    \item\label[step]{itm:pred_tend} The first coarse-grained snapshot in each
+        pair from \cref{itm:coarse_grain} was subtracted from the coarse model
+        prediction produced in \cref{itm:coarse_model} and the difference
+        divided by the coarse model's time step, giving the tendency predicted
+        by the coarse model (i.e., its prediction of the time derivative of the
+        large-scale state).
+    \item\label[step]{itm:subgrid_tend} Finally, the coarse model predicted
+        tendencies from \cref{itm:pred_tend} were subtracted from the true
+        coarse tendencies from \cref{itm:true_tend}, producing the
+        \emph{subgrid tendencies}. These measure the error in the coarse
+        model's prediction of the time derivative of the large-scale state,
+        and would be identically zero for a perfect coarse model.
 \end{enumerate}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/method.pdf}
+    \includegraphics[width=\linewidth]{figures/method_v2.pdf}
     \caption{
-        Flowchart illustrating the procedure used to calculate
-        subgrid tendencies. The plots show an example of the workflow being
-        applied to the temperature data and are for illustrative purposes only.
+        Flowchart illustrating the procedure used to calculate subgrid
+        tendencies. The plots show an example of the workflow being applied to
+        the temperature data but are for illustrative purposes only. The blue
+        numbers correspond to the steps described in the text.
     }
     \label{fig:method}
 \end{figure}
@@ -85,30 +91,29 @@ illustrated in the form of a flowchart in \cref{fig:method}.
 
 \section{Choice of coarse-graining method} \label{sec:coarse_graining}
 Coarse-graining is the process of reducing a gridded dataset onto a
-lower-resolution grid, and it is required at two points in the subgrid tendency
-calculation workflow: first to produce the coarse-grained fine tendency and
-then to produce the coarse state. It was found that the choice of
+lower-resolution grid, and it is required at \cref{itm:coarse_grain} of the
+workflow described in \cref{sec:calculation}. It was found that the choice of
 coarse-graining method was a major influence on the quality of the calculated
-subgrid tendencies; this is the consequence of a subtle issue that initially
-seems purely philosophical but in fact has important practical consequences.
+subgrid tendencies; this is the consequence of a subtle issue that may seem
+purely semantic at first but in fact has important practical implications.
 
-Broadly speaking, the output of a coarse (i.e., reduced-order) model is meant
-to approximate a certain \emph{representation} of the output of the original
-fine model. To give three concrete examples, the coarse model might seek to
+In general, the output of a coarse (i.e., reduced-order) model is meant to
+approximate a certain \emph{representation} of the output of a chosen fine
+model. To give three concrete examples, the coarse model might seek to
 reproduce (a) the values of the high-resolution fields on a sparser grid of
 points, or (b) the averages over a set of larger grid boxes, or (c) the first
-$N$ Fourier coefficients (where $N$ is less than the number of coefficients
-needed to fully determine the original field). The modeller has the freedom
-choose a representation, which in turn determines how the output of the coarse
-model should be interpreted. The choice of representation also implicitly
-determines a coarse-graining operation: a map from the state space of the fine
-model to the state space of the coarse model that isolates the necessary
-large-scale information and discards the rest. Referring to the previous
-examples, option (a) calls for an operation that simply discards, say, three
-out of every four or nine out of ten grid points. Option (b) calls for the
-grouping and averaging of the grid points that lie within each large grid box.
-Option (c) calls for the truncation of fine fields at the $N$th coefficient in
-Fourier space.
+$N$ coefficients of the discrete Fourier transform (where $N$ is less than the
+number of coefficients needed to fully determine the original fields). The
+modeller has the freedom choose a representation, which in turn determines how
+the output of the coarse model should be interpreted. The choice of
+representation also implicitly determines a coarse-graining operation: a map
+from the state space of the fine model to the state space of the coarse model
+that isolates the necessary large-scale information and discards the rest.
+Referring to the previous examples, option (a) calls for an operation that
+simply discards, say, three out of every four or nine out of ten grid points.
+Option (b) calls for the grouping and averaging of the grid points that lie
+within each large grid box. Option (c) calls for the truncation of fine fields
+at the $N$th coefficient in Fourier space.
 
 The key lesson that was learnt during the course of this work is that the
 chosen representation and coarse-graining method must be appropriate to the
@@ -134,39 +139,84 @@ fine model. This gave rise to two constraints on the coarse-graining method:
 During the development of this study, before the above requirements were known,
 coarse-graining was performed by averaging the fine grid points that lay within
 each coarse grid box (a method known within the Earth sciences as
-\emph{first-order conservative regridding} because it preserves mean values).
-Figure \todo{figure comparing coarse-graining methods}, illustrating the
-application of first-order conservative regridding to sample temperature data,
-demonstrates that the result is not very well-resolved on the coarse grid; in
-many places, adjacent grid points have sharp differences in temperature.
-First-order conservative regridding is also not guaranteed to preserve boundary
-values or the divergence-free nature of the velocity field. Consequently, the
-tendencies obtained from the coarse model in \cref{itm:coarse_tend} of the
-workflow suffered from noise and numerical artefacts that propagated to
-the subgrid tendencies in \cref{itm:subgrid_tend}. With the signal of interest
-obscured, it was impossible to model the subgrid tendencies as functions of
-the coarse state.
+\emph{first-order conservative remapping} because it preserves mean values;
+see \cite{jones1999}). Figure \todo{figure comparing coarse-graining
+methods}, illustrating the application of first-order conservative remapping
+to sample temperature data, demonstrates that the result is not very
+well-resolved on the coarse grid; in many places, adjacent grid points have
+sharp differences in temperature. First-order conservative remapping is also
+not guaranteed to preserve boundary values or the divergence-free nature of the
+velocity field. Consequently, the tendencies obtained from the coarse model in
+\cref{itm:pred_tend} of the workflow suffered from noise and numerical
+artefacts that propagated to the subgrid tendencies in \cref{itm:subgrid_tend}.
+With the signal of interest obscured, it was impossible to model the subgrid
+tendencies as functions of the coarse state.
 
-This issue was remedied using a new coarse-graining method. Consider the new
-set of PDEs
+It was evident that the coarse-graining method needed to involve a smoothing
+operation of some kind. However, most conventional smoothing methods, such as
+Gaussian filtering, also fail to preserve the boundary and divergence-free
+conditions. The solution to this problem was to supply each snapshot of the
+fine model state as an initial condition to an appropriate system of PDEs,
+chosen so that the integration of the system would have a smoothing effect on
+the initial condition data. The key advantage of this approach is that the
+boundary and divergence-free conditions can be explicitly enforced.
+
+The choice of PDEs to achieve this was inspired by classical Gaussian
+filtering. Recall that a Gaussian filter convolves input data with a filter
+kernel that takes the form of a Gaussian function, which also happens to be the
+Green's function for the heat equation $\partial \psi / \partial t = \nabla^2
+\psi$ in an \emph{infinite} domain. It follows that heat equations of some form
+on the \emph{finite} domain of the \rb{} problem (whose Greeen's functions are
+not Gaussian) will have a similar smoothing effect while preserving the
+required boundary conditions. The appropriate equation for smoothing the
+temperature field $\theta$ is therefore
+\begin{equation}
+    \label{eqn:diffusion_theta}
+    \pdiff{\theta}{t} = \nabla^2 \theta
+\end{equation}
+on $[0, \Gamma] \times [0, 1]$ with $\theta(z=0) = +1/2$, $\theta(z=1) = -1/2$
+and $\theta(x=0) = \theta(x=\Gamma)$. It is tempting to propose an equation of
+the same form, $\partial \vec{u} / \partial t = \nabla^2 \vec{u}$, for the
+velocity field, but its solution on the finite domain would not necessarily
+preserve $\grad \cdot \vec{u} = 0$. By analogy to the incompressible
+Navier-Stokes equations, it is necessary to introduce a ``pressure'' term
+$-\grad\pi$ on the right-hand side, with the additional field $\pi(x,z)$ giving
+an additional degree of freedom that allows one to impose $\grad \cdot \vec{u}
+= 0$ without over-determining the problem. The velocity field is thus
+smoothed by the equations
 \begin{align}
     \label{eqn:diffusion_u}
-    \pdiff{\vec{u}}{t} &= -\grad \pi + \nabla^2 \vec{u}, \\
-    \label{eqn:diffusion_theta}
-    \pdiff{\theta}{t} &= \nabla^2 \theta, \quad \text{and} \\
+    \pdiff{\vec{u}}{t} &= -\grad\pi + \nabla^2 \vec{u} \quad \text{and} \\
     \label{eqn:diffusion_continuity}
-    \grad \cdot \vec{u} &= 0,
+    \grad \cdot \vec{u} &= 0
 \end{align}
-subject to the required boundary conditions
-\crefrange{rb-eqn:bc_bot}{rb-eqn:bc_sides}. \cref{eqn:diffusion_theta} is
-simply a heat equation; over time, its initial condition is ``smoothed'', akin
-to the conduction of heat through the fluid in the absence of advection.
-\cref{eqn:diffusion_u} is the same except for the addition of the ``pressure''
-term $-\grad \pi$, which provides an additional degree of freedom that is
-needed to simultaneously enforce the divergence-free condition.
-\cref{eqn:diffusion_continuity}. The properties of these equations motivated
-the construction of a Dedalus model to solve them on the same grid as the
-fine model.
+on $[0, \Gamma] \times [0, 1]$ with $\vec{u}(z=0) = \vec{u}(z=1) = \vec{0}$ and
+$\vec{u}(x=0) = \vec{u}(x=\Gamma)$. The equations
+\crefrange{eqn:diffusion_theta}{eqn:diffusion_continuity} were integrated
+numerically on the same grid as the fine model using a solver that was
+straightforwardly implemented in Dedalus.
+
+Once the high-resolution data had been smoothed using the method described
+above, all that remained was to downsample the result to the resolution of
+the coarse model using linear interpolation. To summarise, the coarse-graining
+workflow is as follows:
+\begin{enumerate}
+    \item\label[step]{itm:coarse_grain_input} Input a high-resolution snapshot
+        as the initial condition for the solver of
+        \crefrange{eqn:diffusion_theta}{eqn:diffusion_continuity}.
+    \item Integrate the solver for $\SI{e-3}{}$ time units (the duration that
+        was found to produce the necessary amount of smoothing) in steps of
+        $\SI{2e-4}{}$ time units. \todo{check values}
+    \item Downsample the final state to the resolution of the coarse model
+        and save the result.
+    \item Reset the solver and return to \cref{itm:coarse_grain_input} to
+        coarse-grain the next high-resolution snapshot.
+\end{enumerate}
+
+Figure \todo{figure comparing coarse-graining methods} demonstrates that
+the improved coarse-graining method produces smooth results that are
+well-resolved on the coarse grid, in contrast to first-order conservative
+remapping.
 
 
 \section{Analysis of subgrid tendencies}
