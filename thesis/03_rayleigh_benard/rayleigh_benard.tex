@@ -9,6 +9,7 @@
     \externaldocument[tend-]{../04_tendencies/tendencies}
     \externaldocument[eval-]{../05_evaluation/evaluation}
     \externaldocument[conc-]{../06_conclusion/conclusion}
+    \externaldocument[app-]{../07_appendix/appendix}
 
     \setcounterref{chapter}{main-chap:rayleigh_benard}
     \addtocounter{chapter}{-1}
@@ -211,7 +212,7 @@ concerned with the turbulent regime, since Rayleigh numbers for atmospheric
 deep moist convection can be as large as $\SI{e22}{}$ \parencite{chilla2012}.
 
 
-\section{Large-eddy simulation} \label{sec:les}
+\section{Hyperdiffusion terms} \label{sec:hyper}
 In \cref{eval-chap:evaluation} I will compare the output of a parametrised
 low-resolution model of \crefrange{eqn:dim_momentum}{eqn:bc_sides} to the
 output of the unparametrised base model (i.e., the control). However, it was
@@ -220,7 +221,7 @@ models were prone to numerical instability, preventing the obtainment of a
 suitable control solution. This is to be expected; at high Rayleigh numbers,
 when dissipation is weak, the solutions develop large gradients near
 small-scale features that cannot be properly resolved by coarse models, causing
-them to crash. To be more precise, the energy spectra of turbulent flows
+the model to crash. To be more precise, the energy spectra of turbulent flows
 exhibit an \emph{energy cascade} whereby energy is transferred from
 larger-scale motions to smaller-scale motions; only at sufficiently small
 scales is energy removed from the system by the dissipative terms in the
@@ -228,85 +229,59 @@ equations \parencite{pope2000}. In coarse models where these smallest scales
 are not resolved, excess energy accumulates at the highest resolved
 wavenumbers.
 
-I choose to stabilise the numerical model by artificially introducing
-additional dissipative terms that act on the smallest scales, modelling the
-energy transfer to unresolved motions in what is effectively a simple
-parametrisation. This is known as \emph{large-eddy simulation} or LES. There
-are many options when it comes to choosing the additional terms, but for the
-sake of simplicity I adopt the Smagorinsky model, the oldest and simplest. As
-it happens, the Smagorinsky model was originally proposed in the context of
-atmospheric modelling, by \textcite{smagorinsky1963}. The following description
-of the model follows \textcite{pope2000}.
-
-It is easiest to first rewrite \cref{eqn:momentum} and \cref{eqn:energy} in
-index notation (with implied summation over repeated indices). The modified
-equations read
+I choose to stabilise the numerical model by introducing artificial dissipative
+terms that act on the smallest scales. The modified equations, with the new
+terms highlighted in red, are
 \begin{align}
-    \label{eqn:momentum_idx}
-    \pdiff{u_i}{t} + u_j \partial_j u_i
-        &= -\partial_i \pi + \left(\frac{\prandtl}{\rayleigh}\right)^{1/2}
-            \partial_j \partial_j u_i + \theta \delta_{iz}
-            + {\color{red} \partial_j \tau_{ij}} \quad \text{and} \\
-    \label{eqn:energy_idx}
-    \pdiff{\theta}{t} + u_j \partial_j \theta
-        &= (\rayleigh\,\prandtl)^{-1/2} \, \partial_j \partial_j \theta
-            + {\color{red} \partial_j F_j},
+    \label{eqn:hyper_momentum}
+    \pdiff{\vec{u}}{t} + \vec{u} \cdot \grad \vec{u}
+        &= -\grad \pi + \left( \frac{\prandtl}{\rayleigh}\right)^{1/2}
+            \left(
+                \nabla^2 \vec{u} + {\color{red}
+                \tilde{\nu} f(z) |\nabla^2 \vec{u}| \nabla^2 \vec{u}}
+            \right)
+            + \theta \uvec{z}, \\
+    \label{eqn:hyper_energy}
+    \pdiff{\theta}{t} + \vec{u} \cdot \grad \theta
+        &= (\rayleigh\,\prandtl)^{-1/2}
+            \left(
+                \nabla^2 \theta + {\color{red}
+                \tilde{\kappa} f(z) |\nabla^2 \theta| \nabla^2 \theta}
+            \right), \quad \text{and} \\
+    \label{eqn:hyper_incompressible}
+    \grad \cdot \vec{u} &= 0,
 \end{align}
-where the new terms are highlighted in red and $\delta_{ij}$ is the Kronecker
-delta symbol. $\tau_{ij}$ is known as the \emph{residual stress tensor} and
-$F_j$ is known as the \emph{residual heat flux}. The residual stress tensor is
-given by
+where the constants $\tilde{\nu} = \tilde{\kappa} = \SI{2e-3}{}$ were chosen by
+trial and error to achieve sufficient dissipation. The function $f(z)$ is
+necessary to reduce the artificial terms to zero near the top and bottom of the
+domain (otherwise the model crashes) while leaving them relatively unchanged
+in the interior, and is defined by
 \[
-    \tau_{ij} = 2 \nu_\mathrm{sgs} S_{ij}^*,
+    f(z) = \left[
+        1 - \exp \left( -\frac{\min(z, 1-z)}{0.052} \right)
+    \right]^4.
 \]
-where
-\[
-    \nu_\mathrm{sgs} = (C_S \Delta)^2 \sqrt{2 S_{ij} S_{ij}}
-\]
-is the so-called \emph{eddy viscosity} and
-\[
-    S_{ij} = \frac{1}{2} \left(
-        \frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}
-    \right)
-\]
-is the \emph{strain rate tensor}. $S_{ij}^*$ is the deviatoric part of the
-strain rate tensor given by
-\[
-    S_{ij}^* = S_{ij} - \frac{1}{3} S_{kk} \delta_{ij};
-\]
-in fact, for incompressible flows $\frac{1}{3} S_{kk} = \partial_i u_i = 0$ so
-$S_{ij}^* = S_{ij}$. $\Delta \equiv 2 (\Delta x \Delta z)^{1/2}$ is
-a filter width depending on the \emph{local} grid spacings $\Delta x$ and
-$\Delta z$, and $C_S = 0.17$ is the Smagorinsky constant.
+The definition of $f(z)$ is inspired by the \emph{van Driest damping function}
+commonly used in large-eddy simulations of wall-bounded flows
+\parencite{pope2000}.
 
-It is known that the Smagorinsky model introduces too much artificial
-dissipation near walls in bounded flows such as \rb{} convection
-\parencite{pope2000}. This is remedied by redefining the eddy viscosity to be
-\[
-    \nu_\mathrm{sgs}
-        = (C_S \Delta)^2 (1 - e^{-z^+/A^+})^2 \sqrt{2 S_{ij} S_{ij}},
-\]
-where the \emph{van Driest damping function} $1 - e^{-z^+/A^+}$ attenuates
-the viscosity near the walls. The damping function depends on
-\[
-    z^+ \equiv \frac{\min(z,1-z)}{\delta_\nu},
-\]
-the distance to the nearest wall normalised by the viscous length scale
-$\delta_\nu$. It is conventional to choose $A^+ = 26$.
-\todo{explain measurement of delta-nu}
+The new additions are akin to regular viscous and diffusive terms with
+viscosity and diffusivity coefficients that depend on second derivatives of the
+flow variables. Small-scale features, where $|\nabla^2 \vec{u}|$ and/or
+$|\nabla^2 \theta|$ are large, will experience a larger effective viscosity
+and/or thermal diffusivity respectively, and therefore be dissipated more
+rapidly than larger-scale features.
 
-The residual heat flux is similarly modelled as
-\[
-    F_j = \kappa_\mathrm{sgs} \partial_j \theta,
-\]
-where it is assumed that the \emph{eddy diffusivity}
-$\kappa_\mathrm{sgs}$ is equal to the eddy viscosity $\nu_\mathrm{sgs}$
-\parencite[as in][, for example]{vreugdenhil2018}.
+It must be emphasised that this work is \emph{not} concerned with whether or
+not these modified equations are an accurate representation of physical
+reality; they simply serve as an example dynamical system for the study of
+parametrisation.
 
 
-\section{Model configuration}
+\section{Model configuration} \label{sec:config}
 The nondimensionalised Boussinesq equations
-\crefrange{eqn:momentum}{eqn:bc_sides} are solved numerically using Dedalus
+\crefrange{eqn:hyper_momentum}{eqn:hyper_incompressible} and
+\crefrange{eqn:bc_bot}{eqn:bc_sides} are solved numerically using Dedalus
 (\texttt{v3}), a spectral code built in Python \parencite{burns2020}. Spectral
 methods represent the solution of a partial differential equation as a linear
 combination of linearly independent basis functions, solving for the
@@ -316,12 +291,16 @@ number of basis functions used. This work uses a Fourier (sine/cosine) basis in
 the horizontal direction and a basis of Chebyshev polynomials (of the first
 kind) in the vertical direction. The Fourier basis has the special property
 that all linear combinations respect the periodic boundary conditions.
-Timestepping is performed using a second-order Runge-Kutta scheme. The complete
-model source code is publicly available \todo{data availability}.
+For storage and analysis, the model output is transformed into real space,
+where the fields are defined on a \emph{collocation grid} that is has uniform
+horizontal spacing but non-uniform vertical spacing (smaller near the top and
+bottom of the domain and larger in the middle).
 
-The Rayleigh number was set to $10^9$, a value at which the flow was found to
-be unsteady and feature transient eddies. The aspect ratio of the domain was
-$\Gamma = 8$ and the Prandtl number was set to $1$ for simplicity.
+Timestepping is performed using a second-order Runge-Kutta scheme. The Rayleigh
+number was set to $10^9$, a value at which the flow was found to be unsteady
+and feature transient eddies. The aspect ratio of the domain was $\Gamma = 8$
+and the Prandtl number was set to $1$ for simplicity. The complete model source
+code is publicly available \todo{data availability}.
 
 \todo{link to animations}
 
@@ -340,7 +319,7 @@ reference dynamical system whose behaviour I aim to reproduce by parametrising
 the coarse model. In order to create a worthwhile parametrisation problem, the
 coarse model's resolution should therefore be low enough that it exhibits
 statistically significant biases relative to the fine model, as measured by the
-chosen evaluation metrics. However, as explained in \cref{sec:les}, the
+chosen evaluation metrics. However, as explained in \cref{sec:hyper}, the
 coarse model must still be numerically stable so that it can provide an
 unparametrised control solution.
 
@@ -362,22 +341,24 @@ requirements for accurate simulations of \rb{} convection
 mean (i.e., averaged in each spatial direction) grid spacing and the vertical
 spacing near the plates; I first discuss the former. \citeauthor{grotzbach1983}
 reasoned that a numerical model that neglects subgrid-scale effects must have a
-geometric mean grid spacing $h = (\Delta x \Delta y \Delta z)^{1/3}$ such that
+geometric mean grid spacing $h$ (i.e. $h = (\Delta x \Delta y \Delta z)^{1/3}$
+in 3D) such that
 \begin{equation}
     \label{eqn:grotzbach}
-    h \leq \pi \eta = \pi \left(
-        \frac{\nu^3}{\langle \epsilon \rangle}
-    \right)^{1/4}
+    h \leq \pi \underbrace{
+        \left( \frac{\prandtl}{\rayleigh} \right)^{3/8}
+        \langle \epsilon_k \rangle^{-1/4}
+    }_{\eta},
 \end{equation}
-where $\eta \equiv (\nu^3/\langle \epsilon \rangle)^{1/4}$ is the
-\emph{Kolmogorov length}, the universal smallest relevant length scale for
-general turbulent flow, and $\langle \epsilon \rangle$ is the spatial and
-temporal average of the kinetic energy dissipation rate defined by
+where $\eta$ is the \emph{Kolmogorov length}, the universal smallest relevant
+length scale for general turbulent flow, and $\langle \epsilon_k \rangle$ is
+the spatial and temporal average of the kinetic energy dissipation rate defined
+by
 \begin{equation}
     \label{eqn:kinetic_dissipation}
-    \epsilon(\vec{x}, t) \equiv \frac{\nu}{2} \sum_{ij} \left(
-        \pdiff{u_i}{x_j} + \pdiff{u_j}{x_i}
-    \right)^2
+    \epsilon_k(\vec{x}, t) \equiv
+        \frac{1}{2} \left( \frac{\prandtl}{\rayleigh} \right)^{1/2}
+        \sum_{ij} \left( \pdiff{u_i}{x_j} + \pdiff{u_j}{x_i} \right)^2
 \end{equation}
 \parencite{chilla2012}. The inequality \cref{eqn:grotzbach} between $h$ and
 $\eta$ can be understood using the Nyquist-Shannon theorem, which states that a
@@ -394,22 +375,23 @@ exist. Consider a Taylor series expansion of the horizontally- and
 time-averaged dimensionless temperature profile about $z=0$; recalling the
 boundary condition \cref{eqn:bc_bot}, this reads
 \[
-    \langle \theta \rangle_{A,t} \approx \frac{1}{2}
-        + \left. \pdiff{\langle \theta \rangle_{A,t}}{z} \right|_{z=0} z
+    \langle \theta \rangle _{A,t} \approx \frac{1}{2}
+        + \left. \pdiff{\langle \theta \rangle _{A,t}}{z} \right|_{z=0} z
         + O(z^2).
 \]
-The thermal boundary layer thickness $\delta_T$ is defined \parencite[see,
+The thermal boundary layer thickness $\delta_\theta$ is defined \parencite[see,
 e.g.,][]{chilla2012} as the height at which, to first order, the temperature
 reaches the mean value in the well-mixed interior of the domain (i.e., zero for
 this problem). It follows that
 \begin{equation}
     \label{eqn:thermal_bl}
-    \delta_T = -\frac{1}{2} \left(
-        \left. \pdiff{\langle \theta \rangle_{A,t}}{z} \right|_{z=0}
+    \delta_\theta = -\frac{1}{2} \left(
+        \left. \pdiff{\langle \theta \rangle _{A,t}}{z} \right|_{z=0}
     \right)^{-1}.
 \end{equation}
 
-One then asks how many grid points must be within the thermal boundary layer.
+And similarly for the other boundary layer at $z=1$. One then asks how many
+grid points must be within the thermal boundary layer.
 \citeauthor{grotzbach1983} claimed that 3 points are sufficient for turbulent
 flows but did not give a theoretical argument to derive this number.
 \textcite{shishkina2010} presented a theoretical argument based on the
@@ -434,25 +416,24 @@ instantaneous rate of (vertical) heat transport across a horizontal plane at
 height $z$, normalised by the purely conductive rate that would exist if the
 fluid were at rest \parencite{verzicco1999}. Following \textcite{kooij2018}, I
 define
-\begin{equation}
-    \label{eqn:nusselt}
-    \nusselt(z,t) \equiv \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle_A
+\[
+    \nusselt(z,t) \equiv \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle _A
         - \left\langle \pdiff{\theta}{z} \right\rangle _A
-\end{equation}
-where $\langle \cdot \rangle_A$ denotes averaging over the horizontal plane at
+\]
+where $\langle \cdot \rangle _A$ denotes averaging over the horizontal plane at
 height $z$, and $w = \vec{u} \cdot \uvec{z}$ is the vertical velocity. Notice
 that the heat transport has contribitions from both advection (the first term)
 and conduction (the second term). Authors frequently consider the
 vertically-averaged value
-\[
-    \langle \nusselt(z,t) \rangle_z
-        = \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle_{A,z} + 1
-\]
+\begin{equation} \label{eqn:nusselt_zavg}
+    \langle \nusselt(z,t) \rangle _z
+        = \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle _{A,z} + 1
+\end{equation}
 and/or the time-averaged value, which is is independent of height due to
 energy conservation,
 \[
-    \langle \nusselt(z,t) \rangle_t = \langle \nusselt(z,t) \rangle_{z,t}
-        = \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle_{A,z,t} + 1.
+    \langle \nusselt(z,t) \rangle _t = \langle \nusselt(z,t) \rangle _{z,t}
+        = \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle _{A,z,t} + 1.
 \]
 
 Later work also supports the finding that the Nusselt number is sensitive to
@@ -501,20 +482,160 @@ kinetic energy dissipation rate \cref{eqn:kinetic_dissipation} and the
 corresponding thermal dissipation rate
 \begin{equation}
     \label{eqn:thermal_dissipation}
-    \epsilon_T(\vec{x}, t) \equiv \kappa \sum_i \left(\pdiff{T}{x_i}\right)^2
+    \epsilon_\theta(\vec{x}, t) \equiv
+        (\rayleigh\,\prandtl)^{-1/2} \sum_i \left(\pdiff{\theta}{x_i}\right)^2
 \end{equation}
 were much more sensitive, with their convergence requiring even stricter
 conditions than \cref{eqn:grotzbach}.
 
 
-\section{Choice of resolution: experiment}
-\cref{sec:resolution} showed that simulations must satisfy certain grid spacing
-conditions in order to be accurate, and presented several metrics that are
-sensitive to under-resolution. I now perform numerical experiments and
-use these conditions and metrics to determine appropriate resolutions for
-the fine and coarse models in the parametrisation study that will follow.
+\section{Choice of resolution: experiment} \label{sec:choose_resolution}
+I have performed a series of simulations at different resolutions using the
+numerical model described in \cref{sec:config}, using the metrics identified in
+\cref{sec:metrics} to determine appropriate resolutions for the fine and coarse
+models in the parametrisation study of
+\cref{tend-chap:tendencies,eval-chap:evaluation}. The coarsest simulation had a
+resolution of 256 horizontal (Fourier) modes by 64 vertical (Chebyshev) modes
+and the highest 2048 by 256.
 
-\todo{describe experiments and present results}
+Higher-resolution simulations require shorter time steps in order to be stable.
+The suitability of the time step is determined by the \emph{Courant number}
+\parencite{pope2000}
+\[
+    C \equiv \frac{|u|}{\Delta x / \Delta t} + \frac{|w|}{\Delta z / \Delta t},
+\]
+which expresses the horizontal and vertical velocities $u$ and $w$ in units of
+the grid spacings\footnote{Since the model uses a spectral method, $\Delta x$
+and $\Delta z$ are taken to be the local spacings of the collocation grid in
+real space; see \cref{sec:config}.} $\Delta x$ and $\Delta z$ per time step
+$\Delta t$, and must be sufficiently small (typically less than 1). The time
+step was tuned by trial and error at an intermediate starting resolution (not
+shown) and the time step for other resolutions was scaled to approximately
+preserve $C$. The scaling is derived by reasoning that, if $|u|$ and $|w|$ are
+approximately equal on average and independent of resolution, then for two
+simulations denoted by subscripts 1 and 2, the equality of $C_1$ and $C_2$
+implies
+\begin{align*}
+    \frac{1}{\Delta x_1 / \Delta t_1} + \frac{1}{\Delta z_1 / \Delta t_1}
+        &= \frac{1}{\Delta x_2 / \Delta t_2}
+            + \frac{1}{\Delta z_2 / \Delta t_2} \\
+    \Leftrightarrow \qquad
+    \Delta t_2
+        &= \frac{1/\Delta x_1 + 1/\Delta z_1}{1/\Delta x_2 + 1/\Delta z_2}
+            \Delta t_1.
+\end{align*}
+Recognising that the grid spacings are related to the numbers
+of grid points (or spectral modes) $N_x$ and $N_z$ by $\Delta x = \Gamma/N_x$
+and $\Delta z \approx 1/N_z$ (where $\Gamma$ is the aspect ratio of the
+domain), this may be further simplified to
+\[
+    \Delta t_2
+        = \frac{N_{x_1}/\Gamma + N_{z_1}}{N_{x_2}/\Gamma + N_{z_2}} \Delta t_1.
+\]
+\cref{tab:resolution_tests} summarises the resolutions of the simulations
+and their time steps.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{l l l}
+    \toprule
+    $N_x$ & $N_z$ & $\Delta t$ \\
+    \midrule
+    256 & 64 & $\SI{5.333e-3}{}$ \\
+    512 & 64 & $\SI{4e-3}{}$ \\
+    768 & 96 & $\SI{2.667e-3}{}$ \\
+    1024 & 128 & $\SI{2e-3}{}$ \\
+    1280 & 160 & $\SI{1.6e-3}{}$ \\
+    1536 & 192 & $\SI{1.333e-3}{}$ \\
+    1792 & 224 & $\SI{1.143e-3}{}$ \\
+    2048 & 256 & $\SI{1e-3}{}$ \\
+    \bottomrule
+\end{tabular}
+\caption{
+    Resolutions and time steps of the simulations used in the
+    resolution-dependence experiment.
+}
+\label{tab:resolution_tests}
+\end{table}
+
+The simulations with resolution $1024 \times 128$ and coarser were started from
+the initial condition described in \cref{app-sec:initial_condition} and run for
+1000 time units. The simulations with resolution finer than $1024 \times 128$
+were initialised by interpolating the $1024 \times 128$ solution at time $t =
+650$ and run for a further 350 time units to reduce computational cost. All
+output was saved at an interval of approximately 0.2 time units. The first 750
+time units of data were discarded to ensure that all simulations had reached a
+statistically steady state (\cref{app-sec:spinup} verifies this).
+
+For each simulation, I calculated time averages of the following quantities:
+\begin{enumerate}[a.]
+    \item The vertically-averaged Nusselt number
+        $\langle \nusselt(z,t) \rangle _z$, defined by \cref{eqn:nusselt_zavg},
+    \item The horizontally-averaged thickness of the two thermal boundary
+        layers $( \langle \delta_{\theta, z=0} \rangle _x
+        + \langle \delta_{\theta, z=1} \rangle _x )/2$, defined by
+        \cref{eqn:thermal_bl},
+    \item The RMS speed $\sqrt{\langle \vec{u} \cdot \vec{u} \rangle _{x,z}}$,
+    \item The domain-averaged kinetic energy dissipation rate $\langle
+        \epsilon_k \rangle _{x,z}$, defined by \cref{eqn:kinetic_dissipation},
+        and
+    \item The domain-averaged thermal dissipation rate $\langle \epsilon_\theta
+        \rangle _{x,z}$, defined by \cref{eqn:thermal_dissipation}.
+\end{enumerate}
+
+Time averaging was performed over the 250 time units of data that remained
+after discarding the first 750. I identified two related dominant sources of
+uncertainty in the calculated values: (i) the uncertainty due to the finite
+averaging time and (ii) the uncertainty arising from low-frequency fluctuations
+of the quantities being averaged (i.e., the fact that the results change if the
+finite averaging window is translated in time). I estimated (i) as half the
+range of the running mean,
+\begin{equation} \label{eqn:running_mean}
+    \frac{1}{2} ~ \underset{\tau \in [150, 250]}{\operatorname{range}} ~
+        \frac{1}{\tau} \int_{750}^{750 + \tau} (\cdot) ~\d{t},
+\end{equation}
+which measures the sensitivity of the result to changes in the averaging time.
+I estimated (ii) as half the range of the 150-time-unit rolling mean,
+\begin{equation} \label{eqn:rolling_mean}
+    \frac{1}{2} ~ \underset{\tau \in [0, 100]}{\operatorname{range}} ~
+        \frac{1}{150} \int_{750 + \tau}^{900 + \tau} (\cdot) ~\d{t},
+\end{equation}
+which measures the sensitivity of the result to the translation of the
+averaging window. I took the larger of \cref{eqn:running_mean,eqn:rolling_mean}
+as a conservative estimate of the overall uncertainty.
+
+\cref{fig:resolution_dependence} shows plots of the five metrics as functions
+of resolution, expressing the values as percentage errors relative to the
+highest-resolution simulation. Firstly, observe that all the metrics (except
+perhaps the RMS speed) appear insensitive to small changes in resolution about
+$2048 \times 256$; I therefore choose $2048 \times 256$ as the resolution of the
+fine ``truth'' model for the parametrisation study.
+
+All five metrics exhibit statistically significant discrepancies across the
+range of resolutions tested. I choose $256 \times 64$ as the resolution of the
+coarse model for the parametrisation study because it produces the largest
+error for all metrics while remaining numerically stable.
+
+Notice also that the Nusselt number (\cref{fig:resolution_dependence}a)
+and thermal boundary layer thickness (\cref{fig:resolution_dependence}b)
+have both a monotonic resolution dependence and small relative uncertainties.
+This will make them reliable metrics for evaluating parametrisation
+performance in \cref{eval-chap:evaluation}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/resolution_dependence.pdf}
+    \caption{
+        Time-averaged Nusselt number \textbf{(a)}, thermal boundary layer
+        thickness \textbf{(b)}, RMS speed \textbf{(c)}, kinetic energy
+        dissipation rate \textbf{(d)} and thermal dissipation rate \textbf{(e)}
+        as functions of model resolution, expressed as percentage errors
+        relative to the values from the highest-resolution simulation ($2048
+        \times 256$). Refer to the corresponding list items in the text for
+        more detailed definitions of the quantities.
+    }
+    \label{fig:resolution_dependence}
+\end{figure}
 
 
 \ifSubfilesClassLoaded{%

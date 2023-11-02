@@ -196,10 +196,11 @@ $\vec{u}(x=0) = \vec{u}(x=\Gamma)$. The equations
 numerically on the same grid as the fine model using a solver that was
 straightforwardly implemented in Dedalus.
 
-Once the high-resolution data had been smoothed using the method described
-above, all that remained was to downsample the result to the resolution of
-the coarse model using linear interpolation. To summarise, the coarse-graining
-workflow is as follows:
+Once the high-resolution data had been smoothed using the method
+described above, all that remained was to downsample the result to the
+resolution of the coarse model using linear interpolation \todo{actually
+using change scales function in dedalus}. To summarise, the
+coarse-graining workflow is as follows:
 \begin{enumerate}
     \item\label[step]{itm:coarse_grain_input} Input a high-resolution snapshot
         as the initial condition for the solver of
