@@ -23,7 +23,7 @@
     \mainmatter
 }{}
 
-\chapter{Calculation and modelling of subgrid tendencies}
+\chapter{Analysis and modelling of subgrid tendencies}
 \label{chap:tendencies}
 \setlength{\epigraphwidth}{.45\textwidth}
 \epigraphhead[0.1\textheight]{
@@ -34,19 +34,46 @@
 
 \todo{introductory paragraph: why am I doing this?}
 
+In \cref{rb-chap:rayleigh_benard} I investigated the resolution dependence
+of several metrics in order to choose the resolutions of the fine ``truth''
+model and the coarse ``control'' model needed for data-driven parametrisation.
+\cref{tab:final_resolutions} shows the final choices; for the remainder
+of this thesis, the terms ``fine model'' and ``coarse model'' will refer
+to the settings shown in the Table.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{l l l}
+    \toprule
+    & \textbf{Fine model} & \textbf{Coarse model} \\
+    \midrule
+    $N_x$ & 2048 & 256 \\
+    $N_z$ & 256 & 64 \\
+    $\Delta t$ & $\SI{1.0e-3}{}$ & $\SI{5.333e-3}{}$ \\
+    \bottomrule
+\end{tabular}
+\caption{
+    Resolutions $(N_x, N_z)$ and time steps $\Delta t$ chosen for the fine and
+    coarse models.
+}
+\label{tab:final_resolutions}
+\end{table}
+
 
 \section{Calculation of subgrid tendencies} \label{sec:calculation}
 The workflow used to calculate the subgrid tendencies is described below and
 illustrated as a flowchart in \cref{fig:method}, which uses the same numbering
-to show the order of the steps.
+to show the order of the steps. \todo{refer to literature}
 \begin{enumerate}
-    \item\label[step]{itm:fine_model} The fine model was integrated for
-        [\todo{}] time units. Every 3 time units, the model state was saved,
-        and then saved again one time step later. This resulted in a dataset of
-        [\todo{}] pairs of snapshots separated by 3 time units. An interval of
-        3 time units was chosen as it was the approximate decorrelation time of
-        the model variables (see \cref{app-sec:snapshot_freq}); using a shorter
-        interval would result in saving redundant information.
+    \item\label[step]{itm:fine_model} The fine model was integrated for 300
+        time units, the initial condition being the end of the $2048 \times
+        256$ simulation in \cref{rb-chap:rayleigh_benard}. Every 3 time units,
+        the model state was saved, and then saved again one time step later.
+        This resulted in a dataset of 100 pairs of snapshots separated by 3
+        time units. An interval of 3 time units was chosen as it was the
+        approximate decorrelation time of the model variables (see
+        \cref{app-sec:snapshot_freq}); using a shorter interval would result in
+        saving redundant information.
     \item\label[step]{itm:coarse_grain} Each pair of snapshots was
         \emph{coarse-grained}, reducing its spatial resolution to that of the
         coarse model. The nature of the coarse-graining operation warrants
@@ -71,10 +98,20 @@ to show the order of the steps.
     \item\label[step]{itm:subgrid_tend} Finally, the coarse model predicted
         tendencies from \cref{itm:pred_tend} were subtracted from the true
         coarse tendencies from \cref{itm:true_tend}, producing the
-        \emph{subgrid tendencies}. These measure the error in the coarse
-        model's prediction of the time derivative of the large-scale state,
-        and would be identically zero for a perfect coarse model.
+        \emph{subgrid tendencies}. These measure the error (or, more precisely,
+        minus the error) in the coarse model's prediction of the time
+        derivative of the large-scale state, and would be identically zero for
+        a perfect coarse model.
 \end{enumerate}
+
+The goal will be to approximate the subgrid tendencies (labelled
+``predictand'' in \cref{fig:method}) as functions of the coarse state (labelled
+``predictor''). In \cref{eval-chap:evaluation}, I construct a new coarse model
+that adds the approximate subgrid tendencies to the original predicted
+tendencies, thereby obtaining a better approximation to the true coarse
+tendency. When integrated, the new coarse model should, in principle,
+yield a solution that more closely matches the coarse-grained solution of
+the fine model.
 
 \begin{figure}[ht]
     \centering
@@ -139,18 +176,18 @@ fine model. This gave rise to two constraints on the coarse-graining method:
 During the development of this study, before the above requirements were known,
 coarse-graining was performed by averaging the fine grid points that lay within
 each coarse grid box (a method known within the Earth sciences as
-\emph{first-order conservative remapping} because it preserves mean values;
-see \cite{jones1999}). Figure \todo{figure comparing coarse-graining
-methods}, illustrating the application of first-order conservative remapping
-to sample temperature data, demonstrates that the result is not very
-well-resolved on the coarse grid; in many places, adjacent grid points have
-sharp differences in temperature. First-order conservative remapping is also
-not guaranteed to preserve boundary values or the divergence-free nature of the
-velocity field. Consequently, the tendencies obtained from the coarse model in
-\cref{itm:pred_tend} of the workflow suffered from noise and numerical
-artefacts that propagated to the subgrid tendencies in \cref{itm:subgrid_tend}.
-With the signal of interest obscured, it was impossible to model the subgrid
-tendencies as functions of the coarse state.
+\emph{first-order conservative remapping} because it preserves mean values; see
+\cite{jones1999}). \cref{fig:coarse_graining_example}, illustrating the
+application of first-order conservative remapping to sample temperature data,
+demonstrates that the result is not very well-resolved on the coarse grid; in
+many places, adjacent grid points have sharp differences in temperature.
+First-order conservative remapping is also not guaranteed to preserve boundary
+values or the divergence-free nature of the velocity field. Consequently, the
+tendencies obtained from the coarse model in \cref{itm:pred_tend} of the
+workflow suffered from noise and numerical artefacts that propagated to the
+subgrid tendencies in \cref{itm:subgrid_tend}. With the signal of interest
+obscured, it was impossible to model the subgrid tendencies as functions of the
+coarse state.
 
 It was evident that the coarse-graining method needed to involve a smoothing
 operation of some kind. However, most conventional smoothing methods, such as
@@ -196,31 +233,153 @@ $\vec{u}(x=0) = \vec{u}(x=\Gamma)$. The equations
 numerically on the same grid as the fine model using a solver that was
 straightforwardly implemented in Dedalus.
 
-Once the high-resolution data had been smoothed using the method
-described above, all that remained was to downsample the result to the
-resolution of the coarse model using linear interpolation \todo{actually
-using change scales function in dedalus}. To summarise, the
-coarse-graining workflow is as follows:
+Once the high-resolution data had been smoothed using the method described
+above, all that remained was to downsample the result to the resolution of the
+coarse model. Downsampling was handled by Dedalus via truncation in spectral
+coefficient space. To summarise, the coarse-graining workflow is as follows:
 \begin{enumerate}
     \item\label[step]{itm:coarse_grain_input} Input a high-resolution snapshot
         as the initial condition for the solver of
         \crefrange{eqn:diffusion_theta}{eqn:diffusion_continuity}.
     \item Integrate the solver for $\SI{e-3}{}$ time units (the duration that
         was found to produce the necessary amount of smoothing) in steps of
-        $\SI{2e-4}{}$ time units. \todo{check values}
+        $\SI{2e-4}{}$ time units.
     \item Downsample the final state to the resolution of the coarse model
         and save the result.
     \item Reset the solver and return to \cref{itm:coarse_grain_input} to
         coarse-grain the next high-resolution snapshot.
 \end{enumerate}
 
-Figure \todo{figure comparing coarse-graining methods} demonstrates that
-the improved coarse-graining method produces smooth results that are
-well-resolved on the coarse grid, in contrast to first-order conservative
-remapping.
+\cref{fig:coarse_graining_example} compares the results of the improved
+coarse-graining method and first-order conservative regridding for the
+temperature field. Close inspection of the figure shows that the improved
+coarse-graining method produces smooth results that are well-resolved on the
+coarse grid, in contrast to first-order conservative remapping.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/coarse_graining_example.pdf}
+    \caption{
+        \textbf{(a)} A snapshot of the temperature field in a simulation with
+        $2048 \times 256$ resolution; \textbf{(b)} the field in (a) after
+        first-order conservative regridding to $256 \times 64$ (poorly
+        resolved on the coarse grid); \textbf{(c)} the field in (a) after
+        coarse-graining to $256 \times 64$ using the method in the text
+        (smooth and well-resolved on the coarse grid).
+    }
+    \label{fig:coarse_graining_example}
+\end{figure}
 
 
 \section{Analysis of subgrid tendencies}
+In this section, I will analyse the subgrid tendency data by plotting joint
+histograms of subgrid tendencies (the predictands) against coarse state
+variables and other quantities derived from the coarse state variables (the
+predictors). At each time step, predictor and predictand fields were sampled
+using linear interpolation at $256 \times 64 = 16384$ random, uniformly
+distributed points in the domain\footnote{It is necessary to randomly sample
+the fields in this way, rather than using the raw gridded data, to remove
+artefacts that appear in the histograms when large groups of sampling points
+share the exact same vertical position $z$.}.
+
+The obvious first step is to plot joint histograms for the subgrid tendencies
+of $u$, $w$ and $\theta$ against the values of $u$, $w$ and $\theta$
+themselves. \cref{fig:subgrid_vs_vars} shows all $3 \times 3 = 9$ possible
+histograms, as well as the marginal distributions. There are no immediately
+obvious correlations; each joint distribution appears similar to the product of
+its corresponding marginal distributions. This finding contrasts with the
+well-known results for the Lorenz '96 model that were discussed in
+\cref{l96-chap:lorenz96}. While \cref{l96-fig:wilks2005_regression} showed that
+the subgrid tendencies of Lorenz '96 can, to a large extent, be be predicted
+directly from the values of the resolved variables, the problem is evidently
+more complex for \rb{} convection.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/subgrid_vs_vars.pdf}
+    \caption{
+        Joint histograms of the $u$, $w$ and $\theta$ subgrid tendencies
+        against the values of $u$, $w$ and $\theta$ themselves (main 3-by-3
+        grid of pseudocolour plots); and marginal distributions (top row and
+        right column). Note that the joint histograms use a logarithmic
+        colour scale; smoothed contours (black) are plotted at constant
+        intervals in log-space.
+    }
+    \label{fig:subgrid_vs_vars}
+\end{figure}
+
+Take note, however, of the unusual shape of the joint distribution of the
+$\theta$ subgrid tendency against $w$ (bottom row, second from left in
+\cref{fig:subgrid_vs_vars}). It does not appear to be a simple product of the
+marginal distributions, instead having a slanted linear feature near $w=0$.
+The origin of this feature is revealed by conditioning on the vertical
+coordinate $z$ (or, in other words, using $z$ as a second predictor in
+addition to $w$). I achieve this by plotting, in \cref{fig:theta_vs_w},
+a series of joint histograms, each one using samples from a different
+horizontal slice of the domain.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/theta_vs_w.pdf}
+    \caption{
+        F
+    }
+    \label{fig:theta_vs_w}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/theta_vs_dudx.pdf}
+    \caption{
+        F
+    }
+    \label{fig:theta_vs_dudx}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/u_vs_dudz.pdf}
+    \caption{
+        F
+    }
+    \label{fig:u_vs_dudz}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/w_vs_dudx.pdf}
+    \caption{
+        F
+    }
+    \label{fig:w_vs_dudx}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/theta_subgrid_vs_pred_tend.pdf}
+    \caption{
+        F
+    }
+    \label{fig:theta_subgrid_vs_pred_tend}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/u_subgrid_vs_pred_tend.pdf}
+    \caption{
+        F
+    }
+    \label{fig:u_subgrid_vs_pred_tend}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/w_subgrid_vs_pred_tend.pdf}
+    \caption{
+        F
+    }
+    \label{fig:w_subgrid_vs_pred_tend}
+\end{figure}
 
 
 \section{Modelling of subgrid tendencies}
