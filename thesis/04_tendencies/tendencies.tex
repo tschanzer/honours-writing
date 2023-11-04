@@ -33,6 +33,7 @@
 }
 
 \todo{introductory paragraph: why am I doing this?}
+\todo{mention Alieva paper more}
 
 In \cref{rb-chap:rayleigh_benard} I investigated the resolution dependence
 of several metrics in order to choose the resolutions of the fine ``truth''
@@ -176,18 +177,18 @@ fine model. This gave rise to two constraints on the coarse-graining method:
 During the development of this study, before the above requirements were known,
 coarse-graining was performed by averaging the fine grid points that lay within
 each coarse grid box (a method known within the Earth sciences as
-\emph{first-order conservative remapping} because it preserves mean values; see
-\cite{jones1999}). \cref{fig:coarse_graining_example}, illustrating the
-application of first-order conservative remapping to sample temperature data,
-demonstrates that the result is not very well-resolved on the coarse grid; in
-many places, adjacent grid points have sharp differences in temperature.
-First-order conservative remapping is also not guaranteed to preserve boundary
-values or the divergence-free nature of the velocity field. Consequently, the
-tendencies obtained from the coarse model in \cref{itm:pred_tend} of the
-workflow suffered from noise and numerical artefacts that propagated to the
-subgrid tendencies in \cref{itm:subgrid_tend}. With the signal of interest
-obscured, it was impossible to model the subgrid tendencies as functions of the
-coarse state.
+\emph{first-order conservative remapping} or \emph{regridding} because it
+preserves mean values; see \cite{jones1999}).
+\cref{fig:coarse_graining_example}, illustrating the application of first-order
+conservative regridding to sample temperature data, demonstrates that the
+result is not very well-resolved on the coarse grid; in many places, adjacent
+grid points have sharp differences in temperature. First-order conservative
+regridding is also not guaranteed to preserve boundary values or the
+divergence-free nature of the velocity field. Consequently, the tendencies
+obtained from the coarse model in \cref{itm:pred_tend} of the workflow suffered
+from noise and numerical artefacts that propagated to the subgrid tendencies in
+\cref{itm:subgrid_tend}. With the signal of interest obscured, it was
+impossible to model the subgrid tendencies as functions of the coarse state.
 
 It was evident that the coarse-graining method needed to involve a smoothing
 operation of some kind. However, most conventional smoothing methods, such as
@@ -254,7 +255,7 @@ coefficient space. To summarise, the coarse-graining workflow is as follows:
 coarse-graining method and first-order conservative regridding for the
 temperature field. Close inspection of the figure shows that the improved
 coarse-graining method produces smooth results that are well-resolved on the
-coarse grid, in contrast to first-order conservative remapping.
+coarse grid, in contrast to first-order conservative regridding.
 
 \begin{figure}[ht]
     \centering
@@ -271,7 +272,7 @@ coarse grid, in contrast to first-order conservative remapping.
 \end{figure}
 
 
-\section{Analysis of subgrid tendencies}
+\section{Analysis of subgrid tendencies} \label{sec:subgrid_analysis}
 In this section, I will analyse the subgrid tendency data by plotting joint
 histograms of subgrid tendencies (the predictands) against coarse state
 variables and other quantities derived from the coarse state variables (the
@@ -311,78 +312,222 @@ more complex for \rb{} convection.
 Take note, however, of the unusual shape of the joint distribution of the
 $\theta$ subgrid tendency against $w$ (bottom row, second from left in
 \cref{fig:subgrid_vs_vars}). It does not appear to be a simple product of the
-marginal distributions, instead having a slanted linear feature near $w=0$.
-The origin of this feature is revealed by conditioning on the vertical
-coordinate $z$ (or, in other words, using $z$ as a second predictor in
-addition to $w$). I achieve this by plotting, in \cref{fig:theta_vs_w},
-a series of joint histograms, each one using samples from a different
-horizontal slice of the domain.
+marginal distributions, instead having a slanted linear feature near $w=0$. The
+origin of this feature is revealed by conditioning on the vertical coordinate
+$z$ (or, in other words, using $z$ as a second predictor in addition to $w$). I
+achieve this by plotting, in \cref{fig:theta_vs_w}, a series of joint
+histograms, each one using samples from a different horizontal slice of the
+domain. When sampling is restricted to $z \in [0.0, 0.1]$ or $z \in [0.9,
+1.0]$, a negative correlation is revealed. This means that the coarse model
+tends to overestimate the rate of temperature change when the vertical velocity
+is positive (requiring a negative subgrid tendency correction) and
+underestimate it when the vertical velocity is negative (requiring a positive
+correction). This correlation is not present in the middle of the domain,
+indicating that the slanted feature in the original hisogram originates in the
+boundary layers.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/theta_vs_w.pdf}
+    \includegraphics[width=0.9\linewidth]{figures/theta_vs_w.pdf}
     \caption{
-        F
+        Joint histograms of the $\theta$ subgrid tendency against $w$,
+        conditioned on $z$. The top left panel shows the unconditioned
+        histogram from \cref{fig:subgrid_vs_vars}; the others only use samples
+        from certain horizontal slices of the domain, as indicated by their
+        titles.
     }
     \label{fig:theta_vs_w}
 \end{figure}
 
+Another option is to use the derivatives of $u$, $w$ and $\theta$ (computed
+using finite differences) as predictors.
+\crefrange{fig:theta_vs_dudx}{fig:w_vs_dudx} show similar conditional joint
+histograms for three of the possible pairings, namely $\theta$ subgrid tendency
+against $\partial u/\partial x$, $u$ subgrid tendency against $\partial
+u/\partial z$ and $w$ subgrid tendency against $\partial u/\partial x$. These
+also reveal correlations that only exist near the top and bottom of the domain;
+interestingly, there is a markedly nonlinear correlation for the last pair.
+Overall, it is unsurprising that the subgrid tendency statistics are
+position-dependent, since the system lacks a vertical translation symmetry.
+This is another point of contrast with the Lorenz '96 system (see
+\cref{l96-chap:lorenz96}).
+
+Another observation from \cref{fig:theta_vs_w,fig:theta_vs_dudx,fig:u_vs_dudz}
+is that the subgrid tendencies of $u$ and $\theta$ both have noticeably larger
+variances near the top and bottom of the domain than in the middle. In other
+words, the coarse model tends to suffer from larger errors in the near-wall
+regions, suggesting that parametrisation may play a more important role in
+these places. This supports the findings of \textcite{stevens2010}, who (as
+discussed in \cref{rb-sec:metrics}) reported insufficient thermal dissipation
+near the side walls in under-resolved simulations of \rb{} convection in a
+cylindrical cavity. My result is also reminiscent of recent work by
+\textcite{alieva2023}, who, in developing machine-learning-augmented \rb{}
+simulations, found that best greater accuracy was achieved when the ML
+correction was only applied in the near-wall regions.
+
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/theta_vs_dudx.pdf}
+    \includegraphics[width=0.9\linewidth]{figures/theta_vs_dudx.pdf}
     \caption{
-        F
+        The equivalent of \cref{fig:theta_vs_w} for the $\theta$ subgrid
+        tendency against $\partial u/\partial x$ (which is equal to
+        $-\partial w/\partial z$ due to incompressibility).
     }
     \label{fig:theta_vs_dudx}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/u_vs_dudz.pdf}
+    \includegraphics[width=0.9\linewidth]{figures/u_vs_dudz.pdf}
     \caption{
-        F
+        The equivalent of \cref{fig:theta_vs_w} for the $u$ subgrid
+        tendency against $\partial u/\partial z$.
     }
     \label{fig:u_vs_dudz}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/w_vs_dudx.pdf}
+    \includegraphics[width=0.9\linewidth]{figures/w_vs_dudx.pdf}
     \caption{
-        F
+        The equivalent of \cref{fig:theta_vs_w} for the $w$ subgrid
+        tendency against $\partial u/\partial x$ (which is equal to
+        $-\partial w/\partial z$ due to incompressibility).
     }
     \label{fig:w_vs_dudx}
 \end{figure}
 
+\clearpage
+Yet another possibility is to use the coarse model's predicted
+\emph{tendencies} (calculated in \cref{itm:pred_tend} of
+\cref{sec:calculation}) as predictors for the subgrid tendencies. After all,
+the tendencies are functions---given by the governing equations
+\crefrange{rb-eqn:hyper_momentum}{rb-eqn:hyper_incompressible}---of $u$, $w$,
+$\theta$ and their derivatives. I again generate joint histograms, conditioned
+on $z$, for each variable's subgrid tendency against its predicted tendency;
+these are shown in
+\crefrange{fig:theta_subgrid_vs_pred_tend}{fig:w_subgrid_vs_pred_tend}. For all
+three variables, a negative linear correlation appears in the near-wall
+regions; furthermore, the distributions in these regions appear to lie roughly
+along a line with slope $-1$. This is an interesting and unexpected result
+because it indicates that the magnitudes of the coarse model's predicted
+tendencies systematically exceed the magnitudes of the true tendencies, calling
+for subgrid corrections that almost completely cancel the predictions.
+Interestingly, there appears to be a slight \emph{positive} correlation in the
+middle of the domain for $u$ (\cref{fig:u_subgrid_vs_pred_tend}d) and $w$
+(\cref{fig:w_subgrid_vs_pred_tend}d), indicating that the coarse model is
+underestimating the magnitudes of the tendencies in this region.
+
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/theta_subgrid_vs_pred_tend.pdf}
+    \includegraphics[width=0.95\linewidth]{figures/theta_subgrid_vs_pred_tend.pdf}
     \caption{
-        F
+        The equivalent of \cref{fig:theta_vs_w} for the $\theta$ subgrid
+        tendency against the $\theta$ tendency predicted by the coarse model.
     }
     \label{fig:theta_subgrid_vs_pred_tend}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/u_subgrid_vs_pred_tend.pdf}
+    \includegraphics[width=0.95\linewidth]{figures/u_subgrid_vs_pred_tend.pdf}
     \caption{
-        F
+        The equivalent of \cref{fig:theta_vs_w} for the $u$ subgrid
+        tendency against the $u$ tendency predicted by the coarse model.
     }
     \label{fig:u_subgrid_vs_pred_tend}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{figures/w_subgrid_vs_pred_tend.pdf}
+    \includegraphics[width=0.95\linewidth]{figures/w_subgrid_vs_pred_tend.pdf}
     \caption{
-        F
+        The equivalent of \cref{fig:theta_vs_w} for the $u$ subgrid
+        tendency against the $u$ tendency predicted by the coarse model.
     }
     \label{fig:w_subgrid_vs_pred_tend}
 \end{figure}
 
 
 \section{Modelling of subgrid tendencies}
+In \cref{sec:subgrid_analysis} I demonstrated several correlations that could
+be exploited to construct a parametrisation scheme for modelling the subgrid
+tendencies as functions of the coarse state variables. I choose to use the
+relationship between subgrid tendencies and predicted tendencies, as it admits
+a particularly simple parametrisation.
+
+Observing that the subgrid tendencies (which I now denote by
+$\mathcal{S}_\chi$, where $\chi = u, w, \theta$) are linearly correlated with
+the predicted tendencies (denoted by $\mathcal{P}_\chi$) for any given $z$, I
+propose a statistical model of the form
+\begin{equation} \label{eqn:scheme}
+    \mathcal{S}_\chi =  f_\chi(z)\,\mathcal{P}_\chi.
+\end{equation}
+The function $f_\chi(z)$ determines the slope of the linear relationship at
+height $z$. \cref{eqn:scheme} is an attractive choice because it can be easily
+coupled into the coarse model as a parametrisation scheme. To the right hand
+side of the unparametrised coarse model equations $\partial \chi/\partial t =
+\mathcal{P}_\chi,$ one simply adds the model for the subgrid tendencies,
+meaning that the equations for the parametrised model are simply
+\begin{equation} \label{eqn:res_tend_parametrised_model}
+    \pdiff{\chi}{t} = \mathcal{P}_\chi + \mathcal{S}_\chi
+        = [1 + f_\chi(z)] \mathcal{P}_\chi.
+\end{equation}
+
+It remains to determine $f_\chi(z)$. The conditional distributions in
+\crefrange{fig:theta_subgrid_vs_pred_tend}{fig:w_subgrid_vs_pred_tend}
+seem to be symmetric about $z=1/2$ (i.e., the histograms for $z \in [0, 0.05]$
+and $z \in [0.1, 0.15]$ look very similar to those for $z \in [0.95, 1]$ and $z
+\in [0.85, 0.9]$ respectively), so I assume that $f_\chi(z)$ is a polynomial
+containing only even powers of $(z - 1/2)$. The statistical model
+\cref{eqn:scheme} can then be expanded out as
+\begin{equation} \label{eqn:scheme_poly}
+    \mathcal{S}_\chi =
+        \beta_0 \mathcal{P}_\chi + \beta_1 (z - 1/2)^2 \mathcal{P}_\chi
+        + \beta_2 (z - 1/2)^4 \mathcal{P}_\chi + \cdots
+        + \beta_N (z - 1/2)^{2N} \mathcal{P}_\chi,
+\end{equation}
+where $\beta_i$ are free parameters and $N$ determines the degree of the
+polynomial. Because the model is linear in the $\beta_i$, it can be
+efficiently fitted to the training data using ordinary least squares (OLS).
+
+OLS fitting was performed using the \texttt{statsmodels} package in Python. A
+choice of $N = 10$ for \cref{eqn:scheme_poly} was found to produce the best
+fit. On top of each conditional histogram in
+\crefrange{fig:theta_subgrid_vs_pred_tend}{fig:w_subgrid_vs_pred_tend}
+I have plotted the line $\mathcal{S}_\chi =  f_\chi(z)\,\mathcal{P}_\chi$,
+where $f_\chi$ is evaluated at the middle of the $z$ interval used for
+conditioning. \cref{tab:r_squared} shows the coefficients of determination
+$R^2$ for each variable. With $R^2 = 0.769$, the subgrid tendency of $\theta$
+is captured fairly well. On the other hand, while
+\cref{fig:u_subgrid_vs_pred_tend,fig:w_subgrid_vs_pred_tend} show that the fits
+for $u$ and $w$ have the expected form (slope $f_\chi(z)$ close to -1 for $z$
+near 0 and 1, and close to 0 elsewhere), their low coefficients of
+determination indicate that the residuals are substantial and the use of
+\cref{eqn:scheme_poly} is unlikely to add much value (especially for $w$).
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{l l}
+    \toprule
+    Variable & $R^2$ \\
+    \midrule
+    $\theta$ & 0.769 \\
+    $u$ & 0.357 \\
+    $w$ & 0.079 \\
+    \bottomrule
+\end{tabular}
+\caption{
+    Coefficients of detrmination $R^2$ for the OLS regression of each
+    variable's subgrid tendency against its predicted tendency according to
+    \cref{eqn:scheme_poly}.
+}
+\label{tab:r_squared}
+\end{table}
+
+Thus concludes the analysis and modelling of the subgrid tendencies;
+\cref{eval-chap:evaluation} will take the next step of coupling the fitted
+parametrisation scheme into the coarse model.
 
 
 \ifSubfilesClassLoaded{%
