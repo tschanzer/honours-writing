@@ -126,10 +126,24 @@ from $t=900-150=750$ onwards.
     \label{fig:2048x256_spin_up}
 \end{figure}
 
+\subsection{Parametrised model spin-up time} \label{sec:parametrised_spinup}
+The parametrised model described in \cref{eval-chap:evaluation} was very slow
+to reach a statistically steady state. \cref{fig:parametrised_spin_up} performs
+the same rolling mean analysis as above with a 250 time unit window;
+I determine that 800 time units are required.
 
-% \section{Averaging time} \label{sec:averaging_time}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/parametrised_spin_up.pdf}
+    \caption{
+        Similar to \cref{fig:1024x128_spin_up}, for the parametrised
+        $256 \times 64$ simulation.
+    }
+    \label{fig:parametrised_spin_up}
+\end{figure}
 
 
+\clearpage
 \section{Training dataset snapshot frequency} \label{sec:snapshot_freq}
 When building the parametrisation training dataset for
 \cref{tend-chap:tendencies}, the amount of storage space demanded by the
