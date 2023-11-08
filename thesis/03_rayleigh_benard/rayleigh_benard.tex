@@ -3,17 +3,17 @@
 
 \ifSubfilesClassLoaded{
     \externaldocument[main-]{../main}
-    \externaldocument[fm-]{../00_front_matter/front_matter}
-    \externaldocument[intro-]{../01_introduction/introduction}
-    \externaldocument[l96-]{../02_lorenz96/lorenz96}
-    \externaldocument[tend-]{../04_tendencies/tendencies}
-    \externaldocument[eval-]{../05_evaluation/evaluation}
-    \externaldocument[conc-]{../06_conclusion/conclusion}
-    \externaldocument[app-]{../07_appendix/appendix}
-
     \setcounterref{chapter}{main-chap:rayleigh_benard}
     \addtocounter{chapter}{-1}
 }{}
+
+\externaldocument{\subfix{../00_front_matter/front_matter}}
+\externaldocument{\subfix{../01_introduction/introduction}}
+\externaldocument{\subfix{../02_lorenz96/lorenz96}}
+\externaldocument{\subfix{../04_tendencies/tendencies}}
+\externaldocument{\subfix{../05_evaluation/evaluation}}
+\externaldocument{\subfix{../06_conclusion/conclusion}}
+\externaldocument{\subfix{../07_appendix/appendix}}
 
 \begin{document}
 
@@ -213,7 +213,7 @@ deep moist convection can be as large as $\SI{e22}{}$ \parencite{chilla2012}.
 
 
 \section{Hyperdiffusion terms} \label{sec:hyper}
-In \cref{eval-chap:evaluation} I will compare the output of a parametrised
+In \cref{chap:evaluation} I will compare the output of a parametrised
 low-resolution model of \crefrange{eqn:dim_momentum}{eqn:bc_sides} to the
 output of the unparametrised base model (i.e., the control). However, it was
 found in the early stages of this work that unparametrised low-resolution
@@ -328,7 +328,7 @@ guidelines that have been established in the literature for producing
 well-resolved simulations of \rb{} convection. \cref{sec:metrics} will
 then review the metrics that are known to be sensitive to under-resolution;
 these may be used to experimentally determine appropriate resolutions for the
-fine and coarse models, and later (in \cref{eval-chap:evaluation}) to evaluate
+fine and coarse models, and later (in \cref{chap:evaluation}) to evaluate
 parametrisation performance.
 
 
@@ -494,7 +494,7 @@ I have performed a series of simulations at different resolutions using the
 numerical model described in \cref{sec:config}, using the metrics identified in
 \cref{sec:metrics} to determine appropriate resolutions for the fine and coarse
 models in the parametrisation study of
-\cref{tend-chap:tendencies,eval-chap:evaluation}. The coarsest simulation had a
+\cref{chap:tendencies,chap:evaluation}. The coarsest simulation had a
 resolution of 256 horizontal (Fourier) modes by 64 vertical (Chebyshev) modes
 and the highest 2048 by 256.
 
@@ -559,13 +559,13 @@ and their time steps.
 \end{table}
 
 The simulations with resolution $1024 \times 128$ and coarser were started from
-the initial condition described in \cref{app-sec:initial_condition} and run for
+the initial condition described in \cref{sec:initial_condition} and run for
 1000 time units. The simulations with resolution finer than $1024 \times 128$
 were initialised by interpolating the $1024 \times 128$ solution at time $t =
 650$ and run for a further 350 time units to reduce computational cost. All
 output was saved at an interval of approximately 0.2 time units. The first 750
 time units of data were discarded to ensure that all simulations had reached a
-statistically steady state (\cref{app-sec:spinup} verifies this).
+statistically steady state (\cref{sec:spinup} verifies this).
 
 For each simulation, I calculated time averages of the following quantities:
 \begin{enumerate}[a.]
@@ -620,7 +620,7 @@ Notice also that the Nusselt number (\cref{fig:resolution_dependence}a)
 and thermal boundary layer thickness (\cref{fig:resolution_dependence}b)
 have both a monotonic resolution dependence and small relative uncertainties.
 This will make them reliable metrics for evaluating parametrisation
-performance in \cref{eval-chap:evaluation}.
+performance in \cref{chap:evaluation}.
 
 \begin{figure}[ht]
     \centering

@@ -3,17 +3,17 @@
 
 \ifSubfilesClassLoaded{
   \externaldocument[main-]{../main}
-  \externaldocument[fm-]{../00_front_matter/front_matter}
-  \externaldocument[intro-]{../01_introduction/introduction}
-  \externaldocument[l96-]{../02_lorenz96/lorenz96}
-  \externaldocument[rb-]{../03_rayleigh_benard/rayleigh_benard}
-  \externaldocument[eval-]{../05_evaluation/evaluation}
-  \externaldocument[conc-]{../06_conclusion/conclusion}
-  \externaldocument[app-]{../07_appendix/appendix}
-
   \setcounterref{chapter}{main-chap:tendencies}
   \addtocounter{chapter}{-1}
 }{}
+
+\externaldocument{\subfix{../00_front_matter/front_matter}}
+\externaldocument{\subfix{../01_introduction/introduction}}
+\externaldocument{\subfix{../02_lorenz96/lorenz96}}
+\externaldocument{\subfix{../03_rayleigh_benard/rayleigh_benard}}
+\externaldocument{\subfix{../05_evaluation/evaluation}}
+\externaldocument{\subfix{../06_conclusion/conclusion}}
+\externaldocument{\subfix{../07_appendix/appendix}}
 
 \begin{document}
 
@@ -35,7 +35,7 @@
 \todo{introductory paragraph: why am I doing this?}
 \todo{mention Alieva paper more}
 
-In \cref{rb-chap:rayleigh_benard} I investigated the resolution dependence
+In \cref{chap:rayleigh_benard} I investigated the resolution dependence
 of several metrics in order to choose the resolutions of the fine ``truth''
 model and the coarse ``control'' model needed for data-driven parametrisation.
 \cref{tab:final_resolutions} shows the final choices; for the remainder
@@ -68,12 +68,12 @@ to show the order of the steps. \todo{refer to literature}
 \begin{enumerate}
     \item\label[step]{itm:fine_model} The fine model was integrated for 300
         time units, the initial condition being the end of the $2048 \times
-        256$ simulation in \cref{rb-chap:rayleigh_benard}. Every 3 time units,
+        256$ simulation in \cref{chap:rayleigh_benard}. Every 3 time units,
         the model state was saved, and then saved again one time step later.
         This resulted in a dataset of 100 pairs of snapshots separated by 3
         time units. An interval of 3 time units was chosen as it was the
         approximate decorrelation time of the model variables (see
-        \cref{app-sec:snapshot_freq}); using a shorter interval would result in
+        \cref{sec:snapshot_freq}); using a shorter interval would result in
         saving redundant information.
     \item\label[step]{itm:coarse_grain} Each pair of snapshots was
         \emph{coarse-grained}, reducing its spatial resolution to that of the
@@ -107,7 +107,7 @@ to show the order of the steps. \todo{refer to literature}
 
 The goal will be to approximate the subgrid tendencies (labelled
 ``predictand'' in \cref{fig:method}) as functions of the coarse state (labelled
-``predictor''). In \cref{eval-chap:evaluation}, I construct a new coarse model
+``predictor''). In \cref{chap:evaluation}, I construct a new coarse model
 that adds the approximate subgrid tendencies to the original predicted
 tendencies, thereby obtaining a better approximation to the true coarse
 tendency. When integrated, the new coarse model should, in principle,
@@ -168,8 +168,8 @@ fine model. This gave rise to two constraints on the coarse-graining method:
         unstable or produce output marred by artefacts if this condition is not
         met.
     \item The initial condition must respect physical constraints, namely the
-        divergence-free condition \cref{rb-eqn:incompressible} and the boundary
-        conditions \crefrange{rb-eqn:bc_bot}{rb-eqn:bc_sides}. A numerical
+        divergence-free condition \cref{eqn:incompressible} and the boundary
+        conditions \crefrange{eqn:bc_bot}{eqn:bc_sides}. A numerical
         algorithm cannot be expected to behave predictably when presented with
         unphysical initial conditions.
 \end{enumerate}
@@ -290,7 +290,7 @@ histograms, as well as the marginal distributions. There are no immediately
 obvious correlations; each joint distribution appears similar to the product of
 its corresponding marginal distributions. This finding contrasts with the
 well-known results for the Lorenz '96 model that were discussed in
-\cref{l96-chap:lorenz96}. While \cref{l96-fig:wilks2005_regression} showed that
+\cref{chap:lorenz96}. While \cref{fig:wilks2005_regression} showed that
 the subgrid tendencies of Lorenz '96 can, to a large extent, be be predicted
 directly from the values of the resolved variables, the problem is evidently
 more complex for \rb{} convection.
@@ -350,7 +350,7 @@ interestingly, there is a markedly nonlinear correlation for the last pair.
 Overall, it is unsurprising that the subgrid tendency statistics are
 position-dependent, since the system lacks a vertical translation symmetry.
 This is another point of contrast with the Lorenz '96 system (see
-\cref{l96-chap:lorenz96}).
+\cref{chap:lorenz96}).
 
 Another observation from \cref{fig:theta_vs_w,fig:theta_vs_dudx,fig:u_vs_dudz}
 is that the subgrid tendencies of $u$ and $\theta$ both have noticeably larger
@@ -358,7 +358,7 @@ variances near the top and bottom of the domain than in the middle. In other
 words, the coarse model tends to suffer from larger errors in the near-wall
 regions, suggesting that parametrisation may play a more important role in
 these places. This supports the findings of \textcite{stevens2010}, who (as
-discussed in \cref{rb-sec:metrics}) reported insufficient thermal dissipation
+discussed in \cref{sec:metrics}) reported insufficient thermal dissipation
 near the side walls in under-resolved simulations of \rb{} convection in a
 cylindrical cavity. My result is also reminiscent of recent work by
 \textcite{alieva2023}, who, in developing machine-learning-augmented \rb{}
@@ -402,7 +402,7 @@ Yet another possibility is to use the coarse model's predicted
 \emph{tendencies} (calculated in \cref{itm:pred_tend} of
 \cref{sec:calculation}) as predictors for the subgrid tendencies. After all,
 the tendencies are functions---given by the governing equations
-\crefrange{rb-eqn:hyper_momentum}{rb-eqn:hyper_incompressible}---of $u$, $w$,
+\crefrange{eqn:hyper_momentum}{eqn:hyper_incompressible}---of $u$, $w$,
 $\theta$ and their derivatives. I again generate joint histograms, conditioned
 on $z$, for each variable's subgrid tendency against its predicted tendency;
 these are shown in
@@ -526,7 +526,7 @@ determination indicate that the residuals are substantial and the use of
 \end{table}
 
 Thus concludes the analysis and modelling of the subgrid tendencies;
-\cref{eval-chap:evaluation} will take the next step of coupling the fitted
+\cref{chap:evaluation} will take the next step of coupling the fitted
 parametrisation scheme into the coarse model.
 
 

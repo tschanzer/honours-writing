@@ -3,16 +3,17 @@
 
 \ifSubfilesClassLoaded{
     \externaldocument[main-]{../main}
-    \externaldocument[fm-]{../00_front_matter/front_matter}
-    \externaldocument[l96-]{../02_lorenz96/lorenz96}
-    \externaldocument[rb-]{../03_rayleigh_benard/rayleigh_benard}
-    \externaldocument[tend-]{../04_tendencies/tendencies}
-    \externaldocument[eval-]{../05_evaluation/evaluation}
-    \externaldocument[conc-]{../06_conclusion/conclusion}
-
     \setcounterref{chapter}{main-chap:introduction}
     \addtocounter{chapter}{-1}
 }{}
+
+\externaldocument{\subfix{../00_front_matter/front_matter}}
+\externaldocument{\subfix{../02_lorenz96/lorenz96}}
+\externaldocument{\subfix{../03_rayleigh_benard/rayleigh_benard}}
+\externaldocument{\subfix{../04_tendencies/tendencies}}
+\externaldocument{\subfix{../05_evaluation/evaluation}}
+\externaldocument{\subfix{../06_conclusion/conclusion}}
+\externaldocument{\subfix{../07_appendix/appendix}}
 
 \begin{document}
 
@@ -207,7 +208,7 @@ at time $t$ and not earlier times (that is to say, the parametrisation is
 \emph{memoryless}). Recent research has shown that relaxing these assumptions
 has the potential to greatly improve the accuracy and reliability of the
 parametrised model, and this will be discussed in detail in
-\cref{sec:novel,l96-chap:lorenz96}. However, for the purpose of this basic
+\cref{sec:novel,chap:lorenz96}. However, for the purpose of this basic
 introduction, I will temporarily follow the traditional approach and retain
 these assumptions.
 
@@ -405,7 +406,7 @@ direction, developing data-driven parametrisations that learn to predict the
 tendencies empirically. This section will introduce the stochastic and
 data-driven approaches in general terms while omitting the technical details of
 individual implementations, the aim being to contextualise and motivate the
-study of these approaches in more idealised frameworks in \cref{l96-chap:lorenz96}.
+study of these approaches in more idealised frameworks in \cref{chap:lorenz96}.
 Other methods (such as superparametrisation) exist but are beyond the scope of
 this review.
 

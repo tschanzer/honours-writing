@@ -3,17 +3,17 @@
 
 \ifSubfilesClassLoaded{
   \externaldocument[main-]{../main}
-  \externaldocument[fm-]{../00_front_matter/front_matter}
-  \externaldocument[intro-]{../01_introduction/introduction}
-  \externaldocument[l96-]{../02_lorenz96/lorenz96}
-  \externaldocument[rb-]{../03_rayleigh_benard/rayleigh_benard}
-  \externaldocument[tend-]{../04_tendencies/tendencies}
-  \externaldocument[conc-]{../06_conclusion/conclusion}
-  \externaldocument[app-]{../07_appendix/appendix}
-
   \setcounterref{chapter}{main-chap:evaluation}
   \addtocounter{chapter}{-1}
 }{}
+
+\externaldocument{\subfix{../00_front_matter/front_matter}}
+\externaldocument{\subfix{../01_introduction/introduction}}
+\externaldocument{\subfix{../02_lorenz96/lorenz96}}
+\externaldocument{\subfix{../03_rayleigh_benard/rayleigh_benard}}
+\externaldocument{\subfix{../04_tendencies/tendencies}}
+\externaldocument{\subfix{../06_conclusion/conclusion}}
+\externaldocument{\subfix{../07_appendix/appendix}}
 
 \begin{document}
 
@@ -23,7 +23,7 @@
     \mainmatter
 }{}
 
-\chapter{Assessment of the parametrised model} \label{chap:evaluation}
+\chapter{Online assessment of the parametrised model} \label{chap:evaluation}
 \setlength{\epigraphwidth}{0.5\linewidth}
 \epigraphhead[0.1\textheight]{
     \epigraph{
@@ -34,20 +34,20 @@
     }
 }
 
-In \cref{tend-chap:tendencies}, I analysed the subgrid tendencies and
-constructed a statistical model \cref{tend-eqn:scheme_poly} to estimate
+In \cref{chap:tendencies}, I analysed the subgrid tendencies and
+constructed a statistical model \cref{eqn:scheme_poly} to estimate
 them from the coarse model tendencies. In this chapter, I will assess
 the performance of the parametrised model obtained by coupling the
 statistical model into the coarse \rb{} model.
 
 First, a ``truth'' solution was obtained by running the fine (i.e., $2048
-\times 256$; see \cref{tend-tab:final_resolutions}) model for 300 time units,
+\times 256$; see \cref{tab:final_resolutions}) model for 300 time units,
 saving the output at intervals of 0.2 time units. The last snapshot from the
-fine model simulation described in \cref{tend-sec:calculation}
-(\cref{tend-itm:fine_model}) was used as the initial condition, thus keeping
+fine model simulation described in \cref{sec:calculation}
+(\cref{itm:fine_model}) was used as the initial condition, thus keeping
 the data used to test the parametrisation separate from the data used to fit
 it. Every snapshot in the truth dataset was then coarse-grained using the
-method described in \cref{tend-sec:coarse_graining}; the aim is for the
+method described in \cref{sec:coarse_graining}; the aim is for the
 parametrised model to approximate this coarse-grained truth solution as closely
 as possible.
 
@@ -57,7 +57,7 @@ solution as an initial condition. Output was saved at approximately the
 same interval of 0.2 time units.
 
 The equations governing the parametrised model, given schematically by
-\cref{tend-eqn:res_tend_parametrised_model}, can be written out explicitly as
+\cref{eqn:res_tend_parametrised_model}, can be written out explicitly as
 \begin{align*}
     \pdiff{\vec{u}}{t} &=
         \begin{pmatrix}
@@ -86,14 +86,14 @@ The equations governing the parametrised model, given schematically by
     \grad \cdot \vec{u} &= 0,
 \end{align*}
 where the terms in red distinguish these modified equations from the originals
-\crefrange{rb-eqn:hyper_momentum}{rb-eqn:hyper_incompressible}. The
+\crefrange{eqn:hyper_momentum}{eqn:hyper_incompressible}. The
 parametrised model was run with the same resolution, time step, initial
 condition and output interval as the control.
 
 Unfortunately, when the parametrised model was run with the $f_\theta$,
-$f_u$ and $f_w$ that were fitted in \cref{tend-sec:subgrid_modelling}, it
+$f_u$ and $f_w$ that were fitted in \cref{sec:subgrid_modelling}, it
 became unstable and crashed within 10 time units. Given the low coefficients
-of determination for the $u$ and $w$ fits (\cref{tend-tab:r_squared}), I
+of determination for the $u$ and $w$ fits (\cref{tab:r_squared}), I
 chose to set $f_u(z) = f_w(z) \equiv 0$---that is, to only parametrise the
 $\theta$ tendency and leave the momentum equation unmodified. This stabilised
 the model.
@@ -147,7 +147,7 @@ error.
 
 Another way to assess short-term accuracy is to calculate domain-averaged
 quantities for the parametrised, control and truth solutions and compare them
-over time. As in \cref{rb-sec:choose_resolution}, I consider the Nusselt number
+over time. As in \cref{sec:choose_resolution}, I consider the Nusselt number
 $\nusselt$, thermal boundary layer thickness $\delta_\theta$, RMS speed
 $u_\mathrm{rms}$, kinetic energy dissipation rate $\epsilon_k$ and thermal
 dissipation rate $\epsilon_\theta$, plotting their time series in
@@ -182,7 +182,7 @@ sufficiently short (on the order of a few time units)---a promising result.
 I next consider the long-term mean properties of the parametrised model once it
 is allowed to reach a statistically steady state. This required 1100 time units
 of simulation, with the first 800 time units of data being discarded (see
-\cref{app-sec:parametrised_spinup}). For consistency, the control solution was
+\cref{sec:parametrised_spinup}). For consistency, the control solution was
 also extended to 1100 time units. The fine model did not require further
 spin-up, having been initialised in a statistically steady state.
 
@@ -209,7 +209,7 @@ coarse-grained truth, which it is supposed to represent.
 \end{figure}
 
 The core issue is the smoothing involved in the coarse-graining operation. On
-the one hand, I explained in \cref{tend-sec:coarse_graining} that insufficient
+the one hand, I explained in \cref{sec:coarse_graining} that insufficient
 smoothing causes artefacts that mask the subgrid tendency signal, making it
 more difficult to model the subgrid tendencies. On the other hand,
 \cref{fig:steady_state_vis} shows that the natural state of the coarse model is
@@ -223,13 +223,13 @@ problem. Such a scheme might contain a diffusion term to further smooth
 the coarse solution.
 
 Despite the above issues, I proceed to perform a similar analysis to
-\cref{rb-sec:choose_resolution}, calculating the time averages of $\nusselt$,
+\cref{sec:choose_resolution}, calculating the time averages of $\nusselt$,
 $\delta_\theta$, $u_\mathrm{rms}$, $\epsilon_k$ and $\epsilon_\theta$ over 300
 time units for the coarse-grained truth, control and parametrised solutions. I
 stress that the high-resolution truth solution was first coarse-grained before
 the metrics were calculated. Uncertainties were estimated using the same method
-of running means \cref{rb-eqn:running_mean} and rolling means
-\cref{rb-eqn:rolling_mean} with a 150-time-unit window.
+of running means \cref{eqn:running_mean} and rolling means
+\cref{eqn:rolling_mean} with a 150-time-unit window.
 
 \cref{fig:stats} shows that parametrisation has resulted in a statistically
 significant improvement across all five metrics, approximately halving the

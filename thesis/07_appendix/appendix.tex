@@ -1,15 +1,13 @@
 \providecommand{\topdir}{..}
 \documentclass[../main.tex]{subfiles}
 
-\ifSubfilesClassLoaded{
-  \externaldocument[fm-]{../00_front_matter/front_matter}
-  \externaldocument[intro-]{../01_introduction/introduction}
-  \externaldocument[l96-]{../02_lorenz96/lorenz96}
-  \externaldocument[rb-]{../03_rayleigh_benard/rayleigh_benard}
-  \externaldocument[tend-]{../04_tendencies/tendencies}
-  \externaldocument[eval-]{../05_evaluation/evaluation}
-  \externaldocument[conc-]{../06_conclusion/conclusion}
-}{}
+\externaldocument{\subfix{../00_front_matter/front_matter}}
+\externaldocument{\subfix{../01_introduction/introduction}}
+\externaldocument{\subfix{../02_lorenz96/lorenz96}}
+\externaldocument{\subfix{../03_rayleigh_benard/rayleigh_benard}}
+\externaldocument{\subfix{../04_tendencies/tendencies}}
+\externaldocument{\subfix{../05_evaluation/evaluation}}
+\externaldocument{\subfix{../06_conclusion/conclusion}}
 
 \begin{document}
 
@@ -82,8 +80,8 @@ steady state (to ``spin'' them up) in order to accurately calculate long-term
 statistics. To that end, I have calculated the 250-time-unit rolling means of
 the Nusselt number, thermal boundary layer thickness, RMS speed, kinetic energy
 dissipation rate and thermal dissipation rate (see
-\cref{rb-sec:choose_resolution} for the definitions) using the data from the
-$1024 \times 128$ simulation described in \cref{rb-sec:choose_resolution}.
+\cref{sec:choose_resolution} for the definitions) using the data from the
+$1024 \times 128$ simulation described in \cref{sec:choose_resolution}.
 These are plotted in \cref{fig:1024x128_spin_up}. The RMS speed and kinetic
 energy dissipation rate take longer than the other variables to reach a steady
 state and exhibit larger low-frequency oscillations. Nonetheless, I determine
@@ -97,7 +95,7 @@ that the simulation has reached a sufficiently steady state at $t = 750$.
         boundary layer thickness $\delta_\theta$, RMS speed $u_\mathrm{rms}$,
         kinetic energy dissipation rate $\epsilon_k$ and thermal dissipation
         rate $\epsilon_\theta$ for the $1024 \times 128$ simulation described
-        in \cref{rb-sec:choose_resolution}. The horizontal coordinate is the
+        in \cref{sec:choose_resolution}. The horizontal coordinate is the
         position of the \emph{right} edge of the rolling window. Each quantity
         is expressed as a percentage deviation relative to its value when
         the right edge of the window is at $t=1000$.
@@ -105,7 +103,7 @@ that the simulation has reached a sufficiently steady state at $t = 750$.
     \label{fig:1024x128_spin_up}
 \end{figure}
 
-In the resolution-dependence experiment of \cref{rb-sec:choose_resolution}, the
+In the resolution-dependence experiment of \cref{sec:choose_resolution}, the
 simulations with resolution higher than $1024 \times 128$ were initialised by
 interpolating the $1024 \times 128$ solution at time $t = 650$. These also
 needed to reach a statistically steady state. \cref{fig:2048x256_spin_up} shows
@@ -127,7 +125,7 @@ from $t=900-150=750$ onwards.
 \end{figure}
 
 \subsection{Parametrised model spin-up time} \label{sec:parametrised_spinup}
-The parametrised model described in \cref{eval-chap:evaluation} was very slow
+The parametrised model described in \cref{chap:evaluation} was very slow
 to reach a statistically steady state. \cref{fig:parametrised_spin_up} performs
 the same rolling mean analysis as above with a 250 time unit window;
 I determine that 800 time units are required.
@@ -146,15 +144,15 @@ I determine that 800 time units are required.
 \clearpage
 \section{Training dataset snapshot frequency} \label{sec:snapshot_freq}
 When building the parametrisation training dataset for
-\cref{tend-chap:tendencies}, the amount of storage space demanded by the
+\cref{chap:tendencies}, the amount of storage space demanded by the
 high-resolution model output made it desirable to avoid saving redundant
 information. Saving the model state every time step or every 0.2 time units
-(as in \cref{rb-sec:choose_resolution}) would waste space and reduce the
+(as in \cref{sec:choose_resolution}) would waste space and reduce the
 diversity of the training dataset, because the state exhibits substantial
 autocorrelation at these intervals. \cref{fig:autocorr} shows the
 spatially averaged temporal autocorrelation functions of $u$, $w$ and $\theta$,
 computed for the $1024 \times 128$ simulation that is described in
-\cref{rb-sec:choose_resolution} (again discarding the first 750 time units of
+\cref{sec:choose_resolution} (again discarding the first 750 time units of
 data for spin-up). Observing that all three variables reach the first
 correlation minimum at a lag of approximately 3 time units, I choose to
 save the model output at this interval.
@@ -165,7 +163,7 @@ save the model output at this interval.
     \caption{
         Spatially averaged autocorrelation functions of the three prognostic
         variables in the $1024 \times 128$ simulation that is described in
-        \cref{rb-sec:choose_resolution}.
+        \cref{sec:choose_resolution}.
     }
     \label{fig:autocorr}
 \end{figure}

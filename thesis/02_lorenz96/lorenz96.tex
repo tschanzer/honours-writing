@@ -3,16 +3,17 @@
 
 \ifSubfilesClassLoaded{
     \externaldocument[main-]{../main}
-    \externaldocument[fm-]{../00_front_matter/front_matter}
-    \externaldocument[intro-]{../01_introduction/introduction}
-    \externaldocument[rb-]{../03_rayleigh_benard/rayleigh_benard}
-    \externaldocument[tend-]{../04_tendencies/tendencies}
-    \externaldocument[eval-]{../05_evaluation/evaluation}
-    \externaldocument[conc-]{../06_conclusion/conclusion}
-
     \setcounterref{chapter}{main-chap:lorenz96}
     \addtocounter{chapter}{-1}
 }{}
+
+\externaldocument{\subfix{../00_front_matter/front_matter}}
+\externaldocument{\subfix{../01_introduction/introduction}}
+\externaldocument{\subfix{../03_rayleigh_benard/rayleigh_benard}}
+\externaldocument{\subfix{../04_tendencies/tendencies}}
+\externaldocument{\subfix{../05_evaluation/evaluation}}
+\externaldocument{\subfix{../06_conclusion/conclusion}}
+\externaldocument{\subfix{../07_appendix/appendix}}
 
 \begin{document}
 
@@ -38,7 +39,7 @@ climate models. The simplicity of these systems also helps to ensure the
 reproducibility of the results obtained. This section will review the progress
 that has been made using simple analogue systems and argue that, considering
 the outstanding issues identified in
-\cref{intro-sec:prac_background,intro-sec:novel}, further research using these
+\cref{sec:prac_background,sec:novel}, further research using these
 systems may yet be warranted. The relevant techniques for constructing and
 testing parametrisation schemes in simple model frameworks, and the remaining
 open questions, will be discussed in order to inform future research.
@@ -90,7 +91,7 @@ subsystems and $F$ the constant forcing applied to each $X$ variable.
     \label{fig:L96_diagram}
 \end{figure}
 
-As discussed in \cref{intro-sec:math}, the objective is to find $P_k(X_1,
+As discussed in \cref{sec:math}, the objective is to find $P_k(X_1,
 \dots, X_K) \approx -(hc/b) \sum_{j=1}^J Y_{j,k}$ such that the solution of the
 parametrised system
 \begin{equation*}
@@ -141,7 +142,7 @@ time step, so that
     P(X) = P_\mathrm{det}(X) + e(t).
 \end{equation}
 \textcite{arnold2013} and later \textcite{christensen2015} considered the SPPT
-method (see \cref{intro-sec:stochastic}), where instead
+method (see \cref{sec:stochastic}), where instead
 \begin{equation} \label{eqn:l96_sppt}
     P(X) = [1 + e(t)] P_\mathrm{det}(X).
 \end{equation}
@@ -189,7 +190,7 @@ The model transitions from state to state according to a set of probabilities
 that depend on $X$ and are estimated from the training dataset. The latest
 studies have tested machine learning algorithms for L96, reflecting the
 increasing research interest in ML-based parametrisation schemes for GCMs (see
-\cref{intro-sec:data_driven}). \textcite{gagne2020} used generative adversarial
+\cref{sec:data_driven}). \textcite{gagne2020} used generative adversarial
 networks (GANs), which involve pairs of competing neural networks and have the
 advantage of being stochastic with no need for \emph{ad hoc} perturbations.
 \textcite{bhouri2023} used deterministic but memory-based neural networks
@@ -211,7 +212,7 @@ model and comparing the output of the parametrised model to the corresponding
 ``truth'' solution (which might be the output of a high-resolution
 unparametrised model). Online performance can further be assessed for
 short-term (``weather'') forecasts or long-term (``climate'') predictions. The
-reliability of ensemble forecasts (see \cref{intro-sec:stochastic}) must also
+reliability of ensemble forecasts (see \cref{sec:stochastic}) must also
 be determined. As we shall see, the extent to which good performance in more
 than one category is achievable is a topic of ongoing research.
 
@@ -272,7 +273,7 @@ forecast-verification pairs \parencite{crommelin2008}. Other studies
 \parencite{kwasniok2012,arnold2013} have used more complex skill scores to
 assess forecast accuracy.
 
-Recall from \cref{intro-sec:stochastic} that an ensemble forecast is said to be
+Recall from \cref{sec:stochastic} that an ensemble forecast is said to be
 reliable if the spread of the ensemble members is representative of the range
 of weather states that could possibly be realised, given the initial condition
 uncertainty and model errors. In the context of L96, there are two ways to
@@ -439,7 +440,7 @@ difference between stochastic and deterministic regression-based schemes. These
 findings are consistent with the expectation that the net effect of
 subgrid-scale processes should become increasingly unpredictable as resolution
 increases and the size of the sample of small-scale events decreases (see
-\cref{intro-sec:traditional}). This is another piece of evidence that more
+\cref{sec:traditional}). This is another piece of evidence that more
 realistic fluid models, which do not have such a clean separation between
 ``resolved'' and ``unresolved'' variables, will be more discriminating and
 allow the best approaches to show their full potential.

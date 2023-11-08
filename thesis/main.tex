@@ -17,9 +17,10 @@
     float,
     epigraph,
     refcount,
-    xr-hyper,
 }
 \usepackage[shortlabels]{enumitem}
+\usepackage{subfiles}
+\usepackage{xr-hyper}
 \usepackage[colorlinks=true, allcolors=linkcolor]{hyperref}
 \usepackage[nameinlink]{cleveref}
 \usepackage[
@@ -32,7 +33,6 @@
     giveninits=true,
     sortcites=false,
 ]{biblatex}
-\usepackage{subfiles}
 
 % bibliographic options
 \DeclareFieldFormat[article]{volume}{\mkbibbold{#1}}
@@ -125,17 +125,6 @@
     \addFileDependency{#2.aux}%
 }
 
-\ifSubfilesClassLoaded{}{
-    \externaldocument[fm-]{00_front_matter/front_matter}
-    \externaldocument[intro-]{01_introduction/introduction}
-    \externaldocument[l96-]{02_lorenz96/lorenz96}
-    \externaldocument[rb-]{03_rayleigh_benard/rayleigh_benard}
-    \externaldocument[tend-]{04_tendencies/tendencies}
-    \externaldocument[eval-]{05_evaluation/evaluation}
-    \externaldocument[conc-]{06_conclusion/conclusion}
-    \externaldocument[app-]{07_appendix/appendix}
-}
-
 \begin{document}
 
 \subfile{00_front_matter/front_matter.tex}
@@ -148,6 +137,8 @@
 
 % \backmatter
 \emergencystretch=5em
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Bibliography}
 \printbibliography{}
 
 \subfile{07_appendix/appendix.tex}
