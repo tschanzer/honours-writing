@@ -77,28 +77,6 @@ with the \rb{} system should investigate whether other types of solvers
 (finite difference/volume/element, etc.) are more suitable.
 
 
-\section{The coarse-graining problem}
-\todo{move to conclusion}
-
-The predictability of the subgrid tendencies was found to depend strongly on
-the method used to coarse-grain the high-resolution solutions, and the
-development of an an appropriate method was non-trivial. These findings
-can be justified with further discussion.
-
-The Lorenz '96 system \cref{eqn:l96} explicitly separates its degrees of
-freedom into ``coarse'' and ``fine'' variables, allowing one to unambiguously
-define a reduced model by simply truncating the fine variables from the full
-model. The corresponding ``coarse-graining'' operation is trivial: just discard
-the fine variables. For spatially continuous systems like \rb{}, however,
-standard practice is to construct high- and low-resolution models independently
-from each other by applying (possibly different) discretisation schemes to the
-governing equations. Since the low-resolution model is not, in general,
-obtained by explicitly truncating the high-resolution model, it is up to the
-modeller to choose a coarse-graining operation that maps the high-resolution
-state space to the low-resolution one. While instructive, Lorenz '96 and its
-coarse/fine paradigm are not helpful analogues in this respect.
-
-
 \section{Strategies for improving subgrid tendency prediction}
 \label{sec:improve_prediction}
 % § Alternative approaches in literature (Alieva, Gentine papers)
@@ -137,10 +115,6 @@ of the subgrid tendencies.
 
 \section{Physical explanation of subgrid tendency correlations}
 \label{sec:tendency_explanation}
-% ○ There is evidence that subgrid tendencies are still predictable from the large-scale state
-% ○ Resolved tendency correlation
-%   § Insufficient dissipation - paper
-%   § Convection causes converging moisture to rain out
 Despite the difficulties described in \cref{sec:improve_prediction}, the joint
 histograms in \cref{chap:tendencies} gave clear evidence of subgrid tendency
 predictability in the near-wall regions. In this section, I argue that
@@ -232,24 +206,97 @@ machine learning are able to reveal correlations in this region.
 
 
 \section{Unanswered questions}
-% ○ Address goals that were not achieved, how they might be addressed using tools developed here
-% § Assess value added by stochasticity and memory
-%     ○ And the way in which they are added - e.g. additive vs. multiplicative noise, spatially/temporally correlated vs. white noise
-% § Relationship between offline correlation and online performance
-% § Relationship between short-term forecast skill and long-term statistics (refer to results)
+The amount of effort this work has devoted to overcoming prerequisite issues
+has inevitably limited the scope of its experimentation with actual
+parametrisation development and assessment. The positive outcome, however, is
+that it has implemented the computational tools needed to undertake further
+research with the \rb{} system and made them publicly available for others to
+use \todo{computation section}. There are several worthwhile research
+questions that could be addressed using these tools.
 
-% refer to framework/tools
-% § Reproducibility, readability
-% § Capabilities
+The foremost goal for future work is to determine the extent to which the
+inclusion of stochasticity and/or memory in parametrisation schemes can improve
+their online performance, as well as the optimal method of inclusion. As
+discussed in \cref{chap:introduction}, these are topics of considerable
+research interest in the context of weather and climate modelling. It would be
+possible to include random forcings in a parametrisation either additively or
+multiplicatively, and one could also compare the effects of spatially and/or
+temporally correlated noise to white noise. Online performance could be
+assessed using the same methods as this work: forecast accuracy using the RMSE
+of the prognostic variables and time series of domain-averaged metrics, and
+long-term statistical accuracy using time averages of the same metrics. It
+would be insightful to also test offline performance more thoroughly, perhaps
+using the Hellinger distance to measure the agreement between the distributions
+of predicted and true tendencies (see \cref{sec:l96_offline_testing}).
+
+A second important goal is to determine each scheme's ability to generalise to
+conditions unseen in its training dataset, such as initial conditions with
+different numbers of convection cells or changes in Rayleigh number or domain
+aspect ratio. The findings could inform the development of parametrisations
+for climate models whose effectiveness is robust in warming conditions---an
+important goal of modern research.
+
+With a wider variety of statistical models for the subgrid tendencies in
+combination with a range of stochastic perturbation schemes (with different
+noise amplitudes, correlation times, etc.), it would be possible to determine
+whether schemes that perform well offline generally also perform well online,
+and whether or not their short-term forecast accuracy is correlated with their
+long-term statistical accuracy. These have been topics of for the Lorenz '96
+system (see \cref{sec:l96_open_questions}), and an extension to \rb{} could
+provide further evidence to aid the selection of parametrisation schemes for
+weather and climate models.
 
 
-\section{Conclusion} \label{sec:conclusion}
-% ○ Developed an understanding of the practical issues involved in data-driven parametrisation
-% ○ Methods from L96 do not easily generalise to real fluid models
-% ○ Successful proof of concept and concrete tools for further research
-% § Data-driven works
+\section{Conclusion}
+\label{sec:conclusion}
+Motivated by previous studies on the Lorenz '96 system and open questions in
+weather and climate modelling that call for experimentation in more realistic
+test frameworks, I have implemented a complete proof of concept for data-driven
+parametrisation in \rb{} convection. Given a high-resolution ``truth'' model of
+the flow and a low-resolution baseline model, straightforward mathematical
+arguments in \cref{chap:introduction} justified a method for calculating the
+subgrid tendency of each prognostic variable---that is, the contribution of
+small-scale processes unresolvable by the coarse model to the rate of change of
+the large-scale state that it could resolve. The method was implemented in
+\cref{chap:tendencies} and involved systematic coarse-graining of a
+high-resolution training simulation and time-stepping with the low-resolution
+model.
 
-% much to be learned
+Exploratory analysis in \cref{sec:subgrid_analysis} revealed several
+correlations between the subgrid tendencies and the large-scale state of the
+coarse model. The correlations were all strongly conditional on vertical
+position, appearing to exist only near the top and bottom boundaries of the
+domain. The most notable of these was a negative linear correlation between the
+subgrid tendency of each variable and the corresponding tendency predicted by
+the low-resolution model. A simple parametrisation scheme for predicting the
+subgrid tendencies based on this relationship was fitted to the training
+dataset and coupled into the low-resolution model to emulate the effect of the
+unresolved processes.
+
+Running online, the parametrisation scheme was found to improve the forecast
+accuracy of the coarse model, but only for short lead times. It was also found
+to improve long-term statistical accuracy, reducing the relative error of some
+metrics by as much as one half. This work therefore provides, from first
+principles, evidence that data-driven parametrisation is a viable method for
+improving the skill of low-resolution weather and climate models.
+
+The process of parametrisation development for the \rb{} problem highlighted
+subtle technical obstacles that do not apply to simpler systems such as Lorenz
+'96. Firstly, coarse models were prone to numerical instability, necessitating
+a hyperdiffusive modification of the governing equations. Secondly, the
+predictability of the subgrid tendencies was found to depend strongly on the
+method used to coarse-grain the high-resolution solutions, and the development
+of an an appropriate method was non-trivial. The understanding of these issues
+and the development of computational tools to address them is a second major
+outcome of this work.
+
+Future work will be able to use and extend the tools established here to
+perform further parametrisation experiments, addressing important
+unanswered questions that relate to parametrisation in real weather and climate
+models. Although it remains an idealised system, \rb{} convection has proven to
+be a highly instructive test problem and there are no doubt many more lessons
+to be learnt from it in the future.
+
 
 \ifSubfilesClassLoaded{%
     \emergencystretch=5em
