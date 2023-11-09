@@ -1,5 +1,7 @@
 \documentclass[../main.tex]{subfiles}
 
+\externaldocument{\subfix{../07_appendix/appendix}}
+
 \begin{document}
 
 \frontmatter
@@ -7,7 +9,8 @@
 \vspace*{\fill}
 \begin{center}
     {\Huge \textbf{%
-        Thesis title
+        A proof of concept for data-driven parametrisation in
+        \rb{} convection
     }} \\
     \vspace{1.5cm}
     {\Large\textbf{Thomas D. Schanzer}} \\
@@ -48,7 +51,6 @@
     others in the project's design and conception or in style, presentation
     and linguistic expression is acknowledged.
 
-    \todo{detailed information}
     \begin{flushright}
         Thomas D. Schanzer \\ 10 November 2023
     \end{flushright}
@@ -56,10 +58,24 @@
 \end{center}
 \vspace{1cm}
 \begin{center}
+{\textbf{Author contribution statement}}
+
+\begin{minipage}{0.7\linewidth}
+    I have produced all code, simulations, analysis and writing associated with
+    this thesis from scratch, with no assistance from others except general
+    guidance from Prof. Steven Sherwood and A/Prof. Scott Hottovy (USNA), and
+    occasional verbal advice from members of Prof. Sherwood's research group.
+\end{minipage}
+\end{center}
+\vspace{1cm}
+\begin{center}
 {\textbf{Data availability statement}}
 
 \begin{minipage}{0.7\linewidth}
-    \todo{}
+    All code and raw data needed to produce the results in this thesis have
+    been made publicly available. Availability details, along with a high-level
+    description of the code and instructions for reproducing the results,
+    are given in \cref{chap:computations}.
 \end{minipage}
 \end{center}
 \vspace{3cm}
@@ -81,6 +97,23 @@
 \vfill
 
 \chapter*{Abstract}
+Weather and climate models use so-called parametrisation schemes to emulate the
+effects of small-scale processes that they cannot resolve explicitly.
+Data-driven methods for constructing these schemes have attracted considerable
+research attention in recent years, but remain subject to important outstanding
+questions. Using the simpler case of two-dimensional \rb{} convection as an
+analogue for the climate system, this thesis presents a complete proof of
+concept for a data-driven approach that quantifies subgrid tendencies---the
+effects of unresolvable processes---by systematically coarse-graining
+high-resolution training data. A parametrisation scheme constructed using this
+method is shown to be able to improve both the short-term forecast accuracy and
+long-term statistical accuracy of a low-resolution model. This work identifies
+and addresses subtle technicalities associated with the coarse-graining
+process, establishing concrete computational tools with which future work will
+be able to address remaining unanswered questions surrounding data-driven
+methods and potentially inform parametrisation development in real
+weather and climate models.
+
 
 \tableofcontents
 
