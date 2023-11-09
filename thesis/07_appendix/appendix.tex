@@ -18,22 +18,72 @@
 }{}
 
 \appendix
-\chapter{Description of codebase and data} \label{chap:computations}
-\epigraphhead[0.1\textheight]{
-    \epigraph{\todo{epigraph}}{}
-}
+\chapter{Description of code and data} \label{chap:computations}
+Following the standards set out by \textcite{irving2018}, special care was
+taken to ensure the reproducibility of the results in this thesis and enable
+others to use and extend the code in the future.
 
-\section{Reproducibility}
-% cite reproducibility paper!
+\section{Raw data availability}
+All the raw data needed to produce the results are publicly available on
+Zenodo. They amount to approximately $\SI{109}{\giga\byte}$ in total and
+have been divided between the following records:
+\begin{enumerate}
+    \item \url{https://doi.org/10.5281/zenodo.10090744}
+    \item \url{https://doi.org/10.5281/zenodo.10090882}
+    \item \url{https://doi.org/10.5281/zenodo.10090902}
+\end{enumerate}
+The vast majority of the data is model output in netCDF format, which can
+be accessed using the \texttt{xarray} package in Python. Each output dataset
+is accompanied by a human-readable log file listing the parameter settings
+used.
+
+\section{Code description}
+The code and all other material needed to reproduce the results are
+publicly available on GitHub at
+\url{https://github.com/tschanzer/honours-project}. The repository is
+centred around the package named \texttt{modules}, which contains four
+Python modules:
+\begin{itemize}
+    \item \texttt{modules.models} contains the code needed to run the
+        simulations. It defines a class \texttt{Model} for running normal
+        simulations and a class \texttt{SingleStepModel} for applying single
+        time steps in order to calculate subgrid tendencies. The governing
+        equations are specified when instantiating these classes by passing
+        custom ``equation classes'' as arguments. Equation classes for the
+        parametrised and unparametrised simulations in this thesis have already
+        been implemented, and new (e.g., stochastic) parametrisation schemes
+        can be created and coupled into the models by simply defining new
+        equation classes.
+    \item \texttt{modules.coarse\_graining} defines a \texttt{CoarseGrainer}
+        class that implements the coarse-graining operation described in
+        \cref{chap:tendencies}.
+    \item \texttt{modules.stats} provides functions for calculating metrics
+        such as the Nusselt number that are used to analyse the solutions.
+    \item \texttt{modules.tools} provides other useful analysis functions.
+\end{itemize}
+All functions, methods and classes are annotated with docstrings explaining
+their usage in detail.
+
+\section{Instructions for reproducing the results}
+The results and figures shown in this thesis may be reproduced by first
+following the instructions at
+\url{https://github.com/tschanzer/honours-project#readme} to set up the
+virtual environment and data directories, and then running the Python
+notebooks in the \texttt{final\_notebooks} directory of the repository.
+
+It is also possible to generate the raw data from scratch. The model settings
+used in this work are recorded in human-readable YAML configuration files in
+the \texttt{config} directory of the repository. Simulations using these
+settings can be run by executing the scripts in the \texttt{scripts} directory
+of the repository, passing a configuration file as a command line argument
+like so:
+\begin{verbatim}
+$ mpiexec -n <ncpus> python -m mpi4py scripts/run_model.py <config file>.yml
+\end{verbatim}
+Further assistance is available upon request.
 
 
 \chapter{Details of numerical experiments} \label{chap:details}
-% \setlength{\epigraphwidth}{.45\textwidth}
-\epigraphhead[0.1\textheight]{
-    \epigraph{\todo{epigraph}}{}
-}
-
-
 \section{Initial condition} \label{sec:initial_condition}
 The initial velocity field is specified in terms of the streamfunction
 (whose level curves are streamlines of the flow)
