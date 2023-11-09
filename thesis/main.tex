@@ -43,9 +43,6 @@
 \providecommand{\topdir}{.}
 \addbibresource{\topdir/references.bib}
 \DeclareFieldFormat{titlecase:title}{\MakeSentenceCase*{#1}}
-\newrobustcmd*{\citefirstlastauthor}{%
-    \AtNextCite{\DeclareNameAlias{labelname}{given-family}}\citeauthor
-}
 
 % ref options
 \crefname{section}{\S}{\S\S}
@@ -54,13 +51,17 @@
 \crefname{equation}{}{}
 \crefname{figure}{Figure}{Figures}
 \crefname{table}{Table}{Tables}
-\crefalias{step}{enumi}
-\crefname{step}{Step}{Steps}
+\crefname{enumi}{Item}{Items}
 \crefname{appendix}{Appendix}{Appendices}
 \newcommand\crefrangeconjunction{--}
 \def\equationautorefname~#1\null{(#1)\null}
 \numberwithin{equation}{chapter}
 \definecolor{linkcolor}{RGB}{51, 54, 142}
+
+% steps environment
+\newlist{steps}{enumerate}{1}
+\setlist[steps,1]{label={\arabic*.}, ref={\arabic*}}
+\crefname{stepsi}{Step}{Steps}
 
 \makeatletter
 \patchcmd{\math@cr@@@align}{\cr}{\global\let\df@label\@empty\cr}{}{}

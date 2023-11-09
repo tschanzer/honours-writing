@@ -65,8 +65,8 @@ to the settings shown in the Table.
 The workflow used to calculate the subgrid tendencies is described below and
 illustrated as a flowchart in \cref{fig:method}, which uses the same numbering
 to show the order of the steps. \todo{refer to literature}
-\begin{enumerate}
-    \item\label[step]{itm:fine_model} The fine model was integrated for 300
+\begin{steps}
+    \item\label{itm:fine_model} The fine model was integrated for 300
         time units, the initial condition being the end of the $2048 \times
         256$ simulation in \cref{chap:rayleigh_benard}. Every 3 time units,
         the model state was saved, and then saved again one time step later.
@@ -75,35 +75,35 @@ to show the order of the steps. \todo{refer to literature}
         approximate decorrelation time of the model variables (see
         \cref{sec:snapshot_freq}); using a shorter interval would result in
         saving redundant information.
-    \item\label[step]{itm:coarse_grain} Each pair of snapshots was
+    \item\label{itm:coarse_grain} Each pair of snapshots was
         \emph{coarse-grained}, reducing its spatial resolution to that of the
         coarse model. The nature of the coarse-graining operation warrants
         special attention and is discussed separately in
         \cref{sec:coarse_graining}.
-    \item\label[step]{itm:coarse_model} The first coarse-grained snapshot in
+    \item\label{itm:coarse_model} The first coarse-grained snapshot in
         each pair was input as an initial condition for the coarse model. The
         coarse model integrated for one time step only, and the resulting
         state---the coarse model's prediction for the large-scale state after
         one time step---was saved.
-    \item\label[step]{itm:true_tend} The first coarse-grained snapshot in each
+    \item\label{itm:true_tend} The first coarse-grained snapshot in each
         pair from \cref{itm:coarse_grain} was subtracted from the second
         and the difference divided by the fine model's time step, giving the
         \emph{true coarse tendency} (i.e., the true time derivative of the
         large-scale state as calculated by the fine model).
-    \item\label[step]{itm:pred_tend} The first coarse-grained snapshot in each
+    \item\label{itm:pred_tend} The first coarse-grained snapshot in each
         pair from \cref{itm:coarse_grain} was subtracted from the coarse model
         prediction produced in \cref{itm:coarse_model} and the difference
         divided by the coarse model's time step, giving the tendency predicted
         by the coarse model (i.e., its prediction of the time derivative of the
         large-scale state).
-    \item\label[step]{itm:subgrid_tend} Finally, the coarse model predicted
+    \item\label{itm:subgrid_tend} Finally, the coarse model predicted
         tendencies from \cref{itm:pred_tend} were subtracted from the true
         coarse tendencies from \cref{itm:true_tend}, producing the
         \emph{subgrid tendencies}. These measure the error (or, more precisely,
         minus the error) in the coarse model's prediction of the time
         derivative of the large-scale state, and would be identically zero for
         a perfect coarse model.
-\end{enumerate}
+\end{steps}
 
 The goal will be to approximate the subgrid tendencies (labelled
 ``predictand'' in \cref{fig:method}) as functions of the coarse state (labelled
@@ -238,8 +238,8 @@ Once the high-resolution data had been smoothed using the method described
 above, all that remained was to downsample the result to the resolution of the
 coarse model. Downsampling was handled by Dedalus via truncation in spectral
 coefficient space. To summarise, the coarse-graining workflow is as follows:
-\begin{enumerate}
-    \item\label[step]{itm:coarse_grain_input} Input a high-resolution snapshot
+\begin{steps}
+    \item\label{itm:coarse_grain_input} Input a high-resolution snapshot
         as the initial condition for the solver of
         \crefrange{eqn:diffusion_theta}{eqn:diffusion_continuity}.
     \item Integrate the solver for $\SI{e-3}{}$ time units (the duration that
@@ -249,7 +249,7 @@ coefficient space. To summarise, the coarse-graining workflow is as follows:
         and save the result.
     \item Reset the solver and return to \cref{itm:coarse_grain_input} to
         coarse-grain the next high-resolution snapshot.
-\end{enumerate}
+\end{steps}
 
 \cref{fig:coarse_graining_example} compares the results of the improved
 coarse-graining method and first-order conservative regridding for the
@@ -323,7 +323,7 @@ tends to overestimate the rate of temperature change when the vertical velocity
 is positive (requiring a negative subgrid tendency correction) and
 underestimate it when the vertical velocity is negative (requiring a positive
 correction). This correlation is not present in the middle of the domain,
-indicating that the slanted feature in the original hisogram originates in the
+indicating that the slanted feature in the original histogram originates in the
 boundary layers.
 
 \begin{figure}[ht]
@@ -357,13 +357,14 @@ is that the subgrid tendencies of $u$ and $\theta$ both have noticeably larger
 variances near the top and bottom of the domain than in the middle. In other
 words, the coarse model tends to suffer from larger errors in the near-wall
 regions, suggesting that parametrisation may play a more important role in
-these places. This supports the findings of \textcite{stevens2010}, who (as
-discussed in \cref{sec:metrics}) reported insufficient thermal dissipation
-near the side walls in under-resolved simulations of \rb{} convection in a
-cylindrical cavity. My result is also reminiscent of recent work by
+these places. This is reminiscent of the findings of \textcite{stevens2010},
+who (as discussed in \cref{sec:metrics}) reported insufficient thermal
+dissipation near the side walls in under-resolved simulations of \rb{}
+convection in a cylindrical cavity. It is also reminiscent of recent work by
 \textcite{alieva2023}, who, in developing machine-learning-augmented \rb{}
-simulations, found that best greater accuracy was achieved when the ML
-correction was only applied in the near-wall regions.
+simulations, found that short-term forecast and long-term statistical accuracy
+were optimised when the ML correction was only applied in the near-wall
+regions.
 
 \begin{figure}[ht]
     \centering
@@ -418,6 +419,27 @@ middle of the domain for $u$ (\cref{fig:u_subgrid_vs_pred_tend}d) and $w$
 (\cref{fig:w_subgrid_vs_pred_tend}d), indicating that the coarse model is
 underestimating the magnitudes of the tendencies in this region.
 
+To summarise, there is evidence of:
+\begin{enumerate}
+    \item\label{itm:theta_w} A negative correlation between $\theta$ subgrid
+        tendency and $w$ near $z=0,1$,
+    \item\label{itm:theta_dudx} A positive correlation between $\theta$ subgrid
+        tendency and $\partial u/\partial x$ near $z=0$ and a negative
+        correlation near $z=1$,
+    \item\label{itm:u_dudz} A weak negative correlation between $u$ subgrid
+        tendency and $\partial u/\partial z$ near $z=0$ and a weak positive
+        correlation near $z=1$,
+    \item\label{itm:w_dudx} A nonlinear correlation between $w$ subgrid tendency and
+        $\partial u/\partial x$ near $z=0,1$, and
+    \item\label{itm:subgrid_predicted} A negative correlation between each
+        variable's subgrid tendency and the corresponding tendency predicted by
+        the coarse model, near $z=0,1$.
+\end{enumerate}
+In \cref{sec:tendency_explanation} I will propose a physical explanation that
+links \cref{itm:theta_w,itm:theta_dudx} and the $\theta$ part of
+\cref{itm:subgrid_predicted}, conjecturing that similar explanations exist
+for the others.
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.95\linewidth]{figures/theta_subgrid_vs_pred_tend.pdf}
@@ -449,12 +471,13 @@ underestimating the magnitudes of the tendencies in this region.
 \end{figure}
 
 
-\section{Modelling of subgrid tendencies} \label{sec:subgrid_modelling}
-In \cref{sec:subgrid_analysis} I demonstrated several correlations that could
-be exploited to construct a parametrisation scheme for modelling the subgrid
-tendencies as functions of the coarse state variables. I choose to use the
-relationship between subgrid tendencies and predicted tendencies, as it admits
-a particularly simple parametrisation.
+\section{Modelling of subgrid tendencies}
+\label{sec:subgrid_modelling}
+There are several correlations that could be exploited to construct a
+parametrisation scheme for modelling the subgrid tendencies as functions of the
+coarse state variables. I choose to use the relationship between subgrid
+tendencies and predicted tendencies, as it admits a particularly simple
+parametrisation.
 
 Observing that the subgrid tendencies (which I now denote by
 $\mathcal{S}_\chi$, where $\chi = u, w, \theta$) are linearly correlated with
