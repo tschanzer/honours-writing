@@ -40,8 +40,8 @@
 
 Historically, it has been common practice to develop and test new
 parametrisation techniques using simpler dynamical systems that share the key
-nonlinear, multi-scale and chaotic properties of the climate system. These
-analogue systems provide testbeds where the parametrisation problem is more
+nonlinear, multiscale and chaotic properties of the climate system. These
+analogue systems provide test beds where the parametrisation problem is more
 tractable, avoiding the expense, effort and technicalities of fully-fledged
 climate models. The simplicity of these systems also helps to ensure the
 reproducibility of the results obtained. This section will review the
@@ -54,7 +54,7 @@ assess the performance of the schemes.
 \crefrange{sec:l96_lessons}{sec:beyond_l96} will review the results obtained
 by previous studies, discussing their wider implications and identifying
 remaining opening questions that motivate the original work presented in this
-thesis
+thesis.
 
 \section{The Lorenz '96 system}
 \label{sec:l96_eqns}
@@ -62,7 +62,7 @@ The Lorenz '96 model (henceforth L96) was proposed by eminent meteorologist
 Edward N. Lorenz in a \citeyear{lorenz1995} paper \parencite{lorenz1995} on the
 growth of errors in solutions of dynamical systems and the resulting limits of
 predictability for those systems. \citeauthor{lorenz1995} proposed to mimic the
-multi-scale nature of the climate system by coupling two dynamical systems with
+multiscale nature of the climate system by coupling two dynamical systems with
 different characteristic time scales. Following his notation, there is a
 discrete set of ``slow'' variables $\{X_k\}_{k=1}^K$, each of which has an
 associated discrete set of ``fast'' variables $\{Y_{j,k}\}_{j=1}^J$. The
@@ -82,8 +82,8 @@ The evolution of the system is governed by the ordinary differential equations
         + \frac{hc}{b} X_k.
 \end{align}
 \end{subequations}
-The constant $c \geq 1$ dictates the ratio of the time scale of the $Y$
-variables to the time scale of the $X$ variables, $b$ the typical magnitude of
+The constant $c \geq 1$ dictates the ratio of the timescale of the $Y$
+variables to the timescale of the $X$ variables, $b$ the typical magnitude of
 $X$ relative to $Y$, $h$ the strength of the coupling between the two
 subsystems and $F$ the constant forcing applied to each $X$ variable.
 
@@ -127,14 +127,14 @@ structure of the scheme and then using the training dataset to find the optimal
 values of the associated free parameters. The simplest structure, popularised
 in an influential paper by \textcite{wilks2005}, consists of a polynomial
 regression of $U$ against $X$ as a deterministic base, modified by stochastic
-noise. Wilks' scatterplot of $U$ and $X$ and quartic polynomial least-squares
+noise. Wilks' scatter plot of $U$ and $X$ and quartic polynomial least-squares
 regression, shown in \cref{fig:wilks2005_regression}, confirm that such a
 structure is reasonable.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.3\linewidth]{figures/wilks2005_regression.pdf}
-    \caption{ Scatterplot of unresolved tendencies $U$ against large-scale
+    \caption{ Scatter plot of unresolved tendencies $U$ against large-scale
         variables $X$ in L96 (black dots), and corresponding quartic polynomial
         least-squares regression (black line). Data are for forcing $F=18$.
         Reproduced from Figure 2a of \textcite{wilks2005}. }
@@ -246,7 +246,7 @@ concerned with the agreement between a ``truth'' (or verification) solution of
 \cref{eqn:l96} and the mean of an ensemble of independently realised,
 stochastically parametrised forecasts starting from the same or nearby initial
 conditions. This reflects standard practice in operational numerical weather
-prediction. A standard approach is to calculate the root mean square error
+prediction. A standard approach is to calculate the root-mean-square error
 (RMSE)
 \begin{equation*}
     \mathrm{RMSE}(t) = \left( \left\langle
@@ -285,7 +285,7 @@ Recall from \cref{sec:stochastic} that an ensemble forecast is said to be
 reliable if the spread of the ensemble members is representative of the range
 of weather states that could possibly be realised, given the initial condition
 uncertainty and model errors. In the context of L96, there are two ways to
-measure reliabilty. The first \parencite{wilks2005,crommelin2008,kwasniok2012}
+measure reliability. The first \parencite{wilks2005,crommelin2008,kwasniok2012}
 is to sort the states $X_k$ of the ensemble members at the chosen lead time
 from largest to smallest (or vice versa), and find the rank that the truth
 state would occupy within the list. The ranks from many ensemble forecasts are
@@ -338,7 +338,7 @@ Now that the statistical models and analysis techniques for L96 parametrisation
 have been surveyed, I shall review the results of previous studies, focusing on
 key conclusions that have potential implications for more complex dynamical
 systems. The common objective in many studies has been to determine the value
-added by stochasticity and memory. The general consensus is that
+added by stochasticity and memory. The consensus is that
 parametrisations with white noise outperform purely deterministic ones, and
 that adding memory via red noise or dependence on past large-scale states gives
 a further advantage over white noise
@@ -348,7 +348,7 @@ and in the accuracy of climatological probability distributions.
 \textcite{arnold2013} additionally found that parametrisations with
 state-dependent noise have the potential to produce more skilful forecasts than
 those with state-independent additive noise. This was only observed under
-conditions of small time-scale separation between the resolved and unresolved
+conditions of small timescale separation between the resolved and unresolved
 variables (i.e., $c \sim 1$ in \cref{eqn:l96}); it appeared that simple
 additive noise was sufficient for larger scale separation. A representative
 illustration of the conclusions for short-term forecasting and climate
@@ -371,9 +371,9 @@ prediction are respectively given by Figures 6 and 10 of
         $|X|$), M = ``multiplicative'' (SPPT) and MA = ``multiplicative and
         additive'' (noise standard deviation a linear function of
         $|P_\mathrm{det}(X)|$). Upright light grey triangles indicate results
-        obtained under conditions of larger time scale separation ($c=10$ in
-        \cref{eqn:l96}) and inverted dark grey triangles indicate smaller time
-        scale separation ($c=4$). It is clear that schemes with white noise
+        obtained under conditions of larger timescale separation ($c=10$ in
+        \cref{eqn:l96}) and inverted dark grey triangles indicate smaller
+        timescale separation ($c=4$). It is clear that schemes with white noise
         outperform deterministic ones, and schemes with AR(1) noise outperform
         whose with white noise. }
     \label{fig:arnold_fig6}
@@ -444,7 +444,7 @@ Several specific findings in L96 studies raise other questions that also
 motivate a change of focus to more complex dynamical systems. The first is the
 observation by \textcite{crommelin2008} that the advantage of their conditional
 Markov chain parametrisation over the regression-based approach was greatest
-under conditions of small time-scale separation and diminished with increasing
+under conditions of small timescale separation and diminished with increasing
 scale separation. \textcite{arnold2013} drew a similar conclusion regarding the
 difference between stochastic and deterministic regression-based schemes. These
 findings are consistent with the expectation that the net effect of
@@ -506,7 +506,7 @@ established that there is little benefit in using stochastic parametrisations
 with spatially correlated noise for L96, spatial correlation is expected to be
 a much more important consideration in spatially continuous systems
 \parencite{arnold2013}. One might also ask whether it will be beneficial to
-construct spatially nonlocal schemes where the tendency predicted at each point
+construct spatially non-local schemes where the tendency predicted at each point
 also depends on the values of the large-scale variables at neighbouring points
 (potentially capturing the gradients of these variables).
 

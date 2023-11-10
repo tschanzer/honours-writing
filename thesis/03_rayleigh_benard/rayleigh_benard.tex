@@ -107,7 +107,7 @@ contribution to the weight force. This leads to the Boussinesq equations
     \grad \cdot \vec{u} &= 0,
 \end{align}
 which represent the momentum balance, the conservation of energy and the
-assumption of incompressiblity, respectively. The prognostic variables are the
+assumption of incompressibility, respectively. The prognostic variables are the
 fluid velocity $\vec{u}$ and the temperature $T$ (the pressure perturbation
 $p'$ is implicitly determined by \cref{eqn:dim_incompressible}). The parameters
 of the model are the kinematic viscosity $\nu$ and thermal diffusivity
@@ -151,7 +151,7 @@ e.g.,][]{grotzbach1983,ouertatani2008,stevens2010} which is suitable for the
 turbulent convective regime.
 
 The first step is to choose representative time, length and temperature scales.
-For low-viscosity, turbulent flow, a suitable time scale is the \emph{free-fall
+For low-viscosity, turbulent flow, a suitable timescale is the \emph{free-fall
 time} $t_0$, which is the time for a fluid element with constant temperature $T
 = T_0 - \delta T$ to fall from the top plate to the bottom plate under the
 influence of buoyancy ($-g \alpha \delta T$) alone. It is simple to show that
@@ -205,8 +205,8 @@ thermal diffusivity, and the \emph{Rayleigh number}
 \[
     \rayleigh \equiv \frac{g \alpha d^3 \delta T}{\kappa \nu}.
 \]
-The Rayleigh number can be interpreted as the ratio of the time scale for
-thermal transport by conduction to the time scale for thermal transport by
+The Rayleigh number can be interpreted as the ratio of the timescale for
+thermal transport by conduction to the timescale for thermal transport by
 convection. It determines the importance of diffusion for the evolution of
 $\vec{u}$ and $\theta$; inspection of \cref{eqn:momentum,eqn:energy} indicates
 that low $\rayleigh$ implies strong diffusion and high $\rayleigh$ weak
@@ -283,10 +283,9 @@ $|\nabla^2 \theta|$ are large, will experience a larger effective viscosity
 and/or thermal diffusivity respectively, and therefore be dissipated more
 rapidly than larger-scale features.
 
-It must be emphasised that this work is \emph{not} concerned with whether or
-not these modified equations are an accurate representation of physical
-reality; they simply serve as an example dynamical system for the study of
-parametrisation.
+It must be emphasised that this work is \emph{not} concerned with whether these
+modified equations are an accurate representation of physical reality; they
+simply serve as an example dynamical system for the study of parametrisation.
 
 
 \section{Model configuration}
@@ -433,14 +432,14 @@ define
 \]
 where $\langle \cdot \rangle _A$ denotes averaging over the horizontal plane at
 height $z$, and $w = \vec{u} \cdot \uvec{z}$ is the vertical velocity. Notice
-that the heat transport has contribitions from both advection (the first term)
+that the heat transport has contributions from both advection (the first term)
 and conduction (the second term). Authors frequently consider the
 vertically-averaged value
 \begin{equation} \label{eqn:nusselt_zavg}
     \langle \nusselt(z,t) \rangle _z
         = \sqrt{\rayleigh\,\prandtl} \langle w \theta \rangle _{A,z} + 1
 \end{equation}
-and/or the time-averaged value, which is is independent of height due to
+and/or the time-averaged value, which is independent of height due to
 energy conservation,
 \[
     \langle \nusselt(z,t) \rangle _t = \langle \nusselt(z,t) \rangle _{z,t}

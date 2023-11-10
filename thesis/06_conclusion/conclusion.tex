@@ -70,7 +70,7 @@ However, when modelling real-world systems such as the atmosphere, one does
 not have the freedom to simply alter the governing equations. Successful
 data-driven parametrisation in these cases will depend on the careful choice of
 the numerical methods used to discretise and solve the equations such that
-the underlying coarse model is stable, even if it is inaccurate. Futher work
+the underlying coarse model is stable, even if it is inaccurate. Further work
 with the \rb{} system should investigate whether other types of solvers
 (finite difference/volume/element, etc.) are more suitable.
 
@@ -84,7 +84,7 @@ predictors. For \rb{}, one not only has the three prognostic variables, but
 also their derivatives to arbitrary order in the two spatial directions. The
 position-dependence of the subgrid tendency statistics was a further
 complication, adding $z$ to the list of predictors. One could even use
-spatially or temporally nonlocal predictors (i.e., the values of the variables
+spatially or temporally non-local predictors (i.e., the values of the variables
 at nearby points in space or previous time steps)---a possibility that was not
 even considered in this work. It would be impossible for a human to explore
 every possible combination. Supervised machine learning algorithms, discussed
@@ -168,7 +168,7 @@ $\partial u/\partial x$ has the same sign as the subgrid tendency near $z=0$
 correlation). These predictions are all consistent with the observations in
 \cref{chap:tendencies}.
 
-It is farily easy to attribute the subgrid $\theta$ tendency correlations to
+It is fairly easy to attribute the subgrid $\theta$ tendency correlations to
 advection in the coarse model because $\theta$ behaves a tracer that is nearly
 conserved by the flow. The velocity field, however, also has a boundary layer
 that is widened by the coarse-graining operation, leading me to conjecture that
@@ -176,7 +176,7 @@ the subgrid $u$ and $w$ tendency correlations can be explained using a similar
 argument. The fact that all the correlations exhibit similar height dependence
 lends credence to the conjecture. If this is true, then the fact that $\theta$
 is more closely conserved by the flow than $u$ or $w$ could explain why the
-correlations for $\theta$ were observed to be consistenly stronger than the
+correlations for $\theta$ were observed to be consistently stronger than the
 other variables (see, e.g., \cref{tab:r_squared}).
 
 \begin{figure}[ht]
@@ -239,7 +239,7 @@ With a wider variety of statistical models for the subgrid tendencies in
 combination with a range of stochastic perturbation schemes (with different
 noise amplitudes, correlation times, etc.), it would be possible to determine
 whether schemes that perform well offline generally also perform well online,
-and whether or not their short-term forecast accuracy is correlated with their
+and whether their short-term forecast accuracy is correlated with their
 long-term statistical accuracy. These have been topics of for the Lorenz '96
 system (see \cref{sec:l96_open_questions}), and an extension to \rb{} could
 provide further evidence to aid the selection of parametrisation schemes for
@@ -287,7 +287,7 @@ subtle technical obstacles that do not apply to simpler systems such as Lorenz
 a hyperdiffusive modification of the governing equations. Secondly, the
 predictability of the subgrid tendencies was found to depend strongly on the
 method used to coarse-grain the high-resolution solutions, and the development
-of an an appropriate method was non-trivial. The understanding of these issues
+of an appropriate method was non-trivial. The understanding of these issues
 and the development of computational tools to address them is a second major
 outcome of this work.
 

@@ -43,7 +43,7 @@ extreme events and long-term climate change, and limit anthropogenic impacts to
 sustainable levels.
 
 Our understanding of the Earth system is, to a large extent, derived from
-numerical modelling of the fluid dynamics of the atmospehre and oceans on
+numerical modelling of the fluid dynamics of the atmosphere and oceans on
 finite-resolution grids. The achievable resolution is constrained by
 computational cost; a typical atmospheric global climate model has a spatial
 resolution on the order of $\ang{1}$ latitude/longitude, roughly corresponding
@@ -63,7 +63,7 @@ techniques that attempt to remedy the limitations of the traditional methods
 These non-traditional parametrisation techniques themselves give rise to
 several outstanding problems, motivating this thesis' focus on parametrisation
 research that can be carried out in simpler dynamical system analogues of the
-climate system as a first step towards address the outstanding problems.
+climate system, as a first step towards addressing the outstanding problems.
 \cref{chap:lorenz96} will review the methods and findings of previous work in
 the context of a very simple dynamical system known as Lorenz '96. In light of
 the review, I will argue that future work should progress to parametrisation
@@ -81,9 +81,9 @@ A data-driven parametrisation scheme will be obtained by fitting a statistical
 model to the subgrid tendency dataset. In \cref{chap:evaluation}, I will
 couple the parametrisation scheme into a coarse \rb{} model to produce
 an improved model that attempts to account for the effects of unresolved
-processes, and determine whether or not the inclusion of the parametrisation
-scheme improces the short-term forecast accuracy and long-term statistical
-accuracy of the coarse mode. Finally, \cref{chap:conclusion} will discuss
+processes, and determine whether the inclusion of the parametrisation
+scheme improves the short-term forecast accuracy and long-term statistical
+accuracy of the coarse model. Finally, \cref{chap:conclusion} will discuss
 the findings of this work and draw final conclusions.
 
 
@@ -102,7 +102,7 @@ governed by the Navier-Stokes equations. The algorithm chosen to solve these
 partial differential equations is known as a model's \emph{dynamical core}
 \parencite{mcfarlane2011}. Since analytical solutions to the equations do not
 exist, the dynamical core necessarily approximates the continuous equations
-with finite-dimensional, exactly solvable alternatives using one of several
+with finite-dimensional alternatives using one of several
 possible discretisation schemes (e.g., the finite difference, finite element,
 finite volume and spectral methods) \parencite{christensen2022}. In practice,
 this usually involves representing the prognostic variables (i.e., those that
@@ -137,7 +137,7 @@ time dependence $e^{-i(\vec{k} \cdot \vec{x} - \omega(\vec{k}) t)}$,
 \emph{independently of the other components}. If the equations of fluid
 dynamics were linear, one could safely neglect the fine-scale dynamics because
 they would have no influence on the coarse scales. In reality, the equations
-are nonlinear cannot be solved by Fourier transform.
+are nonlinear and cannot be solved in this way.
 
 The consequence of the nonlinearity of the equations governing atmospheric and
 oceanic flows is, therefore, a coupling of the resolved coarse scales to the
@@ -208,7 +208,7 @@ appropriately---hence the name ``parametrisation'').
 
 \subsection{Mathematical formulation of the parametrisation problem}%
 \label{sec:math}
-In order to make any progress on the parametrization problem, it is necessary
+In order to make any progress on the parametrisation problem, it is necessary
 to formalise the notion of estimating the ``effects'' of unresolved processes.
 I will describe the general approach, which is well-established \parencite[see,
 e.g.,][]{hasselmann1976,palmer2001,demaeyer2018,brajard2021}, while
@@ -365,7 +365,7 @@ motivate research into novel approaches.
 
 % conceptual model (examples)
 A parametrisation scheme is traditionally constructed by formulating a
-simplfied, easily solvable and deterministic conceptual model of the physical
+simplified, easily solvable and deterministic conceptual model of the physical
 process in question. The solution of this model is then used to estimate the
 effect of the process on the coarse-scale state of the parent model, known as
 the \emph{unresolved tendency} \parencite{mcfarlane2011}. For example, the
@@ -479,7 +479,7 @@ of a massive particle in a fluid.
 Further motivation for stochastic parametrisation in particular stems from the
 need to reliably estimate uncertainties in weather forecasts and climate
 projections. Weather forecasting centres typically propagate initial condition
-uncertatinties (due to imperfect observations) through to the final forecast in
+uncertainties (due to imperfect observations) through to the final forecast in
 a Monte Carlo fashion, by initialising an ensemble of model runs with perturbed
 initial conditions and measuring the spread of the resulting forecasts. It has
 been observed that deterministic models produce systematically under-dispersed
@@ -530,7 +530,7 @@ $e(x,y,t)$. It has been argued that this random field should be spatially and
 temporally correlated (in contrast to uncorrelated ``white'' noise) in order to
 emulate the organisation of unresolved processes on larger scales and their
 persistence in time \parencite{christensen2022,franzke2015}. In particular,
-perturbations that explictly depend on their own past values constitute a type
+perturbations that explicitly depend on their own past values constitute a type
 of memory, albeit distinct from the memory term advocated by
 \textcite{wouters2012,wouters2013}, which would instead couple the
 perturbations to the past values of the large-scale variables.
@@ -625,7 +625,7 @@ approximation or regression, and the relevant algorithms usually require a
 training dataset of example inputs (i.e., coarse-scale variables)
 \emph{labelled} with the desired outputs (i.e., unresolved tendencies). One
 commonly-used class of algorithms called \emph{neural networks} consist of
-layers of inter-communicating calculation nodes called neurons and learn to
+layers of intercommunicating calculation nodes called neurons and learn to
 approximate functions by optimising sets of weights associated with the
 neurons. Another type of algorithm is the \emph{random forest}, which
 approximates functions by passing the inputs through a series of nested
@@ -649,7 +649,7 @@ ML parametrisations are not without their issues; they are known to be prone to
 overfitting and often cause their host models to become numerically unstable.
 They are also, by their very nature, far more difficult to interpret than
 traditional schemes. It is therefore very difficult to determine \emph{a
-priori} whether or not they will continue to be valid in climate conditions
+priori} whether they will continue to be valid in climate conditions
 outside the bounds of their training datasets
 \parencite{irrgang2021,beucler2022}. ``Interpretable'' or ``explainable'' ML is
 an active area of research that aims to address these issues. Another active
@@ -658,9 +658,9 @@ known physical constraints and conservation laws that would otherwise be
 violated \parencite[e.g.,][]{yuval2021}.
 
 \section{Summary}
-This section has highlighted the issues associated with traditional
+This chapter has highlighted the issues associated with traditional
 parametrisation schemes (including the limitations of conceptual models, lack
-of scale separation and quasi-equilibrium assumptions) and modern techniques
+of scale separation and quasi-equilibrium assumptions) and reviewed the modern techniques
 (including stochasticity, memory and data-driven/ML modelling) that have been
 developed to address them. However, even the modern techniques give rise to
 questions that lack definitive answers---should stochastic perturbations
