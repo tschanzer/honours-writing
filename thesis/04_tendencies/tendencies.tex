@@ -32,9 +32,6 @@
     }{\emph{Mathematical Methods in Science}\\George P\`{o}lya, 1977}
 }
 
-\todo{introductory paragraph: why am I doing this?}
-\todo{mention Alieva paper more}
-
 In \cref{chap:rayleigh_benard} I investigated the resolution dependence
 of several metrics in order to choose the resolutions of the fine ``truth''
 model and the coarse ``control'' model needed for data-driven parametrisation.
@@ -60,11 +57,25 @@ to the settings shown in the Table.
 \label{tab:final_resolutions}
 \end{table}
 
+The aim of this chapter is to construct a data-driven parametrisation scheme
+for the \rb{} problem. \cref{sec:calculation} will establish the method used to
+calculate subgrid tendencies and generate the training dataset.
+\cref{sec:coarse_graining} will identify and resolve some subtle issues
+associated with the coarse-graining step of the method.
+In \cref{sec:subgrid_analysis}, I will perform exploratory analysis of the
+training dataset to identify correlations that could be used as the bases of
+data-driven parametrisation schemes, before constructing and fitting the
+final scheme in \cref{sec:subgrid_modelling}.
 
-\section{Calculation of subgrid tendencies} \label{sec:calculation}
-The workflow used to calculate the subgrid tendencies is described below and
+
+\section{Calculation of subgrid tendencies}
+\label{sec:calculation}
+Following the generic method of \textcite{brajard2021}, which was reviewed in
+\cref{sec:data_driven}, it is possible to define subgrid tendencies for the
+\rb{} problem and implement a workflow for calculating them using high- and
+low-resolution numerical models. This workflow is described below and
 illustrated as a flowchart in \cref{fig:method}, which uses the same numbering
-to show the order of the steps. \todo{refer to literature}
+to show the order of the steps.
 \begin{steps}
     \item\label{itm:fine_model} The fine model was integrated for 300
         time units, the initial condition being the end of the $2048 \times
@@ -127,7 +138,8 @@ the fine model.
 \end{figure}
 
 
-\section{Choice of coarse-graining method} \label{sec:coarse_graining}
+\section{Choice of coarse-graining method}
+\label{sec:coarse_graining}
 Coarse-graining is the process of reducing a gridded dataset onto a
 lower-resolution grid, and it is required at \cref{itm:coarse_grain} of the
 workflow described in \cref{sec:calculation}. It was found that the choice of

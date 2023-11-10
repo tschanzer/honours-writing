@@ -26,23 +26,75 @@
 \chapter{Introduction} \label{chap:introduction}
 \epigraphhead[0.1\textheight]{
     \epigraph{
-        \textsc{First Witch:} \\
-
-        \hfill\begin{minipage}[b]{\dimexpr\textwidth-1cm}
-            When shall we three meet again \\
-            In thunder, lightning, or in rain?
-        \end{minipage}
+        Bottomless wonders spring from simple rules which are repeated
+        without end.
     }{
-        Shakespeare, \emph{Macbeth}, Act I, Scene I
+        \emph{Fractals and the Art of Roughness}\\
+        Benoit Mandelbrot, 2010
     }
 }
 
-\todo{introductory paragraph with motivation (from proposal) and outline}
+The Earth system (including atmosphere, ocean and land) is distinguished both
+in its complexity and its influence on all terrestrial life. In particular, the
+wellbeing of humanity is critically dependent on our ability to understand and
+predict this system's behaviour---both short-term weather and long-term
+climate. Our knowledge allows us to take action to reduce our vulnerability to
+extreme events and long-term climate change, and limit anthropogenic impacts to
+sustainable levels.
 
-\section{Theoretical background} \label{sec:theory_background}
-\todo{introductory paragraph}
+Our understanding of the Earth system is, to a large extent, derived from
+numerical modelling of the fluid dynamics of the atmospehre and oceans on
+finite-resolution grids. The achievable resolution is constrained by
+computational cost; a typical atmospheric global climate model has a spatial
+resolution on the order of $\ang{1}$ latitude/longitude, roughly corresponding
+to the size of the entire Greater Sydney area from Katoomba to Bondi. Sub-grid
+scale features, such as individual clouds, cannot be explicitly resolved, but
+to ignore them completely would introduce unacceptable biases (inaccuracies,
+relative to observations) in the model output. It is therefore necessary to
+estimate the effects of these features in a process known as
+\emph{parametrisation}. This introductory chapter will begin by presenting a
+more rigorous description of the parametrisation problem in
+\cref{sec:theory_background}. It will then review the practical implementation
+of parametrisation schemes in weather and climate models, beginning with
+traditional methods (\cref{sec:prac_background}) before introducing newer
+techniques that attempt to remedy the limitations of the traditional methods
+(\cref{sec:novel}).
 
-\subsection{The necessity of parametrisation}
+These non-traditional parametrisation techniques themselves give rise to
+several outstanding problems, motivating this thesis' focus on parametrisation
+research that can be carried out in simpler dynamical system analogues of the
+climate system as a first step towards address the outstanding problems.
+\cref{chap:lorenz96} will review the methods and findings of previous work in
+the context of a very simple dynamical system known as Lorenz '96. In light of
+the review, I will argue that future work should progress to parametrisation
+for dynamical systems of intermediate complexity.
+
+\cref{chap:rayleigh_benard} will introduce \rb{} convection, the chosen
+intermediate-complexity test system for this work. The aim will be to construct
+and assess a parametrisation for \rb{} convection using a \emph{data-driven}
+approach analogous to those that have been attracting significant research
+attention in the weather and climate modelling communities.
+\cref{chap:tendencies} will formulate and implement a method for calculating
+so-called subgrid tendencies---the effects of processes unresolvable by a
+coarse model—--by systematically coarse-graining high-resolution training data.
+A data-driven parametrisation scheme will be obtained by fitting a statistical
+model to the subgrid tendency dataset. In \cref{chap:evaluation}, I will
+couple the parametrisation scheme into a coarse \rb{} model to produce
+an improved model that attempts to account for the effects of unresolved
+processes, and determine whether or not the inclusion of the parametrisation
+scheme improces the short-term forecast accuracy and long-term statistical
+accuracy of the coarse mode. Finally, \cref{chap:conclusion} will discuss
+the findings of this work and draw final conclusions.
+
+
+\section{Theoretical background}
+\label{sec:theory_background}
+Having introduced the parametrisation problem in informal language, I now treat
+it more rigorously, first establishing its necessity from a mathematical
+viewpoint in \cref{sec:necessity} and then formalising the seemingly vague
+notion of ``effects of unresolved processes'' in \cref{sec:math}.
+
+\subsection{The necessity of parametrisation} \label{sec:necessity}
 % Broad introduction of weather/climate prediction and fluid equations
 The primary task of general circulation models (GCMs) for Earth's weather and
 climate is to simulate the dynamics of the atmosphere and ocean, which are
@@ -174,10 +226,10 @@ $\vec{x}$ contains the information or variables that are explicitly resolved by
 the model being studied and $\vec{y}$ contains the unresolved, `sub-grid'
 information or variables. Mathematically, $\vec{x}$ and $\vec{y}$ are
 projections of the full state $\vec{z}$ onto lower-dimensional subspaces of the
-original state space \parencite{brajard2021}. Practically, $\vec{x}$ can be
+original state space \parencite{brajard2021}. Practically, $\vec{x}$ could be
 obtained by averaging the original variables over several adjacent grid points,
 with $\vec{y}$ being the corresponding residuals
-\parencite{zacharuk2018,alcala2021}. \todo{fix last sentence}
+\parencite{zacharuk2018,alcala2021}.
 
 In principle, the change of variables splits \cref{eqn:truth}
 into two parts
@@ -238,17 +290,17 @@ of the above methods, so that the parametrised model reads
         = \vec{D}(\tilde{\vec{x}},t) + \vec{P}(\tilde{\vec{x}}, t).
 \end{equation}
 
-\todo{x = <z>, motivate data-driven method (see update presentation)}
-
 
 \section{Practical background} \label{sec:prac_background}
-\todo{introductory paragraph}
+Following the abstract theoretical argument in the previous sections, I will
+next give a more practical introduction to the uses of parametrisation in
+real weather and climate models (\cref{sec:phys_processes}) and the methods
+that are traditionally used to construct parametrisation schemes
+(\cref{sec:traditional}).
 
 \subsection{Physical processes requiring parametrisation}
-% spectrum of scales and implications of cross-interaction
-% Examples of processes requiring parametrisation
-Following the broad theoretical argument in the previous sections, I now turn
-to concrete examples of processes that are often represented by
+\label{sec:phys_processes}
+I now turn to concrete examples of processes that are often represented by
 parametrisations, restricting the discussion to atmospheric processes for
 brevity. This section will give a basic introduction to each process, its
 effect on the larger-scale behaviour of the climate system and the role of its
@@ -528,10 +580,9 @@ where $\Delta t$ is not necessarily equal to $\delta t$ (usually larger). The
 spaces of high- and low-resolution states, having different dimensions, may be
 linked by an operator $\langle \cdot \rangle$ that projects high-resolution
 states onto the low-resolution state space. Practically, the projection
-operation is simply a coarse-graining of $\vec{z}$ by averaging values at
-adjacent grid points to match the resolution of $\vec{x}$ \todo{not
-necessarily!}. Now, for each state $\vec{z}$ in the training dataset, one may
-compute the difference
+operation can simply be a coarse-graining of $\vec{z}$ by averaging values at
+adjacent grid points to match the resolution of $\vec{x}$. Now, for each state
+$\vec{z}$ in the training dataset, one may compute the difference
 \begin{equation*}
     \vec{\epsilon}(\vec{z}) =
         \frac{
@@ -544,14 +595,15 @@ compute the difference
 \end{equation*}
 between the coarse-grained true tendency (on the left) and the tendency
 predicted by the coarse model when it sees the same state (on the right). This
-is the unresolved tendency. Knowledge of $\langle \vec{z} \rangle$ alone does
-not uniquely determine $\vec{\epsilon}$ because $\langle \mathcal{M}(\vec{z})
-\rangle$ depends on the original $\vec{z}$. However, if one can fit a
-statistical model $\vec{P}$ to the dataset of ($\langle \vec{z} \rangle$,
-$\vec{\epsilon}$), then $-\vec{P}(\vec{x}(t)) \Delta t$ will be able to serve
-as an estimate of the error incurred by the coarse model in predicting
-$\vec{x}(t + \Delta t)$ given $\vec{x}(t)$. This motivates the construction of
-a parametrised model $\mathcal{M}^\mathrm{p}$, defined by
+quantity is known as the \emph{subgrid} or \emph{unresolved} tendency.
+Knowledge of $\langle \vec{z} \rangle$ alone does not uniquely determine
+$\vec{\epsilon}$ because $\langle \mathcal{M}(\vec{z}) \rangle$ depends on the
+original $\vec{z}$. However, if one can fit a statistical model $\vec{P}$ to
+the dataset of ($\langle \vec{z} \rangle$, $\vec{\epsilon}$), then
+$-\vec{P}(\vec{x}(t)) \Delta t$ will be able to serve as an estimate of the
+error incurred by the coarse model in predicting $\vec{x}(t + \Delta t)$ given
+$\vec{x}(t)$. This motivates the construction of a parametrised model
+$\mathcal{M}^\mathrm{p}$, defined by
 \begin{equation*}
     \mathcal{M}^\mathrm{p}(\vec{x}) =
         \mathcal{M}^\mathrm{r}(\vec{x}) + \vec{P}(\vec{x}) \Delta t
@@ -605,7 +657,18 @@ research topic is ``physics-guided ML'', the aim of which is to augment ML with
 known physical constraints and conservation laws that would otherwise be
 violated \parencite[e.g.,][]{yuval2021}.
 
-\todo{summary?}
+\section{Summary}
+This section has highlighted the issues associated with traditional
+parametrisation schemes (including the limitations of conceptual models, lack
+of scale separation and quasi-equilibrium assumptions) and modern techniques
+(including stochasticity, memory and data-driven/ML modelling) that have been
+developed to address them. However, even the modern techniques give rise to
+questions that lack definitive answers---should stochastic perturbations
+be additive or multiplicative, spatially/temporally correlated or white?
+How can empirical data-driven schemes be interpreted and explained physically?
+I now turn to simpler dynamical system analogues of the climate system that
+could be used to address these questions.
+
 
 \ifSubfilesClassLoaded{%
     \emergencystretch=5em

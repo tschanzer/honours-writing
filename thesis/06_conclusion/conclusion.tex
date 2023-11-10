@@ -34,27 +34,25 @@
         \emph{Quest: an autobiography}, 1941
     }
 }
-\todo{introductory paragraph}
-% In \crefrange{chap:rayleigh_benard}{chap:evaluation}, I presented a
-% complete proof of concept for data-driven parametrisation in \rb{} convection,
-% from the initial formulation of the problem to the assessment of the
-% parametrised model in an online setting. In the final chapter of this thesis, I
-% will discuss in greater detail the main obstacles that were encountered in the
-% process (\cref{sec:issues}) and the concrete outcomes of this work
-% (\cref{sec:outcomes}) before drawing final conclusions in
-% \cref{sec:conclusion}.
 
-
-% \section{Practical issues and their implications} \label{sec:issues}
-% This work has highlighted several obstacles to the practical implementation
-% data-driven parametrisation that were initially not obvious from a purely
-% theoretical point of view or not applicable to earlier work using simpler
-% dynamical systems such as Lorenz '96. Fundamentally, many of these arise
-% because the \rb{} problem is spatially continous---a PDE, as opposed to ODEs
-% like Lorenz '96.
+In \crefrange{chap:rayleigh_benard}{chap:evaluation}, I presented a complete
+proof of concept for data-driven parametrisation in \rb{} convection, from the
+initial formulation of the problem to the assessment of the parametrised model
+in an online setting. In the final chapter of this thesis, I will discuss in
+greater detail the issues of coarse model instability (\cref{sec:instability})
+and subgrid tendency predictability (\cref{sec:improve_prediction}), suggesting
+possible remedies to be experimented with in future work. In
+\cref{sec:tendency_explanation}, I will argue that the unusual height-dependent
+subgrid tendency correlations observed in \cref{chap:tendencies} are physically
+reasonable, justifying their use as the bases for data-driven parametrisation
+schemes. To end the discussion, I will identify the outstanding questions that
+could be addressed in the future by using and extending the computational tools
+developed in this work (\cref{sec:conclusion_unanswered_questions}) and draw
+a set of final conclusions from this work (\cref{sec:conclusion}).
 
 
 \section{Preventing coarse model instability}
+\label{sec:instability}
 One of the earliest issues encountered in this work was the potential for
 low-resolution models to become numerically unstable, making it difficult to
 obtain a baseline for evaluating parametrised models. Aside from the need for
@@ -206,12 +204,13 @@ machine learning are able to reveal correlations in this region.
 
 
 \section{Unanswered questions}
+\label{sec:conclusion_unanswered_questions}
 The amount of effort this work has devoted to overcoming prerequisite issues
 has inevitably limited the scope of its experimentation with actual
 parametrisation development and assessment. The positive outcome, however, is
 that it has implemented the computational tools needed to undertake further
 research with the \rb{} system and made them publicly available for others to
-use \todo{computation section}. There are several worthwhile research
+use; see \cref{chap:computations}. There are several worthwhile research
 questions that could be addressed using these tools.
 
 The foremost goal for future work is to determine the extent to which the

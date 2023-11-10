@@ -23,34 +23,41 @@
     \mainmatter
 }{}
 
+\dropchapter{1cm}
 \chapter{Case study: the Lorenz '96 system} \label{chap:lorenz96}
-\setlength{\epigraphwidth}{.45\textwidth}
+\setlength{\epigraphwidth}{.5\textwidth}
 \epigraphhead[0.1\textheight]{
-    \epigraph{\todo{epigraph}}{}
+    \epigraph{
+        But there are no longer some problems which are solved and others
+        which are not; there are only problems more or less solved
+        accordingly as they are represented by a series converging more or
+        less rapidly and following a law more or less harmonious.
+    }{
+        \emph{The Future of Mathematics}\\
+        Henri Poincar\'{e}, 1908
+    }
 }
 
-\todo{Fix this paragraph}
 Historically, it has been common practice to develop and test new
 parametrisation techniques using simpler dynamical systems that share the key
 nonlinear, multi-scale and chaotic properties of the climate system. These
 analogue systems provide testbeds where the parametrisation problem is more
 tractable, avoiding the expense, effort and technicalities of fully-fledged
 climate models. The simplicity of these systems also helps to ensure the
-reproducibility of the results obtained. This section will review the progress
-that has been made using simple analogue systems and argue that, considering
-the outstanding issues identified in
-\cref{sec:prac_background,sec:novel}, further research using these
-systems may yet be warranted. The relevant techniques for constructing and
-testing parametrisation schemes in simple model frameworks, and the remaining
-open questions, will be discussed in order to inform future research.
-
-% The most popular option is the so-called Lorenz '96 model, which will be
-% addressed along with other ``toy'' models of its kind in \cref{sec:l96}. More
-% recent work has used more sophisticated models of idealised fluid flows and
-% will be discussed in \cref{sec:simple_fluid}.
-
+reproducibility of the results obtained. This section will review the
+literature associated with one particular dynamical system known as Lorenz '96
+that has been an extremely popular tool for data-driven parametrisation
+research. \cref{sec:l96_eqns} will introduce its governing equations,
+\cref{sec:l96_eqns} the various statistical models that have been used as bases
+for parametrisation schemes, and \cref{sec:l96_evaluation} the methods used to
+assess the performance of the schemes.
+\crefrange{sec:l96_lessons}{sec:beyond_l96} will review the results obtained
+by previous studies, discussing their wider implications and identifying
+remaining opening questions that motivate the original work presented in this
+thesis
 
 \section{The Lorenz '96 system}
+\label{sec:l96_eqns}
 The Lorenz '96 model (henceforth L96) was proposed by eminent meteorologist
 Edward N. Lorenz in a \citeyear{lorenz1995} paper \parencite{lorenz1995} on the
 growth of errors in solutions of dynamical systems and the resulting limits of
@@ -199,6 +206,7 @@ calculation of the unresolved tendencies $U$ in the training dataset.
 
 
 \section{Evaluating parametrisation performance}
+\label{sec:l96_evaluation}
 After choosing and fitting a parametrisation scheme, the next step is to assess
 its performance. It is important to recognise that there are several contexts
 in which one might want a parametrisation to perform well. The first important
@@ -325,6 +333,7 @@ statistics \parencite{crommelin2008,kwasniok2012}.
 
 
 \section{Lessons learnt from Lorenz '96}
+\label{sec:l96_lessons}
 Now that the statistical models and analysis techniques for L96 parametrisation
 have been surveyed, I shall review the results of previous studies, focusing on
 key conclusions that have potential implications for more complex dynamical
@@ -479,6 +488,7 @@ unresolved processes \parencite{bhouri2023}.
 
 
 \section{Beyond Lorenz '96}
+\label{sec:beyond_l96}
 The transition from L96 to more complex systems necessarily gives rise to
 several technicalities that must be addressed. The most pressing of these is
 the fact that increasing the number of degrees of freedom in the host model

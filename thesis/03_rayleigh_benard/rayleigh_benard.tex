@@ -69,9 +69,20 @@
 }
 \undodrop
 
-\todo{introductory paragraph - explain where this is going}
+Having established a useful set of tools and identified directions for further
+work in the previous chapter's review of the Lorenz '96 literature, I now
+propose to use two-dimensional \rb{} convection as an intermediate-complexity
+test problem for data-driven parametrisation.
+\crefrange{sec:rb_equations}{sec:config} first cover the governing equations
+and the numerical methods used to solve them.
+\cref{sec:resolution,sec:choose_resolution} then take the important step of
+choosing the spatial resolutions of the models used for data-driven
+parametrisation, first reviewing relevant literature and then performing
+numerical experiments.
+
 
 \section{Governing equations}
+\label{sec:rb_equations}
 \rb{} convection is the overturning motion of a fluid confined between two
 horizontal isothermal plates, the bottom plate being warmer than the top plate.
 The fluid is traditionally assumed to be incompressible, with density $\rho$
@@ -278,7 +289,8 @@ reality; they simply serve as an example dynamical system for the study of
 parametrisation.
 
 
-\section{Model configuration} \label{sec:config}
+\section{Model configuration}
+\label{sec:config}
 The nondimensionalised Boussinesq equations
 \crefrange{eqn:hyper_momentum}{eqn:hyper_incompressible} and
 \crefrange{eqn:bc_bot}{eqn:bc_sides} are solved numerically using Dedalus
@@ -300,28 +312,27 @@ Timestepping is performed using a second-order Runge-Kutta scheme. The Rayleigh
 number was set to $10^9$, a value at which the flow was found to be unsteady
 and feature transient eddies. The aspect ratio of the domain was $\Gamma = 8$
 and the Prandtl number was set to $1$ for simplicity. The complete model source
-code is publicly available \todo{data availability}.
-
-\todo{link to animations}
+code is publicly available; see \cref{chap:computations}.
 
 
-\section{Choice of resolution: literature} \label{sec:resolution}
-The next important step is to choose the resolution of the fine and coarse
-models. The fine model will serve as ``truth'', providing the training dataset
-to which the parametrisation model will be fitted and the test dataset against
-which the parametrised coarse model will be evaluated. Its resolution should
-therefore be high enough that the (yet-to-be-)chosen evaluation metrics are
-relatively insensitive to small changes in resolution (i.e., there should be
-near-convergence of long-term statistics). Note, however, that neither a
-perfect solution of the fluid equations nor perfect agreement with real-world
-experimental measurements are necessary; the fine model merely serves as a
-reference dynamical system whose behaviour I aim to reproduce by parametrising
-the coarse model. In order to create a worthwhile parametrisation problem, the
-coarse model's resolution should therefore be low enough that it exhibits
-statistically significant biases relative to the fine model, as measured by the
-chosen evaluation metrics. However, as explained in \cref{sec:hyper}, the
-coarse model must still be numerically stable so that it can provide an
-unparametrised control solution.
+\section{Choice of resolution: literature} \label{sec:resolution} The next
+important step is to choose the resolution of the fine and coarse models that
+will be used in the data-driven parametrisation process. The fine model will
+serve as ``truth'', providing the training dataset to which the parametrisation
+model will be fitted and the test dataset against which the parametrised coarse
+model will be evaluated. Its resolution should therefore be high enough that
+the (yet-to-be-)chosen evaluation metrics are relatively insensitive to small
+changes in resolution (i.e., there should be near-convergence of long-term
+statistics). Note, however, that neither a perfect solution of the fluid
+equations nor perfect agreement with real-world experimental measurements are
+necessary; the fine model merely serves as a reference dynamical system whose
+behaviour I aim to reproduce by parametrising the coarse model. In order to
+create a worthwhile parametrisation problem, the coarse model's resolution
+should therefore be low enough that it exhibits statistically significant
+biases relative to the fine model, as measured by the chosen evaluation
+metrics. However, as explained in \cref{sec:hyper}, the coarse model must still
+be numerically stable so that it can provide an unparametrised control
+solution.
 
 With the above constraints in mind, \cref{sec:res_requirements} will review the
 guidelines that have been established in the literature for producing

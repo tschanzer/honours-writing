@@ -38,7 +38,9 @@ In \cref{chap:tendencies}, I analysed the subgrid tendencies and
 constructed a statistical model \cref{eqn:scheme_poly} to estimate
 them from the coarse model tendencies. In this chapter, I will assess
 the performance of the parametrised model obtained by coupling the
-statistical model into the coarse \rb{} model.
+statistical model into the coarse \rb{} model. The assessment will cover
+short-term forecast accuracy \cref{sec:forecast} as well as long-term
+statistical accuracy \cref{sec:climate}.
 
 First, a ``truth'' solution was obtained by running the fine (i.e., $2048
 \times 256$; see \cref{tab:final_resolutions}) model for 300 time units,
@@ -279,8 +281,6 @@ parametrised models required approximately 1.6 CPU-hours and 1.7 CPU-hours
 per 100 units of model time respectively. This indicates that the parametrised
 model's improved predictive skill comes at little to no additional overhead
 cost compared to the control.
-
-\todo{summary?}
 
 \begin{figure}[ht]
     \centering
