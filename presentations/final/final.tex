@@ -16,9 +16,9 @@
     svg,
 }
 \usepackage[hang,flushmargin]{footmisc}
-\setbeameroption{hide notes}
+% \setbeameroption{hide notes}
 % \setbeameroption{show only notes}
-% \setbeameroption{show notes on second screen}
+\setbeameroption{show notes on second screen}
 \setbeamertemplate{note page}[plain]
 % \setbeamercovered{transparent}
 
@@ -122,6 +122,14 @@
 \begin{frame}
     \centering
     \includegraphics[height=0.99\textheight]{figures/news.png}
+    \note{
+    \begin{itemize}
+        \item Understanding of climate system needed to drive this action is
+            derived, to a great extent, from numerical models of the
+            atmosphere, oceans and other components of the Earth system
+            that solve the governing equations on a finite-resolution grid.
+    \end{itemize}
+    }
 \end{frame}
 
 \begin{frame}
@@ -132,16 +140,34 @@
 \begin{frame}
     \centering
     \includegraphics[width=\linewidth]{figures/resolution2.pdf}
+    \note{
+    \begin{itemize}
+        \item On the other hand, there are many processes that occur on
+        spatial scales much smaller than a climate model can resolve.
+    \end{itemize}
+    }
 \end{frame}
 
 \begin{frame}
     \centering
     \includegraphics[width=\linewidth]{figures/resolution3.pdf}
+    \note{
+    \begin{itemize}
+        \item The issue is that... For example...
+        \item This is a question of reduced order modelling...
+        \item Task: **parametrisation**.
+        \item In recent years... **data-driven parametrisation**,
+        \item In this project... analogue... from scratch
+    \end{itemize}
+    }
 \end{frame}
 
 \begin{frame}
     \centering
     \includegraphics[width=\linewidth]{figures/method1.pdf}
+    \note{
+        So how do we calculate...?
+    }
 \end{frame}
 
 \begin{frame}
@@ -167,26 +193,19 @@
 \begin{frame}
     \centering
     \includegraphics[width=\linewidth]{figures/method6.pdf}
+    \note{For a hypothetical perfect coarse model...}
 \end{frame}
 
 \begin{frame}
     \centering
     \includegraphics[width=\linewidth]{figures/method7.pdf}
-\end{frame}
-
-\begin{frame}
-    \centering
-    \includegraphics[width=\linewidth]{figures/method8.pdf}
+    \note{The subgrid tendency represents...}
 \end{frame}
 
 \begin{frame}
     \centering
     \includegraphics[width=\linewidth]{figures/method9.pdf}
-\end{frame}
-
-\begin{frame}
-    \centering
-    \includegraphics[height=0.99\textheight]{figures/theta_subgrid_vs_pred_tend.pdf}
+    \note{STATISTICAL MODEL: LINEAR REGRESSION}
 \end{frame}
 
 \begin{frame}
@@ -194,15 +213,16 @@
         \pdiff{\vec{u}}{t} &= \cdots \\
         \pdiff{\theta}{t} &= \cdots \onslide<2>{\color{hilight} + \text{subgrid tendency model}}
     \end{align*}
+    \note{So, we're able to predict the subgrid tendency...}
 \end{frame}
 
 \begin{frame}
-    \centering
     \begin{description}[align=right, labelwidth=0.5cm]
-        \item[Truth] $2048 \times 256$, no forcing
-        \item[Control]  $256 \times 64$, no forcing
-        \item[Parametrised]  $256 \times 64$, with forcing
+        \item[Truth] $2048 \times 256$
+        \item[Control]  $256 \times 64$
+        \item[Parametrised]  $256 \times 64$ + subgrid tendency model
     \end{description}
+    \note{Will the parametrised model be closer to the truth...?}
 \end{frame}
 
 \begin{frame}
